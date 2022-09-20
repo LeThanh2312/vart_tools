@@ -1,6 +1,9 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'package:flutter/material.dart';
 import '../../command/enum/tab_item.dart';
-import '../../routes.dart';
+import 'package:camera/camera.dart';
+import '../camera/view/camera_screen.dart';
 import '../favourite/favurite_screen.dart';
 import '../file/FileScreen.dart';
 import '../home/view/home_screen.dart';
@@ -10,10 +13,12 @@ class BottomNavigationBarMainScreen extends StatefulWidget {
   const BottomNavigationBarMainScreen({Key? key}) : super(key: key);
 
   @override
-  State<BottomNavigationBarMainScreen> createState() => _BottomNavigationBarMainScreenState();
+  State<BottomNavigationBarMainScreen> createState() =>
+      _BottomNavigationBarMainScreenState();
 }
 
-class _BottomNavigationBarMainScreenState extends State<BottomNavigationBarMainScreen> {
+class _BottomNavigationBarMainScreenState
+    extends State<BottomNavigationBarMainScreen> {
   TabItem _currentTab = TabItem.home;
 
   void updateTabSelection(TabItem tabItem) {
@@ -24,14 +29,13 @@ class _BottomNavigationBarMainScreenState extends State<BottomNavigationBarMainS
 
   @override
   Widget build(BuildContext context) {
-    print("curent Tab: $_currentTab");
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: <Widget>[
           Offstage(
             offstage: _currentTab != TabItem.home,
-            child: HomeScreen(),
+            child: const HomeScreen(),
           ),
           Offstage(
             offstage: _currentTab != TabItem.file,
@@ -50,7 +54,8 @@ class _BottomNavigationBarMainScreenState extends State<BottomNavigationBarMainS
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          Navigator.of(context).pushNamed(Routes.camera);
+          await availableCameras().then((value) => Navigator.push(context,
+              MaterialPageRoute(builder: (_) => CameraScreen(cameras: value))));
         },
         elevation: 4.0,
         child: Container(
@@ -69,7 +74,7 @@ class _BottomNavigationBarMainScreenState extends State<BottomNavigationBarMainS
             children: <Widget>[
               IconButton(
                 onPressed: () {
-                  updateTabSelection( TabItem.home);
+                  updateTabSelection(TabItem.home);
                 },
                 iconSize: 27.0,
                 icon: Icon(
@@ -81,7 +86,7 @@ class _BottomNavigationBarMainScreenState extends State<BottomNavigationBarMainS
               ),
               IconButton(
                 onPressed: () {
-                  updateTabSelection( TabItem.file);
+                  updateTabSelection(TabItem.file);
                 },
                 iconSize: 27.0,
                 icon: Icon(
@@ -97,7 +102,7 @@ class _BottomNavigationBarMainScreenState extends State<BottomNavigationBarMainS
               ),
               IconButton(
                 onPressed: () {
-                  updateTabSelection( TabItem.favourite);
+                  updateTabSelection(TabItem.favourite);
                 },
                 iconSize: 27.0,
                 icon: Icon(
@@ -109,7 +114,7 @@ class _BottomNavigationBarMainScreenState extends State<BottomNavigationBarMainS
               ),
               IconButton(
                 onPressed: () {
-                  updateTabSelection( TabItem.setting);
+                  updateTabSelection(TabItem.setting);
                 },
                 iconSize: 27.0,
                 icon: Icon(
