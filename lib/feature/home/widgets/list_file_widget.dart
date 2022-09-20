@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:vart_tools/config/app_color.dart';
+import 'package:vart_tools/res/app_color.dart';
 import 'package:sizer/sizer.dart';
-import '../../../utilities/extentions/enum/chart_item.dart';
+
+import '../../../command/enum/chart_item.dart';
 
 class ListFile extends StatefulWidget {
   const ListFile({Key? key}) : super(key: key);
@@ -40,7 +41,6 @@ class _ListFileState extends State<ListFile> {
   }
 
   Widget itemFile(ChartItem e, int index, int length) {
-    print("index ${index}  + length ${length}");
     return Column(
       children: [
         Container(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vart_tools/routes.dart';
-import '../../config/app_constants.dart';
+import '../../res/app_constants.dart';
 import 'widgets/circle_chart_widget.dart';
 import 'widgets/list_file_widget.dart';
 import 'widgets/search_widget.dart';

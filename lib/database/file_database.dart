@@ -63,31 +63,42 @@ class FileProvider {
   Future<Database> initializeDB() async {
     String path = await getDatabasesPath();
     return openDatabase(
-      join(path, 'example.db'),
+      join(path, 'file.db'),
       onCreate: (database, version) async {
         await database.execute(
-          "CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL,age INTEGER NOT NULL, country TEXT NOT NULL, email TEXT)",
+          "CREATE TABLE file(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL)",
         );
       },
       version: 1,
     );
   }
 
-  Future<void> deleteUser(int id) async {
+  Future<void> insertFile(FileDatabase file) async {
+    final db = await initializeDB();
+
+    await db.insert(
+      'files',
+      file.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<void> deleteFile(int id) async {
     final db = await initializeDB();
     await db.delete(
-      'users',
+      'files',
       where: "id = ?",
       whereArgs: [id],
     );
   }
 
-  Future<int> update(FileDatabase todo) async {
-    return await db.update(
-      'users',
-      todo.toMap(),
+  Future<void> updateFile(FileDatabase file) async {
+    final db = await initializeDB();
+    await db.update(
+      'files',
+      file.toMap(),
       where: 'id = ?',
-      whereArgs: [todo.id],
+      whereArgs: [file.id],
     );
   }
 

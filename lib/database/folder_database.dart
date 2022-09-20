@@ -1,6 +1,5 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'file_database.dart';
 
 class FolderDatabase {
   final String? id;
@@ -45,31 +44,42 @@ class FolderProvider {
   Future<Database> initializeDB() async {
     String path = await getDatabasesPath();
     return openDatabase(
-      join(path, 'example.db'),
+      join(path, 'folder.db'),
       onCreate: (database, version) async {
         await database.execute(
-          "CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL,age INTEGER NOT NULL, country TEXT NOT NULL, email TEXT)",
+          "CREATE TABLE folder(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL,)",
         );
       },
       version: 1,
     );
   }
 
+  Future<void> insertFolder(FolderDatabase folder) async {
+    final db = await initializeDB();
+
+    await db.insert(
+      'folders',
+      folder.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
   Future<void> deleteUser(int id) async {
     final db = await initializeDB();
     await db.delete(
-      'users',
+      'folders',
       where: "id = ?",
       whereArgs: [id],
     );
   }
 
-  Future<int> update(FileDatabase todo) async {
-    return await db.update(
-      'users',
-      todo.toMap(),
+  Future<void> update(FolderDatabase folder) async {
+    final db = await initializeDB();
+    await db.update(
+      'folders',
+      folder.toMap(),
       where: 'id = ?',
-      whereArgs: [todo.id],
+      whereArgs: [folder.id],
     );
   }
 

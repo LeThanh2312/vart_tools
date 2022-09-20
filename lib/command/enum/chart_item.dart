@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:vart_tools/config/app_color.dart';
+import 'package:vart_tools/res/app_color.dart';
 
 enum ChartItem { folder, image, pdf, word}
 

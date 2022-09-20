@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../utilities/color.dart';
+import '../command/color.dart';
 
 class AppColors{
   static Color primary = HexColor('#400F6F');
