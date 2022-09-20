@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:vart_tools/res/app_color.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../../command/enum/chart_item.dart';
+import '../../../common/enum/chart_item.dart';
+
 
 class ListFile extends StatefulWidget {
   const ListFile({Key? key}) : super(key: key);
@@ -31,7 +32,7 @@ class _ListFileState extends State<ListFile> {
         child: ListView(
           shrinkWrap: true,
           scrollDirection: Axis.vertical,
-          children: listFile.map((ChartItem e) {
+          children: ChartItem.values.map((ChartItem e) {
             int index = listFile.indexOf(e) + 1;
             return itemFile(e, index, listFile.length);
           }).toList(),
@@ -50,7 +51,7 @@ class _ListFileState extends State<ListFile> {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.folder, size: 41),
+                  Icon(e.icon, size: 41),
                   const SizedBox(width: 10),
                   Text(e.name),
                 ],

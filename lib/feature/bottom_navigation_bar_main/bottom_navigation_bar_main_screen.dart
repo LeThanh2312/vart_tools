@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vart_tools/feature/folder/view/folder_screen.dart';
-import '../../command/enum/tab_item.dart';
+import '../../common/enum/tab_item.dart';
 import '../../routes.dart';
 import '../favourite/favurite_screen.dart';
 import '../file/FileScreen.dart';
@@ -27,7 +27,6 @@ class _BottomNavigationBarMainScreenState
 
   @override
   Widget build(BuildContext context) {
-    print("curent Tab: $_currentTab");
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Stack(

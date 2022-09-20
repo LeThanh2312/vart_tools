@@ -1,12 +1,14 @@
+
 import 'package:flutter/material.dart';
 import 'package:pie_chart/pie_chart.dart';
 
-import '../../../command/enum/chart_item.dart';
+import '../../../common/enum/chart_item.dart';
+
 
 class CircleChartWidget extends StatelessWidget {
   CircleChartWidget({Key? key}) : super(key: key);
 
-  List<ChartItem> listChartItem = [
+  final List<ChartItem> listChartItem = [
     ChartItem.folder,
     ChartItem.image,
     ChartItem.pdf,
@@ -29,8 +31,7 @@ class CircleChartWidget extends StatelessWidget {
 
   final ChartType _chartType = ChartType.ring;
 
-  // ignore: prefer_final_fields
-  bool _showLegendsInRow = false;
+  final bool _showLegendsInRow = false;
 
   final bool _showLegends = true;
 

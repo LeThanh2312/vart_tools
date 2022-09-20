@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:vart_tools/feature/folder/widget/folder_item.dart';
 import 'package:vart_tools/feature/folder/widget/popup_new_folder.dart';
 import 'package:vart_tools/feature/home/widgets/search_widget.dart';

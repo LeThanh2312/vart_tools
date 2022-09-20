@@ -14,25 +14,20 @@ class FolderItem extends StatelessWidget {
       padding: const EdgeInsets.only(top: 10),
       child: Row(
         children: [
-          Container(
+          SizedBox(
             height: 50,
             width: 50,
             child: Image.asset(ResAssets.icons.folder),
           ),
-          const SizedBox(
-            width: 30,
-          ),
+          const SizedBox(width: 30),
           Expanded(child: Text(folderName)),
-          Container(
-            height: 30,
-            width: 30,
-          ),
+          const SizedBox(width: 30),
           OutlinedButton(
             onPressed: () {},
-            child: Icon(Icons.more_horiz),
             style: OutlinedButton.styleFrom(
               shape: const CircleBorder(),
             ),
+            child: const Icon(Icons.more_horiz),
           )
         ],
       ),

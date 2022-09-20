@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:vart_tools/res/app_color.dart';
 
 class PopupNewFolder extends StatelessWidget {
@@ -10,16 +8,17 @@ class PopupNewFolder extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Center(
-          child: Column(
-        children: [
-          Text("Tạo thư mục mới"),
-          Divider(
-            height: 15,
-            thickness: 1,
-            color: AppColors.grayColor,
-          ),
-        ],
-      )),
+        child: Column(
+          children: [
+            Text("Tạo thư mục mới"),
+            Divider(
+              height: 15,
+              thickness: 1,
+              color: AppColors.grayColor,
+            ),
+          ],
+        ),
+      ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: const [
