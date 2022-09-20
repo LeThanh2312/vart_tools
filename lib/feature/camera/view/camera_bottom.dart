@@ -1,8 +1,12 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import 'package:camera/camera.dart';
 import '../../../command/enum/camera_type.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 class CameraBottom extends StatefulWidget {
   CameraBottom(
@@ -31,7 +35,7 @@ class _CameraBottomState extends State<CameraBottom> {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Container(
-        height: 15.0.h,
+        height: 13.0.h,
         decoration: const BoxDecoration(
             borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
             color: Colors.transparent),
@@ -135,7 +139,9 @@ class _CameraBottomState extends State<CameraBottom> {
                           ),
                         )
                       : IconButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            getImageGallery();
+                          },
                           iconSize: 50,
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
@@ -254,5 +260,21 @@ class _CameraBottomState extends State<CameraBottom> {
         return null;
       }
     } else {}
+  }
+
+  Future<void> getImageGallery() async {
+    List<AssetEntity> resultList = <AssetEntity>[];
+
+    resultList = (await AssetPicker.pickAssets(
+      context,
+      pickerConfig: const AssetPickerConfig(
+        maxAssets: 2,
+      ),
+    ))!;
+
+    if (listPicture.length > 12) {
+    } else {
+      setState(() {});
+    }
   }
 }

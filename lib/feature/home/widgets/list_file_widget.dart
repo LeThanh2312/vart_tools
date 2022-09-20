@@ -28,13 +28,15 @@ class _ListFileState extends State<ListFile> {
       ),
       child: SizedBox(
         height: 27.0.h,
-        child: ListView(
-          shrinkWrap: true,
-          scrollDirection: Axis.vertical,
-          children: listFile.map((ChartItem e) {
-            int index = listFile.indexOf(e) + 1;
-            return itemFile(e, index, listFile.length);
-          }).toList(),
+        child: Center(
+          child: ListView(
+            shrinkWrap: true,
+            scrollDirection: Axis.vertical,
+            children: listFile.map((ChartItem e) {
+              int index = listFile.indexOf(e) + 1;
+              return itemFile(e, index, listFile.length);
+            }).toList(),
+          ),
         ),
       ),
     );

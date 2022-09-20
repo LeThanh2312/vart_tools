@@ -60,30 +60,33 @@ class _CameraScreenState extends State<CameraScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Stack(
-          children: [
-            if (_controller.value.isInitialized)
-              ShowCamera(
+        child: Container(
+          margin: EdgeInsets.symmetric(vertical: 10),
+          child: Stack(
+            children: [
+              if (_controller.value.isInitialized)
+                ShowCamera(
+                  styleCamera: styleCamera,
+                  controller: _controller,
+                )
+              else
+                Container(
+                    color: Colors.black,
+                    child: const Center(child: CircularProgressIndicator())),
+              CameraHeader(
                 styleCamera: styleCamera,
+                isPageFirst: isPageFirst,
                 controller: _controller,
-              )
-            else
-              Container(
-                  color: Colors.black,
-                  child: const Center(child: CircularProgressIndicator())),
-            CameraHeader(
-              styleCamera: styleCamera,
-              isPageFirst: isPageFirst,
-              controller: _controller,
-            ),
-            CameraBottom(
-              onChangeTypeCamera,
-              onChangePageFirst,
-              styleCamera: styleCamera,
-              isPageFirst: isPageFirst,
-              controller: _controller,
-            ),
-          ],
+              ),
+              CameraBottom(
+                onChangeTypeCamera,
+                onChangePageFirst,
+                styleCamera: styleCamera,
+                isPageFirst: isPageFirst,
+                controller: _controller,
+              ),
+            ],
+          ),
         ),
       ),
     );
