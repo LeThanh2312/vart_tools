@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../command/color.dart';
 
-class AppColors{
+class AppColors {
   static Color primary = HexColor('#400F6F');
   static Color silverColor = HexColor('#C4C4C4');
   static Color whiteColor = HexColor('#FFFFFF');
@@ -11,5 +11,5 @@ class AppColors{
   static Color colorPDF = HexColor('#33CDFE');
   static Color colorWord = HexColor('#333BFE');
   static Color greenLight = HexColor('#E6F8F7');
-
+  static Color grayColor = HexColor('#D9D9D9');
 }
