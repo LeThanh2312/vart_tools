@@ -49,7 +49,7 @@ class CircleChartWidget extends StatelessWidget {
       chartRadius: 200,
       colorList: colorList,
       initialAngleInDegree: 0,
-      chartType: _chartType!,
+      chartType: _chartType,
       centerText: centerText,
       legendOptions: LegendOptions(
         showLegendsInRow: _showLegendsInRow,

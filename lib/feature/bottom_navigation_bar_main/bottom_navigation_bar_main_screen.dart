@@ -3,7 +3,7 @@ import '../../command/enum/tab_item.dart';
 import '../../routes.dart';
 import '../favourite/favurite_screen.dart';
 import '../file/FileScreen.dart';
-import '../home/home_screen.dart';
+import '../home/view/home_screen.dart';
 import '../setting/SettingScreen.dart';
 
 class BottomNavigationBarMainScreen extends StatefulWidget {

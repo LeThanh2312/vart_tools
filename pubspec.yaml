@@ -49,6 +49,7 @@ dev_dependencies:
 
   # CHART
   pie_chart: ^5.3.2
+  percent_indicator: ^4.2.2
 
   # LOCAL DATABASE
   sqflite: ^2.0.3+1

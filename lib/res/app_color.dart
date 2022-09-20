@@ -11,5 +11,6 @@ class AppColors{
   static Color colorPDF = HexColor('#33CDFE');
   static Color colorWord = HexColor('#333BFE');
   static Color greenLight = HexColor('#E6F8F7');
+  static Color yellow = HexColor('#ECBA39');
 
 }

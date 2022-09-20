@@ -48,6 +48,6 @@ extension ChartItemExtention on ChartItem? {
         return 0xf058;
       default:
     }
-    return 0;
+    return 0xf058;
   }
 }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:vart_tools/routes.dart';
-import '../../res/app_constants.dart';
-import 'widgets/circle_chart_widget.dart';
-import 'widgets/list_file_widget.dart';
-import 'widgets/search_widget.dart';
+import '../../../res/app_constants.dart';
+import '../widgets/circle_chart_widget.dart';
+import '../widgets/list_file_widget.dart';
+import '../widgets/search_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
