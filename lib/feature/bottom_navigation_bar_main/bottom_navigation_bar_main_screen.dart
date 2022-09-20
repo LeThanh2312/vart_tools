@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vart_tools/feature/folder/view/folder_screen.dart';
 import '../../command/enum/tab_item.dart';
 import '../../routes.dart';
 import '../favourite/favurite_screen.dart';
@@ -10,10 +11,12 @@ class BottomNavigationBarMainScreen extends StatefulWidget {
   const BottomNavigationBarMainScreen({Key? key}) : super(key: key);
 
   @override
-  State<BottomNavigationBarMainScreen> createState() => _BottomNavigationBarMainScreenState();
+  State<BottomNavigationBarMainScreen> createState() =>
+      _BottomNavigationBarMainScreenState();
 }
 
-class _BottomNavigationBarMainScreenState extends State<BottomNavigationBarMainScreen> {
+class _BottomNavigationBarMainScreenState
+    extends State<BottomNavigationBarMainScreen> {
   TabItem _currentTab = TabItem.home;
 
   void updateTabSelection(TabItem tabItem) {
@@ -35,7 +38,7 @@ class _BottomNavigationBarMainScreenState extends State<BottomNavigationBarMainS
           ),
           Offstage(
             offstage: _currentTab != TabItem.file,
-            child: const FileScreen(),
+            child: const FolderScreen(),
           ),
           Offstage(
             offstage: _currentTab != TabItem.favourite,
@@ -69,7 +72,7 @@ class _BottomNavigationBarMainScreenState extends State<BottomNavigationBarMainS
             children: <Widget>[
               IconButton(
                 onPressed: () {
-                  updateTabSelection( TabItem.home);
+                  updateTabSelection(TabItem.home);
                 },
                 iconSize: 27.0,
                 icon: Icon(
@@ -81,7 +84,7 @@ class _BottomNavigationBarMainScreenState extends State<BottomNavigationBarMainS
               ),
               IconButton(
                 onPressed: () {
-                  updateTabSelection( TabItem.file);
+                  updateTabSelection(TabItem.file);
                 },
                 iconSize: 27.0,
                 icon: Icon(
@@ -97,7 +100,7 @@ class _BottomNavigationBarMainScreenState extends State<BottomNavigationBarMainS
               ),
               IconButton(
                 onPressed: () {
-                  updateTabSelection( TabItem.favourite);
+                  updateTabSelection(TabItem.favourite);
                 },
                 iconSize: 27.0,
                 icon: Icon(
@@ -109,7 +112,7 @@ class _BottomNavigationBarMainScreenState extends State<BottomNavigationBarMainS
               ),
               IconButton(
                 onPressed: () {
-                  updateTabSelection( TabItem.setting);
+                  updateTabSelection(TabItem.setting);
                 },
                 iconSize: 27.0,
                 icon: Icon(
