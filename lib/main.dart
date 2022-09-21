@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:vart_tools/feature/folder/view_model/folders_bloc.dart';
 import 'package:vart_tools/routes.dart';
 import 'package:sizer/sizer.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'feature/bottom_navigation_bar_main/bottom_navigation_bar_main_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiBlocProvider(providers: [
+      BlocProvider(
+        create: (context) => FoldersViewModel(),
+      ),
+    ], child: const MyApp()),
+    // const MyApp()
+  );
 }
 
 class MyApp extends StatelessWidget {
