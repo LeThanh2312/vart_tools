@@ -107,7 +107,7 @@ class _PopupNewFolderState extends State<PopupNewFolder> {
                     if (!_isContain) {
                       context.read<FoldersViewModel>().add(
                             AddFolderEvent(
-                              folder: FolderDb(
+                              folder: FolderModel(
                                 name: folderNameController.text,
                               ),
                             ),

@@ -29,9 +29,7 @@ class _FolderScreenState extends State<FolderScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SearchWidget(),
-            const SizedBox(
-              height: 40,
-            ),
+            const SizedBox(height: 40),
             const PanelControlFolder(),
             Expanded(
               child: BlocBuilder<FoldersViewModel, FoldersState>(

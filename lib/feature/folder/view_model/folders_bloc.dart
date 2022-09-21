@@ -4,17 +4,17 @@ import 'package:vart_tools/database/folder_database.dart';
 class FoldersEvent {}
 
 class FoldersState {
-  List<FolderDb> folders = [];
+  List<FolderModel> folders = [];
   FoldersState({this.folders = const []});
 }
 
 class AddFolderEvent extends FoldersEvent {
-  FolderDb folder;
+  FolderModel folder;
   AddFolderEvent({required this.folder});
 }
 
 class DeleteFolderEvent extends FoldersEvent {
-  FolderDb folder;
+  FolderModel folder;
   DeleteFolderEvent({required this.folder});
 }
 
@@ -31,7 +31,7 @@ class ErrorAddFolder extends FoldersState {
 }
 
 class SuccessInitFolders extends FoldersState {
-  List<FolderDb> folders = [];
+  List<FolderModel> folders = [];
   SuccessInitFolders({required this.folders});
 }
 
