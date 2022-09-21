@@ -5,7 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import 'package:camera/camera.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
-import '../../../common/enum/camera_type.dart';
+import '../../../../common/enum/camera_type.dart';
+import '../../../../res/vietnam_asset_picker_text_delegate.dart';
+import '../../view/list_picture_photo_screen.dart';
+import '../../view/preview_picture_screen.dart';
 
 class CameraBottomWidget extends StatefulWidget {
   const CameraBottomWidget(
@@ -27,7 +30,7 @@ class CameraBottomWidget extends StatefulWidget {
 }
 
 class _CameraBottomWidgetState extends State<CameraBottomWidget> {
-  List<XFile> listPicture = [];
+  List<File> listPicture = [];
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +89,7 @@ class _CameraBottomWidgetState extends State<CameraBottomWidget> {
                 Expanded(
                   child: IconButton(
                     onPressed: () {
-                      takePicture();
+                      takePicture(context);
                     },
                     iconSize: 50,
                     padding: EdgeInsets.zero,
@@ -100,16 +103,15 @@ class _CameraBottomWidgetState extends State<CameraBottomWidget> {
                               widget.styleCamera == CameraType.document))
                       ? InkWell(
                           onTap: () {
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (context) =>
-                            //         ListImagePhotoScreen(
-                            //       picture: listPicture,
-                            //       style: CameraType.passport,
-                            //     ),
-                            //   ),
-                            // );
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ListPicturePhotoScreen(
+                                  listPicture: listPicture,
+                                  style: widget.styleCamera,
+                                ),
+                              ),
+                            );
                           },
                           child: SizedBox(
                             width: 40,
@@ -210,7 +212,7 @@ class _CameraBottomWidgetState extends State<CameraBottomWidget> {
     );
   }
 
-  Future takePicture() async {
+  Future takePicture(BuildContext context) async {
     XFile? pictureBefore;
     XFile? pictureAfter;
     if (!widget.controller.value.isInitialized) {
@@ -222,28 +224,29 @@ class _CameraBottomWidgetState extends State<CameraBottomWidget> {
     if (widget.styleCamera == CameraType.cardID) {
       if (widget.isPageFirst) {
         pictureBefore = await widget.controller.takePicture();
-        listPicture.add(pictureBefore);
+        listPicture.add(File(pictureBefore.path));
         widget.onChangePageFirst(false);
         setState(() {});
       } else {
         pictureAfter = await widget.controller.takePicture();
-        listPicture.add(pictureAfter);
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => PreviewImageScreen(
-        //       pictureBefore: listPicture,
-        //       style: CameraType.cardID,
-        //     ),
-        //   ),
-        // ).then(
-        //   (_) => setState(
-        //     () {
-        //       listPicture.clear();
-        //       isPageFirst = true;
-        //     },
-        //   ),
-        // );
+        listPicture.add(File(pictureAfter.path));
+        if (!mounted) return;
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PreviewPictureScreen(
+              listPicture: listPicture,
+              style: CameraType.cardID,
+            ),
+          ),
+        ).then(
+          (_) => setState(
+            () {
+              listPicture.clear();
+              widget.onChangePageFirst(true);
+            },
+          ),
+        );
       }
     } else if (widget.styleCamera == CameraType.passport ||
         widget.styleCamera == CameraType.document) {
@@ -251,7 +254,7 @@ class _CameraBottomWidgetState extends State<CameraBottomWidget> {
         await widget.controller.setFlashMode(FlashMode.off);
         pictureBefore = await widget.controller.takePicture();
         if (listPicture.length < 20) {
-          listPicture.add(pictureBefore);
+          listPicture.add(File(pictureBefore.path));
         }
         setState(() {});
       } on CameraException catch (e) {
@@ -266,14 +269,40 @@ class _CameraBottomWidgetState extends State<CameraBottomWidget> {
 
     resultList = (await AssetPicker.pickAssets(
       context,
-      pickerConfig: const AssetPickerConfig(
-        maxAssets: 2,
+      pickerConfig: AssetPickerConfig(
+        maxAssets: widget.styleCamera == CameraType.cardID ? 2 : 20,
+        themeColor: Colors.orangeAccent,
+        textDelegate: const VietnameseAssetPickerTextDelegate(),
       ),
     ))!;
+    print('====== ${resultList.length}');
 
-    if (listPicture.length > 12) {
-    } else {
-      setState(() {});
+    for(var item in resultList) {
+      try {
+        final file = await item.file;
+        listPicture.add(file!);
+      } catch(err) {
+        // Do something here
+      }
     }
+
+    if (!mounted) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PreviewPictureScreen(
+          listPicture: listPicture,
+          style: widget.styleCamera,
+        ),
+      ),
+    ).then(
+          (_) => setState(
+            () {
+          listPicture.clear();
+          widget.onChangePageFirst(true);
+        },
+      ),
+    );
   }
-}
+
+  }

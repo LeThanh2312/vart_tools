@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
-import '../../../common/enum/camera_type.dart';
+import '../../../../common/enum/camera_type.dart';
 
 class CameraHeaderWidget extends StatefulWidget {
   const CameraHeaderWidget({
@@ -48,10 +48,8 @@ class _CameraHeaderWidgetState extends State<CameraHeaderWidget> {
             IconButton(
               onPressed: () {
                 if (!isFlash) {
-                  print('==== isFlash: $isFlash');
                   widget.controller.setFlashMode(FlashMode.off);
                 } else {
-                  print('==== isFlash: $isFlash');
                   widget.controller.setFlashMode(FlashMode.always);
                 }
                 isFlash = !isFlash;

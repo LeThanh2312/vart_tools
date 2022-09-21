@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:sizer/sizer.dart';
 import 'package:flutter_dash/flutter_dash.dart';
-
-import '../../../common/enum/camera_type.dart';
+import '../../../../common/enum/camera_type.dart';
 
 class ShowCameraWidget extends StatefulWidget {
   const ShowCameraWidget({Key? key, required this.styleCamera, required this.controller})

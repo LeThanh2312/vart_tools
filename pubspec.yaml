@@ -47,7 +47,6 @@ dev_dependencies:
   flutter_dash: ^1.0.0
 
   #GALLEY
-  image_picker: ^0.8.5+3
   wechat_assets_picker: ^8.1.0
 
   # DEVICE

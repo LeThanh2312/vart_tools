@@ -2,9 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import '../../../common/enum/camera_type.dart';
-import '../widgets/camera_bottom_widget.dart';
-import '../widgets/camera_header_widget.dart';
-import '../widgets/show_camera_widget.dart';
+import '../widgets/camera/camera_bottom_widget.dart';
+import '../widgets/camera/camera_header_widget.dart';
+import '../widgets/camera/show_camera_widget.dart';
 
 class CameraScreen extends StatefulWidget {
   const CameraScreen({Key? key, this.cameras}) : super(key: key);
@@ -71,8 +71,11 @@ class _CameraScreenState extends State<CameraScreen> {
                 )
               else
                 Container(
-                    color: Colors.black,
-                    child: const Center(child: CircularProgressIndicator())),
+                  color: Colors.black,
+                  child: const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
               CameraHeaderWidget(
                 styleCamera: styleCamera,
                 isPageFirst: isPageFirst,
