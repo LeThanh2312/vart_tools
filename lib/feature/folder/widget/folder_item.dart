@@ -1,17 +1,15 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:vart_tools/feature/folder/widget/bottom_sheet_Icon_more.dart';
 import 'package:vart_tools/res/assets.dart';
 
 class FolderItem extends StatelessWidget {
-  const FolderItem({Key? key, required this.folderName}) : super(key: key);
-  final String folderName;
+  const FolderItem({Key? key, this.folderName}) : super(key: key);
+  final String? folderName;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 10),
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
       child: Row(
         children: [
           SizedBox(
@@ -19,11 +17,26 @@ class FolderItem extends StatelessWidget {
             width: 50,
             child: Image.asset(ResAssets.icons.folder),
           ),
-          const SizedBox(width: 30),
-          Expanded(child: Text(folderName)),
-          const SizedBox(width: 30),
+          const SizedBox(
+            width: 30,
+          ),
+          Expanded(child: Text(folderName!)),
+          const SizedBox(
+            height: 30,
+            width: 30,
+          ),
           OutlinedButton(
-            onPressed: () {},
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (context) {
+                  return SizedBox(
+                      height: MediaQuery.of(context).size.height / 3,
+                      width: MediaQuery.of(context).size.width,
+                      child: const BottomSheetIconMore());
+                },
+              );
+            },
             style: OutlinedButton.styleFrom(
               shape: const CircleBorder(),
             ),

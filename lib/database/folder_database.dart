@@ -1,39 +1,40 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:vart_tools/res/strings.dart';
 
-class FolderDatabase {
-  final String? id;
-  final String name;
+class FolderModel {
+  final int? id;
+  final String? name;
   final String? dateCreate;
   final String? dateUpdate;
   final String? link;
-  final bool? favourite;
+  final int? favourite;
+  final int? isDelete;
 
-  FolderDatabase({
-    required this.id,
-    required this.name,
+  FolderModel({
+    this.id,
+    this.name,
     this.dateCreate,
     this.dateUpdate,
     this.link,
     this.favourite,
+    this.isDelete,
   });
 
-  FolderDatabase.fromMap(Map<String, dynamic> res)
-      : id = res["id"],
-        name = res["name"],
-        dateCreate = res["date_create"],
-        dateUpdate = res["date_update"],
-        link = res["link"],
-        favourite = res["favourite"];
+  FolderModel.fromMap(Map<String, dynamic> res)
+      : id = res[DbFolder.id],
+        name = res[DbFolder.name],
+        dateCreate = res[DbFolder.dateCreate],
+        dateUpdate = res[DbFolder.dateUpdate],
+        link = res[DbFolder.link],
+        favourite = res[DbFolder.favourite],
+        isDelete = res[DbFolder.isDelete];
 
   Map<String, Object?> toMap() {
     return {
-      'id': id,
-      'name': name,
-      'date_create': dateCreate,
-      'date_update': dateUpdate,
-      'link': link,
-      'favourite': favourite,
+      DbFolder.id: id,
+      DbFolder.name: name,
+      DbFolder.link: link,
     };
   }
 }
@@ -45,42 +46,70 @@ class FolderProvider {
     String path = await getDatabasesPath();
     return openDatabase(
       join(path, 'folder.db'),
+      version: 1,
       onCreate: (database, version) async {
         await database.execute(
-          "CREATE TABLE folder(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL,)",
+          """CREATE TABLE folders(
+            id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+            name TEXT NOT NULL,
+            date_create TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            date_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            link TEXT,
+            favourite INTEGER DEFAULT 0,
+            is_delete INTEGER DEFAULT 0
+           )""",
         );
       },
-      version: 1,
     );
   }
 
-  Future<void> insertFolder(FolderDatabase folder) async {
+  Future<void> insertFolder(FolderModel folder) async {
     final db = await initializeDB();
 
     await db.insert(
-      'folders',
+      DbFolder.tableName,
       folder.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 
-  Future<void> deleteUser(int id) async {
+  Future<void> deleteFolder(int id, FolderModel folderDb) async {
     final db = await initializeDB();
     await db.delete(
-      'folders',
+      DbFolder.tableName,
       where: "id = ?",
       whereArgs: [id],
     );
   }
 
-  Future<void> update(FolderDatabase folder) async {
+  Future<void> update(FolderModel folder) async {
     final db = await initializeDB();
     await db.update(
-      'folders',
+      DbFolder.tableName,
       folder.toMap(),
       where: 'id = ?',
       whereArgs: [folder.id],
     );
+  }
+
+  Future<List<FolderModel>> getFolders() async {
+    final db = await initializeDB();
+    final List<Map<String, dynamic>> maps = await db.query(
+      DbFolder.tableName,
+      where: 'is_delete = ?',
+      whereArgs: [0],
+    );
+    return List.generate(maps.length, (i) {
+      return FolderModel(
+        id: maps[i][DbFolder.id],
+        name: maps[i][DbFolder.name],
+        dateCreate: maps[i][DbFolder.dateCreate],
+        dateUpdate: maps[i][DbFolder.dateUpdate],
+        favourite: maps[i][DbFolder.favourite],
+        isDelete: maps[i][DbFolder.isDelete],
+        link: maps[i][DbFolder.link],
+      );
+    });
   }
 
   Future close() async => db.close();
