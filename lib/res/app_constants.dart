@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vart_tools/res/app_color.dart';
 
-
 const padding24 = 24.0;
 const defaultPadding = 20.0;
 const padding16 = 16.0;
