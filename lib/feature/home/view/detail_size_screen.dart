@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:vart_tools/command/enum/chart_item.dart';
 import 'package:vart_tools/res/app_color.dart';
 import 'package:sizer/sizer.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
+import '../../../common/enum/chart_item.dart';
+
 class DetailSizeScreen extends StatefulWidget {
-  DetailSizeScreen({Key? key, required this.typeDetail}) : super(key: key);
-  ChartItem typeDetail;
+  const DetailSizeScreen({Key? key, required this.typeDetail}) : super(key: key);
+  final ChartItem typeDetail;
 
   @override
   State<DetailSizeScreen> createState() => _DetailSizeScreenState();
@@ -44,8 +45,7 @@ class _DetailSizeScreenState extends State<DetailSizeScreen> {
                   Expanded(
                     flex: 1,
                     child: Icon(
-                      IconData(widget.typeDetail.icon,
-                          fontFamily: 'MaterialIcons'),
+                      widget.typeDetail.icon,
                       color: AppColors.yellow,
                       size: 50,
                     ),

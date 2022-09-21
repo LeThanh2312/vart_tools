@@ -1,10 +1,10 @@
 // ignore_for_file: depend_on_referenced_packages
 import 'package:flutter/material.dart';
-import '../../../command/enum/camera_type.dart';
 import 'package:camera/camera.dart';
-import 'camera_bottom.dart';
-import 'camera_header.dart';
-import 'show_camera_widget.dart';
+import '../../../common/enum/camera_type.dart';
+import '../widgets/camera_bottom_widget.dart';
+import '../widgets/camera_header_widget.dart';
+import '../widgets/show_camera_widget.dart';
 
 class CameraScreen extends StatefulWidget {
   const CameraScreen({Key? key, this.cameras}) : super(key: key);
@@ -61,11 +61,11 @@ class _CameraScreenState extends State<CameraScreen> {
     return Scaffold(
       body: SafeArea(
         child: Container(
-          margin: EdgeInsets.symmetric(vertical: 10),
+          margin: const EdgeInsets.symmetric(vertical: 10),
           child: Stack(
             children: [
               if (_controller.value.isInitialized)
-                ShowCamera(
+                ShowCameraWidget(
                   styleCamera: styleCamera,
                   controller: _controller,
                 )
@@ -73,12 +73,12 @@ class _CameraScreenState extends State<CameraScreen> {
                 Container(
                     color: Colors.black,
                     child: const Center(child: CircularProgressIndicator())),
-              CameraHeader(
+              CameraHeaderWidget(
                 styleCamera: styleCamera,
                 isPageFirst: isPageFirst,
                 controller: _controller,
               ),
-              CameraBottom(
+              CameraBottomWidget(
                 onChangeTypeCamera,
                 onChangePageFirst,
                 styleCamera: styleCamera,

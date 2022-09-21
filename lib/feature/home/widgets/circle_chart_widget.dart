@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pie_chart/pie_chart.dart';
 
-import '../../../command/enum/chart_item.dart';
+import '../../../common/enum/chart_item.dart';
 
 class CircleChartWidget extends StatelessWidget {
   CircleChartWidget({Key? key}) : super(key: key);

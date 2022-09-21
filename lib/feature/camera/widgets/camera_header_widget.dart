@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
-import '../../../command/enum/camera_type.dart';
+import '../../../common/enum/camera_type.dart';
 
-class CameraHeader extends StatefulWidget {
-  CameraHeader({
+class CameraHeaderWidget extends StatefulWidget {
+  const CameraHeaderWidget({
     Key? key,
     required this.styleCamera,
     required this.isPageFirst,
     required this.controller,
   }) : super(key: key);
-  CameraType styleCamera;
-  CameraController controller;
-  bool isPageFirst;
+  final CameraType styleCamera;
+  final CameraController controller;
+  final bool isPageFirst;
 
   @override
-  State<CameraHeader> createState() => _CameraHeaderState();
+  State<CameraHeaderWidget> createState() => _CameraHeaderWidgetState();
 }
 
-class _CameraHeaderState extends State<CameraHeader> {
+class _CameraHeaderWidgetState extends State<CameraHeaderWidget> {
   bool isFlash = false;
 
   @override

@@ -1,23 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:vart_tools/common/enum/chart_item.dart';
 import 'package:vart_tools/res/app_color.dart';
 import 'package:sizer/sizer.dart';
-import '../../../command/enum/chart_item.dart';
 import '../view/detail_size_screen.dart';
 
-class ListFile extends StatefulWidget {
-  const ListFile({Key? key}) : super(key: key);
+class ListFileWidget extends StatefulWidget {
+  const ListFileWidget({Key? key}) : super(key: key);
 
   @override
-  State<ListFile> createState() => _ListFileState();
+  State<ListFileWidget> createState() => _ListFileWidgetState();
 }
 
-class _ListFileState extends State<ListFile> {
-  List<ChartItem> listFile = [
-    ChartItem.folder,
-    ChartItem.image,
-    ChartItem.pdf,
-    ChartItem.word
-  ];
+class _ListFileWidgetState extends State<ListFileWidget> {
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +26,9 @@ class _ListFileState extends State<ListFile> {
           child: ListView(
             shrinkWrap: true,
             scrollDirection: Axis.vertical,
-            children: listFile.map((ChartItem e) {
-              int index = listFile.indexOf(e) + 1;
-              return itemFile(e, index, listFile.length);
+            children: ChartItem.values.map((ChartItem e) {
+              int index = ChartItem.values.indexOf(e) + 1;
+              return itemFile(e, index, ChartItem.values.length);
             }).toList(),
           ),
         ),
@@ -53,7 +47,7 @@ class _ListFileState extends State<ListFile> {
               Row(
                 children: [
                   Icon(
-                    IconData(e.icon, fontFamily: 'MaterialIcons'),
+                    e.icon,
                     color: AppColors.yellow,
                     size: 41,
                   ),

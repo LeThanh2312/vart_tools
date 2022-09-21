@@ -4,12 +4,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import 'package:camera/camera.dart';
-import '../../../command/enum/camera_type.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
+import '../../../common/enum/camera_type.dart';
 
-class CameraBottom extends StatefulWidget {
-  CameraBottom(
+class CameraBottomWidget extends StatefulWidget {
+  const CameraBottomWidget(
     this.onChangeType,
     this.onChangePageFirst, {
     Key? key,
@@ -17,17 +16,17 @@ class CameraBottom extends StatefulWidget {
     required this.controller,
     required this.isPageFirst,
   }) : super(key: key);
-  CameraType styleCamera;
-  CameraController controller;
-  bool isPageFirst;
+  final CameraType styleCamera;
+  final CameraController controller;
+  final bool isPageFirst;
   final void Function(CameraType value) onChangeType;
   final void Function(bool value) onChangePageFirst;
 
   @override
-  State<CameraBottom> createState() => _CameraBottomState();
+  State<CameraBottomWidget> createState() => _CameraBottomWidgetState();
 }
 
-class _CameraBottomState extends State<CameraBottom> {
+class _CameraBottomWidgetState extends State<CameraBottomWidget> {
   List<XFile> listPicture = [];
 
   @override

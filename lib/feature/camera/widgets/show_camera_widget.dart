@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
-import '../../../command/enum/camera_type.dart';
 import 'package:sizer/sizer.dart';
 import 'package:flutter_dash/flutter_dash.dart';
 
-class ShowCamera extends StatefulWidget {
-  ShowCamera({Key? key, required this.styleCamera, required this.controller})
+import '../../../common/enum/camera_type.dart';
+
+class ShowCameraWidget extends StatefulWidget {
+  const ShowCameraWidget({Key? key, required this.styleCamera, required this.controller})
       : super(key: key);
-  CameraType styleCamera;
-  CameraController controller;
+  final CameraType styleCamera;
+  final CameraController controller;
 
   @override
-  State<ShowCamera> createState() => _ShowCameraState();
+  State<ShowCameraWidget> createState() => _ShowCameraWidgetState();
 }
 
-class _ShowCameraState extends State<ShowCamera> {
+class _ShowCameraWidgetState extends State<ShowCameraWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(

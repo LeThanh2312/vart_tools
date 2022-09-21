@@ -36,18 +36,18 @@ extension ChartItemExtention on ChartItem? {
     return AppColors.primary;
   }
 
-  int get icon {
+  IconData get icon {
     switch (this) {
       case ChartItem.folder:
-        return 0xe2a3;
+        return Icons.folder;
       case ChartItem.image:
-        return 0xe332;
+        return Icons.image;
       case ChartItem.pdf:
-        return 0xe4c0;
+        return Icons.picture_as_pdf;
       case ChartItem.word:
-        return 0xf058;
+        return Icons.file_copy_outlined;
       default:
     }
-    return 0xf058;
+    return Icons.folder;
   }
 }

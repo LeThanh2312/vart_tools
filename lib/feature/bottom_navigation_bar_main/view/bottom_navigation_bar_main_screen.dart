@@ -1,13 +1,13 @@
 // ignore_for_file: depend_on_referenced_packages
 
 import 'package:flutter/material.dart';
-import '../../command/enum/tab_item.dart';
 import 'package:camera/camera.dart';
-import '../camera/view/camera_screen.dart';
-import '../favourite/favurite_screen.dart';
-import '../file/FileScreen.dart';
-import '../home/view/home_screen.dart';
-import '../setting/SettingScreen.dart';
+import '../../../common/enum/tab_item.dart';
+import '../../camera/view/camera_screen.dart';
+import '../../favourite/favourite_screen.dart';
+import '../../file/file_screen.dart';
+import '../../home/view/home_screen.dart';
+import '../../setting/settings_screen.dart';
 
 class BottomNavigationBarMainScreen extends StatefulWidget {
   const BottomNavigationBarMainScreen({Key? key}) : super(key: key);
@@ -47,7 +47,7 @@ class _BottomNavigationBarMainScreenState
           ),
           Offstage(
             offstage: _currentTab != TabItem.setting,
-            child: const SettingScreen(),
+            child: const SettingsScreen(),
           ),
         ],
       ),
@@ -90,7 +90,7 @@ class _BottomNavigationBarMainScreenState
                 },
                 iconSize: 27.0,
                 icon: Icon(
-                  Icons.file_open,
+                  Icons.folder,
                   color: _currentTab == TabItem.file
                       ? Colors.blue.shade900
                       : Colors.grey.shade400,
