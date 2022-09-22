@@ -9,21 +9,20 @@ class BottomNavigatorListPictureWidget extends StatefulWidget {
     Key? key,
     required this.type,
     required this.listPicture,
+    required this.listPictureRemove,
   }) : super(key: key);
+
   final CameraType type;
   final List<File> listPicture;
+  final List<File> listPictureRemove;
 
   @override
   State<BottomNavigatorListPictureWidget> createState() =>
       _BottomNavigatorListPictureWidgetState();
 }
 
-class _BottomNavigatorListPictureWidgetState extends State<BottomNavigatorListPictureWidget> {
-
-  late final List<File> listPictureAfterSelect;
-
-
-
+class _BottomNavigatorListPictureWidgetState
+    extends State<BottomNavigatorListPictureWidget> {
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
@@ -49,16 +48,8 @@ class _BottomNavigatorListPictureWidgetState extends State<BottomNavigatorListPi
             ),
             //to leave space in between the bottom app bar items and below the FAB
             IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PreviewPictureScreen(
-                      listPicture: widget.listPicture,
-                      style: widget.type,
-                    ),
-                  ),
-                );
+              onPressed: () async {
+                await listPictureSelect();
               },
               iconSize: 27.0,
               icon: const Icon(
@@ -69,5 +60,36 @@ class _BottomNavigatorListPictureWidgetState extends State<BottomNavigatorListPi
         ),
       ),
     );
+  }
+
+  Future<List<File>> listPictureSelect() async {
+    List<File> listPictureSelect = [...widget.listPicture];
+    print('======== listPictureSelect ${listPictureSelect.length}');
+    print('======== listPictureSelect ${widget.listPictureRemove.length}');
+    for (var item in widget.listPictureRemove) {
+      try {
+        listPictureSelect.remove(item);
+      } catch (err) {
+        // Do something here
+      }
+    }
+    if (listPictureSelect.isNotEmpty) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PreviewPictureScreen(
+            listPicture: listPictureSelect,
+            style: widget.type,
+          ),
+        ),
+      );
+    } else {
+      const snackBar = SnackBar(
+        content: Text('Vui lòng chọn ít nhất một ảnh'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+    print('======== listPictureSelect after ${listPictureSelect.length}');
+    return listPictureSelect;
   }
 }

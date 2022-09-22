@@ -2,8 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
-class GridviewImage extends StatefulWidget {
-  const GridviewImage({
+class GridviewImageWidget extends StatefulWidget {
+  const GridviewImageWidget({
     Key? key,
     required this.listPicture,
     required this.listPictureRemove,
@@ -12,10 +12,10 @@ class GridviewImage extends StatefulWidget {
   final List<File> listPictureRemove;
 
   @override
-  State<GridviewImage> createState() => _GridviewImageState();
+  State<GridviewImageWidget> createState() => _GridviewImageWidgetState();
 }
 
-class _GridviewImageState extends State<GridviewImage> {
+class _GridviewImageWidgetState extends State<GridviewImageWidget> {
 
   @override
   Widget build(BuildContext context) {

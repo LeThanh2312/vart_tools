@@ -62,6 +62,9 @@ dev_dependencies:
   # CUSTOM CAMERA
   camera: ^0.10.0+1
 
+  # STATE MANAGER
+  flutter_bloc: ^8.1.1
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

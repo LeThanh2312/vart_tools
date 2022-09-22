@@ -43,21 +43,19 @@ class _PreviewPictureState extends State<PreviewPicture> {
                 ),
               ],
             )
-          : SizedBox(
-              width: 40.0.w,
-              height: 80.0.h,
+          : Expanded(
               child: ListView(
                 shrinkWrap: true,
                 scrollDirection: Axis.vertical,
                 children: widget.picture.map((e) {
                   String index = '${widget.picture.indexOf(e) + 1}';
                   return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _numbered(index),
                       Container(
-                        margin: const EdgeInsets.only(bottom: 10),
+                        margin: const EdgeInsets.only(bottom: 10,left: 10),
                         child: Image.file(File(e.path),
                             fit: BoxFit.cover, width: 30.0.w),
                       ),

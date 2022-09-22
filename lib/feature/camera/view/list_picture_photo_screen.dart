@@ -2,8 +2,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import 'package:vart_tools/common/enum/camera_type.dart';
-import '../widgets/list_picture/bottom_navigation_list_picture.dart';
-import '../widgets/list_picture/gridview_image.dart';
+import 'package:vart_tools/feature/camera/widgets/list_select_picture/gridview_image_widget.dart';
+
+import '../widgets/list_select_picture/bottom_navigation_list_picture_widget.dart';
 
 class ListPicturePhotoScreen extends StatefulWidget {
   const ListPicturePhotoScreen({
@@ -51,10 +52,8 @@ class _ListPicturePhotoScreenState extends State<ListPicturePhotoScreen> {
                 ),
               ],
             ),
-            SizedBox(
-              width: 100.0.w,
-              height: 81.0.h,
-              child: GridviewImage(
+            Expanded(
+              child: GridviewImageWidget(
                   listPicture: widget.listPicture,
                   listPictureRemove: listPictureRemove),
             ),
@@ -63,22 +62,9 @@ class _ListPicturePhotoScreenState extends State<ListPicturePhotoScreen> {
       ),
       bottomNavigationBar: BottomNavigatorListPictureWidget(
         type: widget.style,
-        listPicture: ListPictureSelect(),
+        listPicture: widget.listPicture,
+        listPictureRemove: listPictureRemove,
       ),
     );
-  }
-
-  List<File> ListPictureSelect() {
-    late List<File> listPictureSelect = widget.listPicture;
-    print('======== listPictureSelect ${listPictureSelect.length}');
-    for(var item in listPictureRemove) {
-      try {
-        listPictureSelect.remove(item);
-      } catch(err) {
-        // Do something here
-      }
-    }
-    print('======== listPictureSelect after ${listPictureSelect.length}');
-    return listPictureSelect;
   }
 }
