@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:vart_tools/feature/folder/widget/bottom_sheet_Icon_more.dart';
+import 'package:vart_tools/database/folder_database.dart';
+import 'package:vart_tools/feature/folder/widget/bottom_sheet_folder.dart';
 import 'package:vart_tools/res/assets.dart';
 
 class FolderItem extends StatelessWidget {
-  const FolderItem({Key? key, this.folderName}) : super(key: key);
-  final String? folderName;
+  const FolderItem({
+    Key? key,
+    required this.folder,
+  }) : super(key: key);
+  final FolderModel folder;
 
   @override
   Widget build(BuildContext context) {
@@ -20,20 +24,19 @@ class FolderItem extends StatelessWidget {
           const SizedBox(
             width: 30,
           ),
-          Expanded(child: Text(folderName!)),
-          const SizedBox(
-            height: 30,
-            width: 30,
-          ),
+          Expanded(child: Text(folder.name!)),
           OutlinedButton(
             onPressed: () {
               showModalBottomSheet(
                 context: context,
                 builder: (context) {
                   return SizedBox(
-                      height: MediaQuery.of(context).size.height / 3,
-                      width: MediaQuery.of(context).size.width,
-                      child: const BottomSheetIconMore());
+                    height: MediaQuery.of(context).size.height / 4,
+                    width: MediaQuery.of(context).size.width,
+                    child: BottomSheetFolder(
+                      folder: folder,
+                    ),
+                  );
                 },
               );
             },

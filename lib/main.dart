@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_bloc.dart';
+import 'package:vart_tools/feature/folder/view_model/folders_trash_bloc.dart';
 import 'package:vart_tools/routes.dart';
 import 'package:sizer/sizer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,6 +12,9 @@ void main() {
     MultiBlocProvider(providers: [
       BlocProvider(
         create: (context) => FoldersViewModel(),
+      ),
+      BlocProvider(
+        create: (context) => FolderTrashViewModel(),
       ),
     ], child: const MyApp()),
     // const MyApp()

@@ -13,4 +13,5 @@ class AppColors {
   static Color colorWord = HexColor('#333BFE');
   static Color greenLight = HexColor('#E6F8F7');
   static Color grayColor = HexColor('#D9D9D9');
+  static Color colorBackgroundPopup = HexColor("#D1DCDB");
 }

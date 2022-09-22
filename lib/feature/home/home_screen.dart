@@ -84,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               Container(
-                margin: const EdgeInsets.only(top: 10,bottom: 30),
+                margin: const EdgeInsets.only(top: 10, bottom: 30),
                 child: CircleChartWidget(),
               ),
               const ListFile()

@@ -3,7 +3,6 @@ import 'package:vart_tools/feature/folder/view/folder_screen.dart';
 import '../../common/enum/tab_item.dart';
 import '../../routes.dart';
 import '../favourite/favurite_screen.dart';
-import '../file/FileScreen.dart';
 import '../home/home_screen.dart';
 import '../setting/SettingScreen.dart';
 

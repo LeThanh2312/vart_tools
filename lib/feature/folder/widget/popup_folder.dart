@@ -4,14 +4,17 @@ import 'package:vart_tools/feature/folder/view_model/folders_bloc.dart';
 import 'package:vart_tools/res/app_color.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class PopupNewFolder extends StatefulWidget {
-  const PopupNewFolder({Key? key}) : super(key: key);
+class PopUpFolder extends StatefulWidget {
+  const PopUpFolder({Key? key, required this.title, required this.folderId})
+      : super(key: key);
+  final String title;
+  final int? folderId;
 
   @override
-  State<PopupNewFolder> createState() => _PopupNewFolderState();
+  State<PopUpFolder> createState() => _PopUpFolderState();
 }
 
-class _PopupNewFolderState extends State<PopupNewFolder> {
+class _PopUpFolderState extends State<PopUpFolder> {
   TextEditingController folderNameController = TextEditingController();
   bool _validate = false;
   bool _isContain = false;
@@ -30,13 +33,17 @@ class _PopupNewFolderState extends State<PopupNewFolder> {
     return status;
   }
 
+  // Future<List<FolderModel>> getDetailFolder(int id) async {
+  //   return await FolderProvider().getFolders(id);
+  // }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Center(
           child: Column(
         children: [
-          const Text("Tạo thư mục mới"),
+          Text(widget.title),
           Divider(
             height: 15,
             thickness: 1,
@@ -98,24 +105,41 @@ class _PopupNewFolderState extends State<PopupNewFolder> {
                 child: const Text('Hủy'),
               ),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (folderNameController.text.isEmpty) {
                     setState(() {
                       _validate = true;
                     });
                   } else {
                     if (!_isContain) {
-                      context.read<FoldersViewModel>().add(
-                            AddFolderEvent(
-                              folder: FolderModel(
-                                name: folderNameController.text,
+                      if (widget.folderId == null) {
+                        context.read<FoldersViewModel>().add(
+                              AddFolderEvent(
+                                folder: FolderModel(
+                                    name: folderNameController.text,
+                                    dateCreate: DateTime.now().toString(),
+                                    dateUpdate: DateTime.now().toString()),
                               ),
-                            ),
-                          );
-                      Navigator.of(context).pop();
+                            );
+                      } else {
+                        List<FolderModel> folders =
+                            await FolderProvider().getFolders(widget.folderId);
+                        FolderModel data = folders.first;
+                        data.name = folderNameController.text;
+                        data.dateUpdate = DateTime.now().toString();
+                        context.read<FoldersViewModel>().add(
+                              RenameFolderEvent(
+                                folder: data,
+                              ),
+                            );
+                      }
+                      Navigator.of(context).popUntil((route) => route.isFirst);
                     }
                   }
                 },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.grayColor,
+                ),
                 child: const Text('Đồng ý'),
               ),
             ],

@@ -4,12 +4,12 @@ import 'package:vart_tools/res/strings.dart';
 
 class FolderModel {
   final int? id;
-  final String? name;
-  final String? dateCreate;
-  final String? dateUpdate;
-  final String? link;
-  final int? favourite;
-  final int? isDelete;
+  String? name;
+  String? dateCreate;
+  String? dateUpdate;
+  String? link;
+  int? favourite;
+  int? isDelete;
 
   FolderModel({
     this.id,
@@ -31,11 +31,21 @@ class FolderModel {
         isDelete = res[DbFolder.isDelete];
 
   Map<String, Object?> toMap() {
-    return {
+    var map = <String, Object?>{
       DbFolder.id: id,
       DbFolder.name: name,
-      DbFolder.link: link,
+      DbFolder.link: (link == null) ? null : link,
+      DbFolder.dateCreate:
+          (dateCreate == null) ? DateTime.now().toString() : dateCreate,
+      DbFolder.dateUpdate:
+          (dateUpdate == null) ? DateTime.now().toString() : dateUpdate,
+      DbFolder.favourite: (favourite == null) ? 0 : favourite,
+      DbFolder.isDelete: (isDelete == null) ? 0 : isDelete,
     };
+    if (id != null) {
+      map[DbFolder.id] = id;
+    }
+    return map;
   }
 }
 
@@ -65,6 +75,7 @@ class FolderProvider {
 
   Future<void> insertFolder(FolderModel folder) async {
     final db = await initializeDB();
+    print(folder.toMap());
 
     await db.insert(
       DbFolder.tableName,
@@ -84,20 +95,55 @@ class FolderProvider {
 
   Future<void> update(FolderModel folder) async {
     final db = await initializeDB();
-    await db.update(
+    final result = await db.update(
       DbFolder.tableName,
       folder.toMap(),
       where: 'id = ?',
       whereArgs: [folder.id],
     );
+    // print(folder.dateUpdate);
+    // int count = await db.rawUpdate(
+    //     'UPDATE folders SET name = ?, date_update = ? WHERE id = ?',
+    //     [folder.name, folder.dateUpdate, folder.id]);
+    // print(count);
   }
 
-  Future<List<FolderModel>> getFolders() async {
+  Future<List<FolderModel>> getFolders(int? id) async {
+    final db = await initializeDB();
+    final List<Map<String, dynamic>> maps;
+    if (id == null) {
+      maps = await db.query(
+        DbFolder.tableName,
+        where: 'is_delete = ?',
+        whereArgs: ['0'],
+      );
+    } else {
+      maps = await db.query(
+        DbFolder.tableName,
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+    }
+
+    return List.generate(maps.length, (i) {
+      return FolderModel(
+        id: maps[i][DbFolder.id],
+        name: maps[i][DbFolder.name],
+        dateCreate: maps[i][DbFolder.dateCreate],
+        dateUpdate: maps[i][DbFolder.dateUpdate],
+        favourite: maps[i][DbFolder.favourite],
+        isDelete: maps[i][DbFolder.isDelete],
+        link: maps[i][DbFolder.link],
+      );
+    });
+  }
+
+  Future<List<FolderModel>> getFoldersTrash() async {
     final db = await initializeDB();
     final List<Map<String, dynamic>> maps = await db.query(
       DbFolder.tableName,
       where: 'is_delete = ?',
-      whereArgs: [0],
+      whereArgs: ['1'],
     );
     return List.generate(maps.length, (i) {
       return FolderModel(

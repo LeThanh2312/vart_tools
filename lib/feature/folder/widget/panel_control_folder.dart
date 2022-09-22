@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:vart_tools/feature/folder/widget/popup_new_folder.dart';
+import 'package:vart_tools/database/folder_database.dart';
+import 'package:vart_tools/feature/folder/view/folder_trash_screen.dart';
+import 'package:vart_tools/feature/folder/widget/popup_folder.dart';
 import 'package:vart_tools/res/app_color.dart';
 import 'package:vart_tools/res/assets.dart';
 
@@ -29,7 +31,8 @@ class PanelControlFolder extends StatelessWidget {
           onPressed: () {
             showDialog(
               context: context,
-              builder: (context) => const PopupNewFolder(),
+              builder: (context) =>
+                  const PopUpFolder(title: "Tạo thư mục mới", folderId: null),
             );
           },
           color: AppColors.grayColor,
@@ -55,7 +58,13 @@ class PanelControlFolder extends StatelessWidget {
         MaterialButton(
           height: 42,
           minWidth: 42,
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const FolderTrashScreen()),
+            );
+          },
           color: AppColors.grayColor,
           shape: const CircleBorder(),
           child: Image.asset(

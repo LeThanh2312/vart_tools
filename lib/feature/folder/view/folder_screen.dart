@@ -23,10 +23,13 @@ class _FolderScreenState extends State<FolderScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Padding(
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
         padding: const EdgeInsets.only(left: 15, right: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             const SearchWidget(),
             const SizedBox(height: 40),
@@ -34,14 +37,16 @@ class _FolderScreenState extends State<FolderScreen> {
             Expanded(
               child: BlocBuilder<FoldersViewModel, FoldersState>(
                 builder: (context, state) {
-                  if (state is SuccessInitFolders) {
+                  if (state is SuccessInitFoldersState) {
                     return ListView(
                       children: [
                         for (var folder in state.folders)
-                          FolderItem(folderName: folder.name),
+                          FolderItem(
+                            folder: folder,
+                          ),
                       ],
                     );
-                  } else if (state is ErrorInitFolders) {
+                  } else if (state is ErrorInitFoldersState) {
                     return Text(state.message);
                   } else {
                     return const Center(
