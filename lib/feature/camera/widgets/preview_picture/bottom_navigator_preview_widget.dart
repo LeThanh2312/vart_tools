@@ -1,12 +1,18 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import '../../view/crop_image_screen.dart';
 
 class BottomNavigatorPreviewWidget extends StatefulWidget {
   const BottomNavigatorPreviewWidget({
     Key? key,
     required this.onShowPopupFilter,
+    required this.listImage,
   }) : super(key: key);
   final void Function(bool value) onShowPopupFilter;
+  final List<File> listImage;
 
   @override
   State<BottomNavigatorPreviewWidget> createState() =>
@@ -28,14 +34,14 @@ class _BottomNavigatorPreviewWidgetState
           children: <Widget>[
             IconButton(
               onPressed: () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => CropImageScreen(
-                //       picture: widget.picture,
-                //     ),
-                //   ),
-                // );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CropImageScreen(
+                      picture: widget.listImage,
+                    ),
+                  ),
+                );
               },
               iconSize: 27.0,
               icon: const Icon(

@@ -56,6 +56,7 @@ class _PreviewPictureScreenState extends State<PreviewPictureScreen> {
       ),
       bottomNavigationBar: BottomNavigatorPreviewWidget(
         onShowPopupFilter: onShowPopupFilter,
+        listImage: widget.listPicture,
       ),
     );
   }
