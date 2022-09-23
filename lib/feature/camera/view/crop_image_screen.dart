@@ -2,31 +2,33 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import 'package:extended_image_library/extended_image_library.dart';
-
+import 'package:image/image.dart' as ImageLib;
 import '../../../common/crop_image.dart';
 
 class CropImageScreen extends StatefulWidget {
   const CropImageScreen({
     Key? key,
-    required this.picture,
+    required this.listPictureOrigin,
   }) : super(key: key);
-  final List<File> picture;
+  final List<File> listPictureOrigin;
 
   @override
   State<CropImageScreen> createState() => _CropImageScreenState();
 }
 
 class _CropImageScreenState extends State<CropImageScreen> {
+  List<File> listPicture = [];
+
   int index = 1;
   final GlobalKey _cropperKey = GlobalKey(debugLabel: 'cropperKey');
 
   //late Rect _rect;
   final _cropController = CropController();
-  int _rotationTurns = 0;
-
+  bool isRotating = false;
 
   @override
   Widget build(BuildContext context) {
+    listPicture = [...widget.listPictureOrigin];
     return Scaffold(
       body: Column(
         children: [
@@ -47,44 +49,43 @@ class _CropImageScreenState extends State<CropImageScreen> {
               ],
             ),
           ),
-          // Expanded(
-          //   child: Stack(
-          //     children: [
-          //       Center(
-          //         child: RotatedBox(
-          //           quarterTurns: _rotationTurns,
-          //           child: Image.file(
-          //             File(widget.picture[index - 1].path),
-          //             fit: BoxFit.contain,
-          //             width: 70.0.w,
-          //             height: double.infinity,
-          //           ),
-          //         ),
-          //       ),
-          //       // IgnorePointer(
-          //       //   child: ClipPath(
-          //       //     clipper:_CropAreaClipper(_rect, 0),
-          //       //     child: Container(
-          //       //       width: double.infinity,
-          //       //       height: double.infinity,
-          //       //       color:  Colors.black.withAlpha(100),
-          //       //     ),
-          //       //   ),
-          //       // ),
-          //     ],
-          //   ),
-          // ),
-          SizedBox(
-            height: 68.0.h,
-            child: Crop(
-              image: File(widget.picture[index - 1].path).readAsBytesSync(),
-              controller: _cropController,
-              onCropped: (image) {
-              },
-              rotationTurns: _rotationTurns,
+          Expanded(
+            child: Stack(
+              children: [
+                Center(
+                  child: isRotating
+                      ? const CircularProgressIndicator()
+                      : Image.file(
+                          listPicture[index - 1],
+                          fit: BoxFit.cover,
+                          width: 60.0.w,
+                          alignment: Alignment.topCenter,
+                        ),
+                ),
+                // IgnorePointer(
+                //   child: ClipPath(
+                //     clipper:_CropAreaClipper(_rect, 0),
+                //     child: Container(
+                //       width: double.infinity,
+                //       height: double.infinity,
+                //       color:  Colors.black.withAlpha(100),
+                //     ),
+                //   ),
+                // ),
+              ],
             ),
           ),
-
+          // SizedBox(
+          //   height: 68.0.h,
+          //   child: Crop(
+          //     image: File(widget.picture[index - 1].path).readAsBytesSync(),
+          //     controller: _cropController,
+          //     onCropped: (image) {
+          //     },
+          //     rotationTurns: _rotationTurns,
+          //   ),
+          // ),
+          //
           // Cropper(
           //   cropperKey: _cropperKey,
           //   rotationTurns: _rotationTurns,
@@ -111,11 +112,11 @@ class _CropImageScreenState extends State<CropImageScreen> {
                 ),
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Text('$index/${widget.picture.length}'),
+                  child: Text('$index/${listPicture.length}'),
                 ),
                 IconButton(
                   onPressed: () {
-                    if (index < widget.picture.length) index++;
+                    if (index < listPicture.length) index++;
                     setState(() {});
                   },
                   iconSize: 27.0,
@@ -146,7 +147,9 @@ class _CropImageScreenState extends State<CropImageScreen> {
               ),
               IconButton(
                 onPressed: () {
-                  setState(() => _rotationTurns++);
+                  setState(() {});
+                  _rotateImage(listPicture[index - 1], 90);
+                  print('>>> finish');
                 },
                 iconSize: 27.0,
                 icon: const Icon(
@@ -155,7 +158,8 @@ class _CropImageScreenState extends State<CropImageScreen> {
               ),
               IconButton(
                 onPressed: () {
-                  setState(() => _rotationTurns--);
+                  _rotateImage(listPicture[index - 1], -90);
+                  setState(() {});
                 },
                 iconSize: 27.0,
                 icon: const Icon(
@@ -183,6 +187,30 @@ class _CropImageScreenState extends State<CropImageScreen> {
         ),
       ),
     );
+  }
+
+  void _rotateImage(File file, int angle) async {
+    setState(() {
+      isRotating = true;
+    });
+    try {
+      File contrastFile = File(file.path);
+      ImageLib.Image? contrast =
+          ImageLib.decodeImage(contrastFile.readAsBytesSync());
+      contrast = ImageLib.copyRotate(contrast!, angle);
+      final selectedFile = listPicture[index - 1];
+      final newFile =
+          await selectedFile.writeAsBytes(ImageLib.encodeJpg(contrast));
+      listPicture[index - 1] = newFile;
+      imageCache.clear();
+      imageCache.clearLiveImages();
+      setState(() {});
+    } catch (e) {
+    } finally {
+      setState(() {
+        isRotating = false;
+      });
+    }
   }
 }
 

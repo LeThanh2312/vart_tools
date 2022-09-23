@@ -64,8 +64,6 @@ class _BottomNavigatorListPictureWidgetState
 
   Future<List<File>> listPictureSelect() async {
     List<File> listPictureSelect = [...widget.listPicture];
-    print('======== listPictureSelect ${listPictureSelect.length}');
-    print('======== listPictureSelect ${widget.listPictureRemove.length}');
     for (var item in widget.listPictureRemove) {
       try {
         listPictureSelect.remove(item);
@@ -89,7 +87,6 @@ class _BottomNavigatorListPictureWidgetState
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
-    print('======== listPictureSelect after ${listPictureSelect.length}');
     return listPictureSelect;
   }
 }

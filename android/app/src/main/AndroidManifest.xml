@@ -2,10 +2,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.vart_tools">
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" tools:node="remove" />
-    <!-- Remove READ_MEDIA_VIDEO if you don't need to load videos. -->
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" tools:node="remove" />
-    <!-- Remove READ_MEDIA_AUDIO if you don't need to load audios. -->
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" tools:node="remove" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
    <application
         android:label="vart_tools"
         android:name="${applicationName}"

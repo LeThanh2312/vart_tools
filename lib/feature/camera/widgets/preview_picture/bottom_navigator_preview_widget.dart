@@ -33,12 +33,12 @@ class _BottomNavigatorPreviewWidgetState
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             IconButton(
-              onPressed: () {
+              onPressed: () async{
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => CropImageScreen(
-                      picture: widget.listImage,
+                      listPictureOrigin: widget.listImage,
                     ),
                   ),
                 );

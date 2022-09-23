@@ -141,7 +141,7 @@ class _CameraBottomWidgetState extends State<CameraBottomWidget> {
                         )
                       : IconButton(
                           onPressed: () async {
-                            getImageGallery();
+                            getImageGallery(context);
                           },
                           iconSize: 50,
                           padding: EdgeInsets.zero,
@@ -264,7 +264,7 @@ class _CameraBottomWidgetState extends State<CameraBottomWidget> {
     } else {}
   }
 
-  Future<void> getImageGallery() async {
+  Future<void> getImageGallery(BuildContext context) async {
     List<AssetEntity> resultList = <AssetEntity>[];
 
     resultList = (await AssetPicker.pickAssets(
@@ -285,24 +285,30 @@ class _CameraBottomWidgetState extends State<CameraBottomWidget> {
         // Do something here
       }
     }
-
-    if (!mounted) return;
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PreviewPictureScreen(
-          listPicture: listPicture,
-          style: widget.styleCamera,
+    if(widget.styleCamera == CameraType.cardID && listPicture.length != 2){
+      const snackBar = SnackBar(
+        content: Text('Vui lòng chọn ít nhất hai ảnh'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }else{
+      if (!mounted) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PreviewPictureScreen(
+            listPicture: listPicture,
+            style: widget.styleCamera,
+          ),
         ),
-      ),
-    ).then(
-          (_) => setState(
-            () {
-          listPicture.clear();
-          widget.onChangePageFirst(true);
-        },
-      ),
-    );
+      ).then(
+            (_) => setState(
+              () {
+            listPicture.clear();
+            widget.onChangePageFirst(true);
+          },
+        ),
+      );
+    }
   }
 
   }
