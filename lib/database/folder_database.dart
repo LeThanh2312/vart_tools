@@ -102,6 +102,25 @@ class FolderProvider {
     );
   }
 
+  Future<void> recoveryFolders(List<int> ids) async {
+    final db = await initializeDB();
+    final data = {"is_delete": '0'};
+    for (int id in ids) {
+      final result = await db.update(
+        DbFolder.tableName,
+        data,
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+    }
+    // final result = await db.rawUpdate(
+    //     'UPDATE folders SET is_delete = ? WHERE id = IN (${List.filled(ids.length, '?').join(',')})',
+    //     [0, ids]);
+    // final result = await db.update(DbFolder.tableName, data,
+    //     where: 'id = IN (${List.filled(ids.length, '?').join(',')})',
+    //     whereArgs: ids);
+  }
+
   Future<void> update(FolderModel folder) async {
     final db = await initializeDB();
     final result = await db.update(
