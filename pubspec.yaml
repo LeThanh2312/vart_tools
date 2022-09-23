@@ -42,16 +42,37 @@ dev_dependencies:
 
   flutter_lints: ^2.0.0
 
+  # WIDGET DOT LINE
+  flutter_dash: ^1.0.0
+
+  # GALLEY
+  wechat_assets_picker: ^8.1.0
+
   # DEVICE
   sizer: ^2.0.15
 
   # CHART
   pie_chart: ^5.3.2
+  percent_indicator: ^4.2.2
 
   # LOCAL DATABASE
   sqflite: ^2.0.3+1
   flutter_svg: ^1.1.5
   flutter_bloc: ^8.1.1
+
+  # CUSTOM CAMERA
+  camera: ^0.10.0+1
+
+  # STATE MANAGER
+  flutter_bloc: ^8.1.1
+
+  # HANDLE IMAGE
+  opencv: ^1.0.4
+  extended_image_library: ^3.4.0
+  image_cropper: ^3.0.0
+  #image_crop: ^0.4.1
+  crop_your_image: ^0.7.2
+  cropperx: ^1.1.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

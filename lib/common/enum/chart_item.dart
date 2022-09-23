@@ -41,15 +41,13 @@ extension ChartItemExtention on ChartItem? {
       case ChartItem.folder:
         return Icons.folder;
       case ChartItem.image:
-        return Icons.folder;
+        return Icons.image;
       case ChartItem.pdf:
-        return Icons.folder;
+        return Icons.picture_as_pdf;
       case ChartItem.word:
-        return Icons.folder;
+        return Icons.file_copy_outlined;
       default:
     }
     return Icons.folder;
-
   }
-
 }

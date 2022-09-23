@@ -1,24 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:vart_tools/common/enum/chart_item.dart';
 import 'package:vart_tools/res/app_color.dart';
 import 'package:sizer/sizer.dart';
+import '../view/detail_size_screen.dart';
 
-import '../../../common/enum/chart_item.dart';
-
-
-class ListFile extends StatefulWidget {
-  const ListFile({Key? key}) : super(key: key);
+class ListFileWidget extends StatefulWidget {
+  const ListFileWidget({Key? key}) : super(key: key);
 
   @override
-  State<ListFile> createState() => _ListFileState();
+  State<ListFileWidget> createState() => _ListFileWidgetState();
 }
 
-class _ListFileState extends State<ListFile> {
-  List<ChartItem> listFile = [
-    ChartItem.folder,
-    ChartItem.image,
-    ChartItem.pdf,
-    ChartItem.word
-  ];
+class _ListFileWidgetState extends State<ListFileWidget> {
 
   @override
   Widget build(BuildContext context) {
@@ -29,13 +22,15 @@ class _ListFileState extends State<ListFile> {
       ),
       child: SizedBox(
         height: 27.0.h,
-        child: ListView(
-          shrinkWrap: true,
-          scrollDirection: Axis.vertical,
-          children: ChartItem.values.map((ChartItem e) {
-            int index = listFile.indexOf(e) + 1;
-            return itemFile(e, index, listFile.length);
-          }).toList(),
+        child: Center(
+          child: ListView(
+            shrinkWrap: true,
+            scrollDirection: Axis.vertical,
+            children: ChartItem.values.map((ChartItem e) {
+              int index = ChartItem.values.indexOf(e) + 1;
+              return itemFile(e, index, ChartItem.values.length);
+            }).toList(),
+          ),
         ),
       ),
     );
@@ -51,7 +46,11 @@ class _ListFileState extends State<ListFile> {
             children: [
               Row(
                 children: [
-                  Icon(e.icon, size: 41),
+                  Icon(
+                    e.icon,
+                    color: AppColors.yellow,
+                    size: 41,
+                  ),
                   const SizedBox(width: 10),
                   Text(e.name),
                 ],
@@ -61,7 +60,16 @@ class _ListFileState extends State<ListFile> {
                   const Text('600Mb/2GB'),
                   const SizedBox(width: 10),
                   InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailSizeScreen(
+                            typeDetail: e,
+                          ),
+                        ),
+                      );
+                    },
                     child: const Icon(Icons.keyboard_arrow_right, size: 44),
                   ),
                 ],

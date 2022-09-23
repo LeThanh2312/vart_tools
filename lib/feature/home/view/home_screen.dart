@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:vart_tools/routes.dart';
-import '../../res/app_constants.dart';
-import 'widgets/circle_chart_widget.dart';
-import 'widgets/list_file_widget.dart';
-import 'widgets/search_widget.dart';
+import '../../../res/app_constants.dart';
+import '../widgets/circle_chart_widget.dart';
+import '../widgets/list_file_widget.dart';
+import '../widgets/search_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -36,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     flex: 1,
                     child: InkWell(
                       onTap: () {
-                        Navigator.of(context).pushNamed(Routes.recycle_bin);
+                        Navigator.of(context).pushNamed(Routes.recycleBin);
                       },
                       child: Column(
                         children: const [
@@ -87,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 margin: const EdgeInsets.only(top: 10, bottom: 30),
                 child: CircleChartWidget(),
               ),
-              const ListFile()
+              const ListFileWidget()
             ],
           ),
         ),
