@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vart_tools/common/enum/chart_item.dart';
 import 'package:vart_tools/res/app_color.dart';
-import 'package:sizer/sizer.dart';
 import '../view/detail_size_screen.dart';
 
 class ListFileWidget extends StatefulWidget {
@@ -21,7 +20,6 @@ class _ListFileWidgetState extends State<ListFileWidget> {
         color: AppColors.greenLight,
       ),
       child: SizedBox(
-        height: 27.0.h,
         child: Center(
           child: ListView(
             shrinkWrap: true,

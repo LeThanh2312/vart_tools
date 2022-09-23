@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:vart_tools/routes.dart';
 import '../../../res/app_constants.dart';
+import '../../camera/view/camera_screen.dart';
+import '../../folder/view/folder_trash_screen.dart';
 import '../widgets/circle_chart_widget.dart';
 import '../widgets/list_file_widget.dart';
 import '../widgets/search_widget.dart';
+import 'package:camera/camera.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -36,7 +38,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     flex: 1,
                     child: InkWell(
                       onTap: () {
-                        Navigator.of(context).pushNamed(Routes.recycleBin);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const FolderTrashScreen()),
+                        );
                       },
                       child: Column(
                         children: const [
@@ -52,8 +58,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   Expanded(
                     flex: 1,
                     child: InkWell(
-                      onTap: () {
-                        Navigator.of(context).pushNamed(Routes.camera);
+                      onTap: () async {
+                        await availableCameras().then((value) => Navigator.push(context,
+                            MaterialPageRoute(builder: (_) => CameraScreen(cameras: value))));
                       },
                       child: Column(
                         children: const [
