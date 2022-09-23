@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vart_tools/database/folder_database.dart';
+import 'package:vart_tools/feature/folder/view_model/folders_bloc.dart';
 
 // class FolderTrashState {
 //   List<FolderModel> folders = [];
@@ -9,6 +10,8 @@ import 'package:vart_tools/database/folder_database.dart';
 abstract class FolderTrashEvent {}
 
 enum FolderTrashStatus { loading, success, failure, initialize }
+
+enum FolderRecoverStatus { processing, success, failure, initialize }
 
 class LoadFolderTrashEvent extends FolderTrashEvent {}
 
@@ -20,6 +23,11 @@ class ToggleSelectFolderTrashEvent extends FolderTrashEvent {
 class PermanentlyDeleteEvent extends FolderTrashEvent {
   final List<int> selectedIds;
   PermanentlyDeleteEvent({required this.selectedIds});
+}
+
+class RecoverFolderEvent extends FolderTrashEvent {
+  final List<int> selectedIds;
+  RecoverFolderEvent({required this.selectedIds});
 }
 
 // class LoadingDatatTrashState extends FolderTrashState {}
@@ -39,10 +47,12 @@ class FolderTrashState {
   final List<FolderModel> folders;
   final List<int> selectedFolderIds;
   final FolderTrashStatus status;
+  final FolderRecoverStatus recoverStatus;
 
   FolderTrashState({
     required this.folders,
     required this.selectedFolderIds,
+    this.recoverStatus = FolderRecoverStatus.initialize,
     this.status = FolderTrashStatus.initialize,
   });
 
@@ -50,11 +60,13 @@ class FolderTrashState {
     List<FolderModel>? folders,
     List<int>? selectedFolderIds,
     FolderTrashStatus? status,
+    FolderRecoverStatus? recoverStatus,
   }) {
     return FolderTrashState(
       folders: folders ?? this.folders,
       selectedFolderIds: selectedFolderIds ?? this.selectedFolderIds,
       status: status ?? this.status,
+      recoverStatus: recoverStatus ?? FolderRecoverStatus.initialize,
     );
   }
 
@@ -90,6 +102,9 @@ class FolderTrashState {
 
   bool get isEmptySelectedId => selectedFolderIds.isEmpty;
   bool isChecked(FolderModel folder) => selectedFolderIds.contains(folder.id);
+  void deleteFolders(List<int> ids) {
+    folders.removeWhere((element) => ids.contains(element.id));
+  }
 
   bool get isLoading => status == FolderTrashStatus.loading;
   bool get isSuccess => status == FolderTrashStatus.success;
@@ -101,6 +116,7 @@ class FolderTrashViewModel extends Bloc<FolderTrashEvent, FolderTrashState> {
     on<LoadFolderTrashEvent>(_loadFoldersTrash);
     on<ToggleSelectFolderTrashEvent>(_toggleSelectFolderTrash);
     on<PermanentlyDeleteEvent>(_permanentlyDelete);
+    on<RecoverFolderEvent>(_recoverFolders);
   }
 
   void _loadFoldersTrash(LoadFolderTrashEvent event, Emitter emit) async {
@@ -131,6 +147,20 @@ class FolderTrashViewModel extends Bloc<FolderTrashEvent, FolderTrashState> {
       emit(FolderTrashState.success(folders));
     } catch (e) {
       emit(FolderTrashState.failure());
+    }
+  }
+
+  void _recoverFolders(RecoverFolderEvent event, Emitter emit) async {
+    try {
+      emit(state.copyWith(recoverStatus: FolderRecoverStatus.processing));
+      await FolderProvider().recoveryFolders(event.selectedIds);
+      state.deleteFolders(event.selectedIds);
+      emit(state.copyWith(
+        folders: state.folders,
+        recoverStatus: FolderRecoverStatus.success,
+      ));
+    } catch (e) {
+      emit(state.copyWith(recoverStatus: FolderRecoverStatus.failure));
     }
   }
 }
