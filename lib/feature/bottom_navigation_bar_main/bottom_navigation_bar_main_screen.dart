@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:vart_tools/feature/folder/view/folder_favourite_screen.dart';
 import 'package:vart_tools/feature/folder/view/folder_screen.dart';
+import 'package:vart_tools/feature/folder/view_model/folders_favourite_bloc.dart';
 import '../../common/enum/tab_item.dart';
 import '../../routes.dart';
 import '../favourite/favurite_screen.dart';
 import '../home/home_screen.dart';
 import '../setting/SettingScreen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class BottomNavigationBarMainScreen extends StatefulWidget {
   const BottomNavigationBarMainScreen({Key? key}) : super(key: key);
@@ -21,6 +24,9 @@ class _BottomNavigationBarMainScreenState
   void updateTabSelection(TabItem tabItem) {
     setState(() {
       _currentTab = tabItem;
+      if (_currentTab == TabItem.favourite) {
+        context.read<FolderFavouriteViewModel>().add(LoadDataFavouriteEvent());
+      }
     });
   }
 
@@ -40,7 +46,7 @@ class _BottomNavigationBarMainScreenState
           ),
           Offstage(
             offstage: _currentTab != TabItem.favourite,
-            child: const FavouriteScreen(),
+            child: const FolderFavouriteScreen(),
           ),
           Offstage(
             offstage: _currentTab != TabItem.setting,

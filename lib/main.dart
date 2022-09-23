@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_bloc.dart';
+import 'package:vart_tools/feature/folder/view_model/folders_favourite_bloc.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_trash_bloc.dart';
 import 'package:vart_tools/routes.dart';
 import 'package:sizer/sizer.dart';
@@ -16,6 +17,9 @@ void main() {
       BlocProvider(
         create: (context) => FolderTrashViewModel(),
       ),
+      BlocProvider(
+        create: (context) => FolderFavouriteViewModel(),
+      )
     ], child: const MyApp()),
     // const MyApp()
   );

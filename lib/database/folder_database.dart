@@ -93,6 +93,15 @@ class FolderProvider {
     );
   }
 
+  Future<void> permanentlyDeleteFolders(List<int> ids) async {
+    final db = await initializeDB();
+    await db.delete(
+      DbFolder.tableName,
+      where: "id IN (${List.filled(ids.length, '?').join(',')})",
+      whereArgs: ids,
+    );
+  }
+
   Future<void> update(FolderModel folder) async {
     final db = await initializeDB();
     final result = await db.update(
@@ -101,11 +110,6 @@ class FolderProvider {
       where: 'id = ?',
       whereArgs: [folder.id],
     );
-    // print(folder.dateUpdate);
-    // int count = await db.rawUpdate(
-    //     'UPDATE folders SET name = ?, date_update = ? WHERE id = ?',
-    //     [folder.name, folder.dateUpdate, folder.id]);
-    // print(count);
   }
 
   Future<List<FolderModel>> getFolders(int? id) async {
@@ -143,6 +147,26 @@ class FolderProvider {
     final List<Map<String, dynamic>> maps = await db.query(
       DbFolder.tableName,
       where: 'is_delete = ?',
+      whereArgs: ['1'],
+    );
+    return List.generate(maps.length, (i) {
+      return FolderModel(
+        id: maps[i][DbFolder.id],
+        name: maps[i][DbFolder.name],
+        dateCreate: maps[i][DbFolder.dateCreate],
+        dateUpdate: maps[i][DbFolder.dateUpdate],
+        favourite: maps[i][DbFolder.favourite],
+        isDelete: maps[i][DbFolder.isDelete],
+        link: maps[i][DbFolder.link],
+      );
+    });
+  }
+
+  Future<List<FolderModel>> getFoldersFavourite() async {
+    final db = await initializeDB();
+    final List<Map<String, dynamic>> maps = await db.query(
+      DbFolder.tableName,
+      where: 'favourite = ?',
       whereArgs: ['1'],
     );
     return List.generate(maps.length, (i) {

@@ -24,33 +24,40 @@ class RenameFolderEvent extends FoldersEvent {
   RenameFolderEvent({required this.folder});
 }
 
-class LoadingInitFoldersState extends FoldersState {}
+class LoadingDataFoldersState extends FoldersState {}
 
-class ErrorInitFoldersState extends FoldersState {
+class ErrorLoadDataFoldersState extends FoldersState {
   String message;
-  ErrorInitFoldersState({required this.message});
+  ErrorLoadDataFoldersState({required this.message});
 }
 
-class SuccessInitFoldersState extends FoldersState {
+class SuccessLoadDataFoldersState extends FoldersState {
   List<FolderModel> folders = [];
-  SuccessInitFoldersState({required this.folders});
+  SuccessLoadDataFoldersState({required this.folders});
+}
+
+class FavouriteFolderEvent extends FoldersEvent {
+  FolderModel folder;
+  int isFavourite;
+  FavouriteFolderEvent({required this.folder, required this.isFavourite});
 }
 
 class FoldersViewModel extends Bloc<FoldersEvent, FoldersState> {
   FoldersViewModel() : super(FoldersState()) {
-    on<FoldersEvent>(_initFolders);
+    on<FoldersEvent>(_loadDataFolders);
     on<AddFolderEvent>(_addFolder);
     on<RenameFolderEvent>(_renameFolder);
     on<DeleteFolderEvent>(_deleteFolder);
+    on<FavouriteFolderEvent>(_favouriteFolder);
   }
 
-  void _initFolders(FoldersEvent event, Emitter emit) async {
-    emit(LoadingInitFoldersState());
+  void _loadDataFolders(FoldersEvent event, Emitter emit) async {
+    emit(LoadingDataFoldersState());
     try {
       state.folders = await FolderProvider().getFolders(null);
-      emit(SuccessInitFoldersState(folders: state.folders));
+      emit(SuccessLoadDataFoldersState(folders: state.folders));
     } catch (e) {
-      emit(ErrorInitFoldersState(message: "loading error!"));
+      emit(ErrorLoadDataFoldersState(message: "loading error!"));
     }
   }
 
@@ -58,9 +65,9 @@ class FoldersViewModel extends Bloc<FoldersEvent, FoldersState> {
     try {
       await FolderProvider().insertFolder(event.folder);
       state.folders = await FolderProvider().getFolders(null);
-      emit(SuccessInitFoldersState(folders: state.folders));
+      emit(SuccessLoadDataFoldersState(folders: state.folders));
     } catch (e) {
-      emit(ErrorInitFoldersState(message: "add folder error"));
+      emit(ErrorLoadDataFoldersState(message: "add folder error"));
     }
   }
 
@@ -68,9 +75,9 @@ class FoldersViewModel extends Bloc<FoldersEvent, FoldersState> {
     try {
       await FolderProvider().update(event.folder);
       state.folders = await FolderProvider().getFolders(null);
-      emit(SuccessInitFoldersState(folders: state.folders));
+      emit(SuccessLoadDataFoldersState(folders: state.folders));
     } catch (e) {
-      emit(ErrorInitFoldersState(message: "rename folder error"));
+      emit(ErrorLoadDataFoldersState(message: "rename folder error"));
     }
   }
 
@@ -79,9 +86,20 @@ class FoldersViewModel extends Bloc<FoldersEvent, FoldersState> {
       event.folder.isDelete = 1;
       await FolderProvider().update(event.folder);
       state.folders = await FolderProvider().getFolders(null);
-      emit(SuccessInitFoldersState(folders: state.folders));
+      emit(SuccessLoadDataFoldersState(folders: state.folders));
     } catch (e) {
-      emit(ErrorInitFoldersState(message: "delete folder fail"));
+      emit(ErrorLoadDataFoldersState(message: "delete folder fail"));
+    }
+  }
+
+  void _favouriteFolder(FavouriteFolderEvent event, Emitter emit) async {
+    try {
+      event.folder.favourite = event.isFavourite;
+      await FolderProvider().update(event.folder);
+      state.folders = await FolderProvider().getFolders(null);
+      emit(SuccessLoadDataFoldersState(folders: state.folders));
+    } catch (e) {
+      emit(ErrorLoadDataFoldersState(message: "delete folder fail"));
     }
   }
 }
