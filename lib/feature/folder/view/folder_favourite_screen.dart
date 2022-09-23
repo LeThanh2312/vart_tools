@@ -24,23 +24,14 @@ class _FolderFavouriteScreenState extends State<FolderFavouriteScreen> {
     return SafeArea(
       child: SizedBox(
         height: double.infinity,
-        width: MediaQuery.of(context).size.width,
+        width: MediaQuery
+            .of(context)
+            .size
+            .width,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Align(alignment: Alignment.center, child: SearchWidget()),
-            Padding(
-              padding: const EdgeInsets.only(top: 15, left: 15, right: 15),
-              child: Row(
-                children: [
-                  InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Icon(Icons.arrow_back_ios)),
-                ],
-              ),
-            ),
             Padding(
               padding: const EdgeInsets.only(top: 20, bottom: 20),
               child: Row(
@@ -55,7 +46,7 @@ class _FolderFavouriteScreenState extends State<FolderFavouriteScreen> {
             ),
             Expanded(
               child:
-                  BlocBuilder<FolderFavouriteViewModel, FolderFavouriteState>(
+              BlocBuilder<FolderFavouriteViewModel, FolderFavouriteState>(
                 builder: (context, state) {
                   if (state is LoadingDataFavouriteSuccessState) {
                     return ListView(

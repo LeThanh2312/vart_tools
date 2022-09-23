@@ -1,8 +1,6 @@
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import '../../view/crop_image_screen.dart';
 
 class BottomNavigatorPreviewWidget extends StatefulWidget {

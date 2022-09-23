@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:vart_tools/feature/folder/view/folder_favourite_screen.dart';
 import 'package:vart_tools/feature/folder/view/folder_screen.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_favourite_bloc.dart';
-import '../../common/enum/tab_item.dart';
-import '../../routes.dart';
-import '../favourite/favurite_screen.dart';
-import '../home/home_screen.dart';
-import '../setting/SettingScreen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../common/enum/tab_item.dart';
+import '../../camera/view/camera_screen.dart';
+import '../../home/view/home_screen.dart';
+import '../../setting/settings_screen.dart';
+import 'package:camera/camera.dart';
+
 
 class BottomNavigationBarMainScreen extends StatefulWidget {
   const BottomNavigationBarMainScreen({Key? key}) : super(key: key);
