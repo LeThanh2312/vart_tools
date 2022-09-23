@@ -33,10 +33,6 @@ class _PopUpFolderState extends State<PopUpFolder> {
     return status;
   }
 
-  // Future<List<FolderModel>> getDetailFolder(int id) async {
-  //   return await FolderProvider().getFolders(id);
-  // }
-
   @override
   Widget build(BuildContext context) {
     return AlertDialog(

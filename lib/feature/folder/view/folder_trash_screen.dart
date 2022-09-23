@@ -3,6 +3,7 @@ import 'package:vart_tools/database/folder_database.dart';
 import 'package:vart_tools/feature/folder/view/folder_screen.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_trash_bloc.dart';
 import 'package:vart_tools/feature/folder/widget/folder_trash_item.dart';
+import 'package:vart_tools/feature/folder/widget/popup_confirm_permantly_folder.dart';
 import 'package:vart_tools/feature/home/widgets/search_widget.dart';
 import 'package:vart_tools/res/app_color.dart';
 import 'package:vart_tools/res/font_size.dart';
@@ -17,13 +18,15 @@ class FolderTrashScreen extends StatefulWidget {
 }
 
 class _FolderTrashScreenState extends State<FolderTrashScreen> {
+  List idSelected = [];
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    context.read<FolderTrashViewModel>().add(LoadDataTrashEvent());
+    context.read<FolderTrashViewModel>().add(LoadFolderTrashEvent());
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
@@ -31,7 +34,6 @@ class _FolderTrashScreenState extends State<FolderTrashScreen> {
         child: Stack(
           children: [
             Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Align(alignment: Alignment.center, child: SearchWidget()),
                 Padding(
@@ -65,8 +67,9 @@ class _FolderTrashScreenState extends State<FolderTrashScreen> {
                 Expanded(
                   child: BlocBuilder<FolderTrashViewModel, FolderTrashState>(
                     builder: (context, state) {
-                      if (state is LoadingDataTrashSuccessState) {
+                      if (state.isSuccess) {
                         return ListView(
+                          padding: EdgeInsets.zero,
                           children: [
                             for (var folder in state.folders)
                               FolderTrashItem(
@@ -74,8 +77,8 @@ class _FolderTrashScreenState extends State<FolderTrashScreen> {
                               ),
                           ],
                         );
-                      } else if (state is LoadingDataTrashErrorState) {
-                        return Text(state.message);
+                      } else if (state.isFailure) {
+                        return const Text("Something went wrong");
                       } else {
                         return const Center(
                           child: CircularProgressIndicator(),
@@ -83,13 +86,7 @@ class _FolderTrashScreenState extends State<FolderTrashScreen> {
                       }
                     },
                   ),
-                )
-                // const Padding(
-                //   padding: EdgeInsets.only(left: 40, right: 40),
-                //   child:
-
-                //   FolderTrashItem(folder: null),
-                // ),
+                ),
               ],
             ),
             Positioned(
@@ -106,20 +103,36 @@ class _FolderTrashScreenState extends State<FolderTrashScreen> {
                     ),
                   ),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: const [
-                    Text(
-                      "Xóa",
-                      style: ResStyle.trash_text1,
-                    ),
-                    Text(
-                      "đã chọn (1) mục",
-                      style: ResStyle.trash_text2,
-                    ),
-                    Text("khôi phục", style: ResStyle.trash_text1)
-                  ],
-                ),
+                child: BlocBuilder<FolderTrashViewModel, FolderTrashState>(
+                    builder: (context, state) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      TextButton(
+                        child: Text("Xóa"),
+                        onPressed: state.isEmptySelectedId
+                            ? null
+                            : () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) =>
+                                      PopupConfirmPermantlyFolder(
+                                          selectedFolderIds:
+                                              state.selectedFolderIds),
+                                );
+                              },
+                      ),
+                      Text(
+                        "đã chọn ${state.selectedFolderIds.length} mục",
+                        style: ResStyle.trash_text2,
+                      ),
+                      TextButton(
+                        child: Text("Khôi phục"),
+                        onPressed: state.isEmptySelectedId ? null : () {},
+                      ),
+                    ],
+                  );
+                }),
               ),
             )
           ],
