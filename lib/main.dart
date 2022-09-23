@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_bloc.dart';
+import 'package:vart_tools/feature/folder/view_model/folders_favourite_bloc.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_trash_bloc.dart';
 import 'package:vart_tools/routes.dart';
 import 'package:sizer/sizer.dart';
@@ -10,20 +11,21 @@ import 'feature/camera/view_model/camera_bloc.dart';
 
 void main() {
   runApp(
-    MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) => CameraPictureBloc(),
-        ),
-        BlocProvider(
-          create: (context) => FoldersViewModel(),
-        ),
-        BlocProvider(
-          create: (context) => FolderTrashViewModel(),
-        ),
-      ],
-      child: const MyApp(),
-    ),
+    MultiBlocProvider(providers: [
+      BlocProvider(
+        create: (context) => CameraPictureBloc(),
+      ),
+      BlocProvider(
+        create: (context) => FoldersViewModel(),
+      ),
+      BlocProvider(
+        create: (context) => FolderTrashViewModel(),
+      ),
+      BlocProvider(
+        create: (context) => FolderFavouriteViewModel(),
+      )
+    ], child: const MyApp()),
+    // const MyApp()
   );
 }
 

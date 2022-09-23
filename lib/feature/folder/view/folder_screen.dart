@@ -37,7 +37,7 @@ class _FolderScreenState extends State<FolderScreen> {
             Expanded(
               child: BlocBuilder<FoldersViewModel, FoldersState>(
                 builder: (context, state) {
-                  if (state is SuccessInitFoldersState) {
+                  if (state is SuccessLoadDataFoldersState) {
                     return ListView(
                       children: [
                         for (var folder in state.folders)
@@ -46,7 +46,7 @@ class _FolderScreenState extends State<FolderScreen> {
                           ),
                       ],
                     );
-                  } else if (state is ErrorInitFoldersState) {
+                  } else if (state is ErrorLoadDataFoldersState) {
                     return Text(state.message);
                   } else {
                     return const Center(
