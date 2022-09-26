@@ -8,7 +8,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'feature/bottom_navigation_bar_main/bottom_navigation_bar_main_screen.dart';
 
+class SimpleBlocObserver extends BlocObserver {
+  @override
+  void onChange(BlocBase bloc, Change change) {
+    super.onChange(bloc, change);
+    print('${bloc.runtimeType} $change');
+  }
+}
+
 void main() {
+  Bloc.observer = SimpleBlocObserver();
   runApp(
     MultiBlocProvider(providers: [
       BlocProvider(

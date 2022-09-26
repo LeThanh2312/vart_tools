@@ -30,18 +30,6 @@ class _FolderFavouriteScreenState extends State<FolderFavouriteScreen> {
           children: [
             const Align(alignment: Alignment.center, child: SearchWidget()),
             Padding(
-              padding: const EdgeInsets.only(top: 15, left: 15, right: 15),
-              child: Row(
-                children: [
-                  InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Icon(Icons.arrow_back_ios)),
-                ],
-              ),
-            ),
-            Padding(
               padding: const EdgeInsets.only(top: 20, bottom: 20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,

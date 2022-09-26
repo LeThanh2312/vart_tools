@@ -17,7 +17,7 @@ class _FolderScreenState extends State<FolderScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<FoldersViewModel>().add(FoldersEvent());
+    context.read<FoldersViewModel>().add(LoadFoldersEvent());
   }
 
   @override
@@ -37,16 +37,14 @@ class _FolderScreenState extends State<FolderScreen> {
             Expanded(
               child: BlocBuilder<FoldersViewModel, FoldersState>(
                 builder: (context, state) {
-                  if (state is SuccessLoadDataFoldersState) {
+                  if (state.isSuccess) {
                     return ListView(
                       children: [
-                        for (var folder in state.folders)
-                          FolderItem(
-                            folder: folder,
-                          ),
+                        for (var folder in state.filterFolder)
+                          FolderItem(folder: folder),
                       ],
                     );
-                  } else if (state is ErrorLoadDataFoldersState) {
+                  } else if (state.isFailure) {
                     return Text(state.message);
                   } else {
                     return const Center(

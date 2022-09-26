@@ -2,11 +2,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vart_tools/database/folder_database.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_bloc.dart';
 
-// class FolderTrashState {
-//   List<FolderModel> folders = [];
-//   FolderTrashState({this.folders = const []});
-// }
-
 abstract class FolderTrashEvent {}
 
 enum FolderTrashStatus { loading, success, failure, initialize }
@@ -29,19 +24,6 @@ class RecoverFolderEvent extends FolderTrashEvent {
   final List<int> selectedIds;
   RecoverFolderEvent({required this.selectedIds});
 }
-
-// class LoadingDatatTrashState extends FolderTrashState {}
-
-// class LoadingDataTrashSuccessState extends FolderTrashState {
-//   final List<FolderModel> folders;
-//   final List<int> selectedFolders;
-//   LoadingDataTrashSuccessState({required this.folders, required this.selectedFolders});
-// }
-
-// class LoadingDataTrashErrorState extends FolderTrashState {
-//   String message;
-//   LoadingDataTrashErrorState({required this.message});
-// }
 
 class FolderTrashState {
   final List<FolderModel> folders;
@@ -190,25 +172,3 @@ class IdCheckState {
   List<int> idChecks;
   IdCheckState({this.idChecks = const []});
 }
-
-// class DeleteIdCheckEvent extends FolderTrashEvent {
-//   int idCheck;
-//   DeleteIdCheckEvent({required this.idCheck});
-// }
-
-// class IdCheckState {
-//   List idChecks = [];
-//   AddIdCheckState({required this.idChecks});
-// }
-
-// class IdCheckViewModel extends Bloc<IdCheckEvent, IdCheckState> {
-//   IdCheckViewModel() : super(IdCheckState(idChecks: [])) {
-//     on<IdCheckEvent>(_addItemCheck);
-//   }
-
-//   void _addItemCheck(IdCheckEvent event, Emitter emit) {
-//     state.idChecks = event.idChecks;
-//     print("data state ${state.idChecks}");
-//     print(state.idChecks.length);
-//   }
-// }

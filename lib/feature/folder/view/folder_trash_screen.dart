@@ -33,7 +33,7 @@ class _FolderTrashScreenState extends State<FolderTrashScreen> {
     return BlocListener<FolderTrashViewModel, FolderTrashState>(
       listener: (context, state) {
         if (state.recoverStatus == FolderRecoverStatus.success) {
-          context.read<FoldersViewModel>().add(FoldersEvent());
+          context.read<FoldersViewModel>().add(LoadFoldersEvent());
         }
       },
       child: Scaffold(
