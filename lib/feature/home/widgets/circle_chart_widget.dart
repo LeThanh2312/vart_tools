@@ -1,19 +1,10 @@
-
 import 'package:flutter/material.dart';
 import 'package:pie_chart/pie_chart.dart';
 
 import '../../../common/enum/chart_item.dart';
 
-
 class CircleChartWidget extends StatelessWidget {
   CircleChartWidget({Key? key}) : super(key: key);
-
-  final List<ChartItem> listChartItem = [
-    ChartItem.folder,
-    ChartItem.image,
-    ChartItem.pdf,
-    ChartItem.word
-  ];
 
   final dataMap = <String, double>{
     ChartItem.folder.name: 5,
@@ -35,14 +26,10 @@ class CircleChartWidget extends StatelessWidget {
 
   final bool _showLegends = true;
 
+  final String centerText = '1620Mb/5GB \n (32,4 %)';
+
   @override
   Widget build(BuildContext context) {
-    return chart();
-  }
-
-  String centerText = '1620Mb/5GB \n (32,4 %)';
-
-  Widget chart() {
     return PieChart(
       dataMap: dataMap,
       animationDuration: const Duration(milliseconds: 800),
@@ -50,7 +37,7 @@ class CircleChartWidget extends StatelessWidget {
       chartRadius: 200,
       colorList: colorList,
       initialAngleInDegree: 0,
-      chartType: _chartType!,
+      chartType: _chartType,
       centerText: centerText,
       legendOptions: LegendOptions(
         showLegendsInRow: _showLegendsInRow,
@@ -76,4 +63,4 @@ class CircleChartWidget extends StatelessWidget {
       baseChartColor: Colors.transparent,
     );
   }
-}
+ }

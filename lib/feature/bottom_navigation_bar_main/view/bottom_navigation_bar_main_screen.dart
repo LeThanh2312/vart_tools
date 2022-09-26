@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:vart_tools/feature/folder/view/folder_favourite_screen.dart';
 import 'package:vart_tools/feature/folder/view/folder_screen.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_favourite_bloc.dart';
-import '../../common/enum/tab_item.dart';
-import '../../routes.dart';
-import '../favourite/favurite_screen.dart';
-import '../home/home_screen.dart';
-import '../setting/SettingScreen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../common/enum/tab_item.dart';
+import '../../camera/view/camera_screen.dart';
+import '../../home/view/home_screen.dart';
+import '../../setting/settings_screen.dart';
+import 'package:camera/camera.dart';
+
 
 class BottomNavigationBarMainScreen extends StatefulWidget {
   const BottomNavigationBarMainScreen({Key? key}) : super(key: key);
@@ -38,7 +39,7 @@ class _BottomNavigationBarMainScreenState
         children: <Widget>[
           Offstage(
             offstage: _currentTab != TabItem.home,
-            child: HomeScreen(),
+            child: const HomeScreen(),
           ),
           Offstage(
             offstage: _currentTab != TabItem.file,
@@ -50,14 +51,15 @@ class _BottomNavigationBarMainScreenState
           ),
           Offstage(
             offstage: _currentTab != TabItem.setting,
-            child: const SettingScreen(),
+            child: const SettingsScreen(),
           ),
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          Navigator.of(context).pushNamed(Routes.camera);
+          await availableCameras().then((value) => Navigator.push(context,
+              MaterialPageRoute(builder: (_) => CameraScreen(cameras: value))));
         },
         elevation: 4.0,
         child: Container(
@@ -92,7 +94,7 @@ class _BottomNavigationBarMainScreenState
                 },
                 iconSize: 27.0,
                 icon: Icon(
-                  Icons.file_open,
+                  Icons.folder,
                   color: _currentTab == TabItem.file
                       ? Colors.blue.shade900
                       : Colors.grey.shade400,

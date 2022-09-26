@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../common/color.dart';
 
 class AppColors {
@@ -12,6 +11,8 @@ class AppColors {
   static Color colorPDF = HexColor('#33CDFE');
   static Color colorWord = HexColor('#333BFE');
   static Color greenLight = HexColor('#E6F8F7');
+  static Color yellow = HexColor('#ECBA39');
+
   static Color grayColor = HexColor('#D9D9D9');
   static Color colorBackgroundPopup = HexColor("#D1DCDB");
 }

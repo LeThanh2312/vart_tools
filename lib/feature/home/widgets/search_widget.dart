@@ -17,13 +17,13 @@ class _SearchWidgetState extends State<SearchWidget> {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: Container(
-        height: 5.0.h,
+        height: 35,
         decoration: BoxDecoration(
             color: AppColors.whiteColor,
             borderRadius: BorderRadius.circular(15.0),
             border: Border.all(color: AppColors.greyLine)),
         child: Container(
-          width: 90.0.w,
+          width: MediaQuery.of(context).size.width,
           margin: const EdgeInsets.only(left: 0, right: defaultPadding),
           child: TextField(
             autofocus: false,
@@ -41,7 +41,7 @@ class _SearchWidgetState extends State<SearchWidget> {
               focusedBorder: InputBorder.none,
               //contentPadding: EdgeInsets.only(bottom: 2.0.h),
               border: InputBorder.none,
-              prefixIcon: Icon(Icons.search),
+              prefixIcon: Icon(Icons.search,color: Colors.blue,),
             ),
           ),
         ),

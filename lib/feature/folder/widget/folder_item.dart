@@ -34,7 +34,7 @@ class FolderItem extends StatelessWidget {
                 height: 5,
               ),
               Text(
-                  "Ngày tạo: ${DateFormat('dd/m/yyyy hh:mm:ss').format(DateTime.parse(folder.dateCreate!))}")
+                  "${DateFormat('dd/MM/yyyy hh:mm').format(DateTime.parse(folder.dateCreate!))}")
             ],
           )),
           OutlinedButton(

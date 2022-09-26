@@ -24,7 +24,10 @@ class _FolderFavouriteScreenState extends State<FolderFavouriteScreen> {
     return SafeArea(
       child: SizedBox(
         height: double.infinity,
-        width: MediaQuery.of(context).size.width,
+        width: MediaQuery
+            .of(context)
+            .size
+            .width,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -43,7 +46,7 @@ class _FolderFavouriteScreenState extends State<FolderFavouriteScreen> {
             ),
             Expanded(
               child:
-                  BlocBuilder<FolderFavouriteViewModel, FolderFavouriteState>(
+              BlocBuilder<FolderFavouriteViewModel, FolderFavouriteState>(
                 builder: (context, state) {
                   if (state is LoadingDataFavouriteSuccessState) {
                     return ListView(
