@@ -1,7 +1,6 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
-import 'package:extended_image_library/extended_image_library.dart';
 
 class ShowImageHandle extends StatefulWidget {
   const ShowImageHandle({
@@ -10,7 +9,7 @@ class ShowImageHandle extends StatefulWidget {
     required this.isRotating, required this.index,
     required this.onChangeIndex,
   }) : super(key: key);
-  final List<File> listPictureHandle;
+  final List<Uint8List> listPictureHandle;
   final bool isRotating;
   final int index;
   final void Function(int value) onChangeIndex;
@@ -28,7 +27,7 @@ class _ShowImageHandleState extends State<ShowImageHandle> {
           Center(
             child: widget.isRotating
                 ? const CircularProgressIndicator()
-                : Image.file(
+                : Image.memory(
                     widget.listPictureHandle[widget.index - 1],
                     fit: BoxFit.cover,
                     width: 65.0.w,

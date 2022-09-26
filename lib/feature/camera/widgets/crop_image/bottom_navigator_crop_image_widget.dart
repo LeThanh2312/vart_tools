@@ -1,5 +1,4 @@
-import 'dart:io';
-import 'package:permission_handler/permission_handler.dart';
+import 'dart:typed_data';
 import 'package:image/image.dart' as ImageLib;
 import 'package:flutter/material.dart';
 
@@ -11,7 +10,7 @@ class BottomNavigatorCropImage extends StatefulWidget {
     required this.isRotating,
     required this.onChangeRotating,
   }) : super(key: key);
-  final List<File> listPictureHandle;
+  final List<Uint8List> listPictureHandle;
   final int index;
   final bool isRotating;
   final void Function(bool value) onChangeRotating;
@@ -42,8 +41,10 @@ class _BottomNavigatorCropImageState extends State<BottomNavigatorCropImage> {
             ),
             IconButton(
               onPressed: () {
+                widget.onChangeRotating(true);
                 setState(() {});
                 _rotateImage(widget.listPictureHandle[widget.index - 1], 90);
+
               },
               iconSize: 27.0,
               icon: const Icon(
@@ -52,8 +53,9 @@ class _BottomNavigatorCropImageState extends State<BottomNavigatorCropImage> {
             ),
             IconButton(
               onPressed: () {
-                _rotateImage(widget.listPictureHandle[widget.index - 1], -90);
+                widget.onChangeRotating(true);
                 setState(() {});
+                _rotateImage(widget.listPictureHandle[widget.index - 1], -90);
               },
               iconSize: 27.0,
               icon: const Icon(
@@ -82,28 +84,14 @@ class _BottomNavigatorCropImageState extends State<BottomNavigatorCropImage> {
     );
   }
 
-  void _rotateImage(File file, int angle) async {
-    setState(() {
-      widget.onChangeRotating(true);
-    });
-    var status = await Permission.storage.status;
-    if (!status.isGranted) {
-      await Permission.storage.request();
-    }
+  void _rotateImage(Uint8List file, int angle) async {
     try {
-      File contrastFile = File(file.path);
-      ImageLib.Image? contrast =
-          ImageLib.decodeImage(contrastFile.readAsBytesSync());
+      ImageLib.Image? contrast = ImageLib.decodeImage(file);
       contrast = ImageLib.copyRotate(contrast!, angle);
-      final selectedFile = widget.listPictureHandle[widget.index - 1];
-      final newFile =
-          await selectedFile.writeAsBytes(ImageLib.encodeJpg(contrast));
-      widget.listPictureHandle[widget.index - 1] = newFile;
-      imageCache.clear();
-      imageCache.clearLiveImages();
+      widget.listPictureHandle[widget.index - 1] = Uint8List.fromList(ImageLib.encodePng(contrast));
       setState(() {});
     } catch (e) {
-      e;
+      print(e);
     } finally {
       setState(() {
         widget.onChangeRotating(false);
