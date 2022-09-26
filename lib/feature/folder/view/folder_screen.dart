@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vart_tools/database/folder_database.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_bloc.dart';
 import 'package:vart_tools/feature/folder/widget/folder_item.dart';
 import 'package:vart_tools/feature/folder/widget/panel_control_folder.dart';
@@ -38,10 +39,14 @@ class _FolderScreenState extends State<FolderScreen> {
               child: BlocBuilder<FoldersViewModel, FoldersState>(
                 builder: (context, state) {
                   if (state.isSuccess) {
-                    return ListView(
+                    return ReorderableListView(
+                      onReorder: reorderData,
                       children: [
                         for (var folder in state.filterFolder)
-                          FolderItem(folder: folder),
+                          Card(
+                            key: ValueKey(folder),
+                            child: FolderItem(folder: folder),
+                          ),
                       ],
                     );
                   } else if (state.isFailure) {
@@ -58,5 +63,10 @@ class _FolderScreenState extends State<FolderScreen> {
         ),
       ),
     );
+  }
+
+  void reorderData(int oldIndex, int newIndex) {
+    final event = DragSortFolderEvent(oldIndex: oldIndex, newIndex: newIndex);
+    context.read<FoldersViewModel>().add(event);
   }
 }
