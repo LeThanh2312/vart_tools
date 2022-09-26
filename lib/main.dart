@@ -9,7 +9,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'feature/bottom_navigation_bar_main/view/bottom_navigation_bar_main_screen.dart';
 import 'feature/camera/view_model/camera_bloc.dart';
 
+class SimpleBlocObserver extends BlocObserver {
+  @override
+  void onChange(BlocBase bloc, Change change) {
+    super.onChange(bloc, change);
+    print('${bloc.runtimeType} $change');
+  }
+}
+
 void main() {
+  Bloc.observer = SimpleBlocObserver();
   runApp(
     MultiBlocProvider(providers: [
       BlocProvider(

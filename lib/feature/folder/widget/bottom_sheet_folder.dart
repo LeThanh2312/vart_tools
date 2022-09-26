@@ -46,7 +46,7 @@ class _BottomSheetFolderState extends State<BottomSheetFolder> {
             showDialog(
               context: context,
               builder: (context) =>
-                  PopUpFolder(title: "sửa thư mục", folderId: widget.folder.id),
+                  PopUpFolder(title: "sửa thư mục", folder: widget.folder),
             );
           },
           child: Padding(

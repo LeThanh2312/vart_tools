@@ -4,6 +4,7 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:vart_tools/database/folder_database.dart';
 import 'package:vart_tools/feature/folder/view/folder_trash_screen.dart';
+import 'package:vart_tools/feature/folder/widget/bottom_sheet_sort.dart';
 import 'package:vart_tools/feature/folder/widget/popup_folder.dart';
 import 'package:vart_tools/res/app_color.dart';
 import 'package:vart_tools/res/assets.dart';
@@ -32,7 +33,7 @@ class PanelControlFolder extends StatelessWidget {
             showDialog(
               context: context,
               builder: (context) =>
-                  const PopUpFolder(title: "Tạo thư mục mới", folderId: null),
+                  const PopUpFolder(title: "Tạo thư mục mới", folder: null),
             );
           },
           color: AppColors.grayColor,
@@ -46,7 +47,18 @@ class PanelControlFolder extends StatelessWidget {
         MaterialButton(
           height: 42,
           minWidth: 42,
-          onPressed: () {},
+          onPressed: () {
+            showModalBottomSheet(
+              context: context,
+              builder: (context) {
+                return SizedBox(
+                  height: MediaQuery.of(context).size.height / 4,
+                  width: MediaQuery.of(context).size.width,
+                  child: BottomSheetSort(),
+                );
+              },
+            );
+          },
           color: AppColors.grayColor,
           shape: const CircleBorder(),
           child: Image.asset(

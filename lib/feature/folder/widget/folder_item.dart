@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:vart_tools/database/folder_database.dart';
 import 'package:vart_tools/feature/folder/widget/bottom_sheet_folder.dart';
 import 'package:vart_tools/res/assets.dart';
+import 'package:intl/intl.dart';
 
 class FolderItem extends StatelessWidget {
   const FolderItem({
@@ -24,7 +25,18 @@ class FolderItem extends StatelessWidget {
           const SizedBox(
             width: 30,
           ),
-          Expanded(child: Text(folder.name!)),
+          Expanded(
+              child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(folder.name!),
+              const SizedBox(
+                height: 5,
+              ),
+              Text(
+                  "${DateFormat('dd/MM/yyyy hh:mm').format(DateTime.parse(folder.dateCreate!))}")
+            ],
+          )),
           OutlinedButton(
             onPressed: () {
               showModalBottomSheet(
@@ -33,9 +45,7 @@ class FolderItem extends StatelessWidget {
                   return SizedBox(
                     height: MediaQuery.of(context).size.height / 4,
                     width: MediaQuery.of(context).size.width,
-                    child: BottomSheetFolder(
-                      folder: folder,
-                    ),
+                    child: BottomSheetFolder(folder: folder),
                   );
                 },
               );
