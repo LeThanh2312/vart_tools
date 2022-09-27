@@ -2,7 +2,6 @@ import 'dart:typed_data';
 import 'package:sizer/sizer.dart';
 import 'package:flutter/material.dart';
 
-
 class CropImageHeaderWidget extends StatefulWidget {
   const CropImageHeaderWidget({Key? key, required this.listPictureHandle,}) : super(key: key);
   final List<Uint8List> listPictureHandle;
@@ -23,6 +22,8 @@ class _CropImageHeaderWidgetState extends State<CropImageHeaderWidget> {
           InkWell(
             onTap: () async {
               widget.listPictureHandle.clear();
+              imageCache.clear();
+              imageCache.clearLiveImages();
               Navigator.of(context).pop();
             },
             child: const Center(
