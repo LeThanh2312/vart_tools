@@ -8,6 +8,7 @@ import 'package:vart_tools/feature/folder/widget/popup_confirm_permantly_folder.
 import 'package:vart_tools/feature/folder/widget/popup_confirm_recover_folder.dart';
 import 'package:vart_tools/feature/home/widgets/search_widget.dart';
 import 'package:vart_tools/res/app_color.dart';
+import 'package:vart_tools/res/assets.dart';
 import 'package:vart_tools/res/font_size.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -38,13 +39,15 @@ class _FolderTrashScreenState extends State<FolderTrashScreen> {
       },
       child: Scaffold(
         body: Padding(
-          padding: const EdgeInsets.only(top: 60),
+          padding: const EdgeInsets.only(top: 60, left: 15, right: 15),
           child: Stack(
             children: [
               Column(
                 children: [
                   const Align(
-                      alignment: Alignment.center, child: SearchWidget()),
+                    alignment: Alignment.center,
+                    child: SearchWidget(),
+                  ),
                   Padding(
                     padding:
                         const EdgeInsets.only(top: 15, left: 15, right: 15),
@@ -78,15 +81,39 @@ class _FolderTrashScreenState extends State<FolderTrashScreen> {
                     child: BlocBuilder<FolderTrashViewModel, FolderTrashState>(
                       builder: (context, state) {
                         if (state.isSuccess) {
-                          return ListView(
-                            padding: EdgeInsets.zero,
-                            children: [
-                              for (var folder in state.folders)
-                                FolderTrashItem(
-                                  folder: folder,
-                                ),
-                            ],
-                          );
+                          if (state.folders.isNotEmpty) {
+                            return ListView(
+                              padding: EdgeInsets.zero,
+                              children: [
+                                for (var folder in state.folders)
+                                  FolderTrashItem(
+                                    folder: folder,
+                                  ),
+                              ],
+                            );
+                          } else {
+                            return SizedBox(
+                              width: MediaQuery.of(context).size.width,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const SizedBox(
+                                    height: 100,
+                                  ),
+                                  Image.asset(
+                                    ResAssets.icons.trashEmpty,
+                                    height: 200,
+                                    width: 200,
+                                    fit: BoxFit.fill,
+                                  ),
+                                  const Text(
+                                    "Thùng rác trống",
+                                    style: ResStyle.blur_Text,
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
                         } else if (state.isFailure) {
                           return const Text("Something went wrong");
                         } else {

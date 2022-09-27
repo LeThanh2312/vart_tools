@@ -8,4 +8,6 @@ class AssetIcons {
   final String sort_folder = "$iconpath/sort_folder.png";
   final String delete = "$iconpath/delete.png";
   final String folder = "$iconpath/folder.png";
+  final String listFolderEmpty = "$iconpath/list_folder_empty.png";
+  final String trashEmpty = "$iconpath/trash_empty.png";
 }

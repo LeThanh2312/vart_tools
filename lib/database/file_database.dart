@@ -1,58 +1,64 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:vart_tools/res/strings.dart';
 
-class FileDatabase {
-  final String id;
-  final String name;
-  final String image;
-  final DateTime? dateCreate;
-  final DateTime? dateUpdate;
-  final int? size;
-  final String? format;
-  final String? idFolder;
-  final String? link;
-  final String? tag;
-  final bool? favourite;
+class FileModel {
+  final int? id;
+  String name;
+  String? image;
+  String? dateCreate;
+  String? dateUpdate;
+  int? size;
+  String? format;
+  String idFolder;
+  String? link;
+  String? tag;
+  int? isFavourite;
+  int? isDelete;
 
-  FileDatabase({
-    required this.id,
+  FileModel({
+    this.id,
     required this.name,
-    required this.image,
+    this.image,
     this.dateCreate,
     this.dateUpdate,
     this.size,
     this.format,
-    this.idFolder,
+    required this.idFolder,
     this.link,
     this.tag,
-    this.favourite,
+    this.isFavourite,
+    this.isDelete,
   });
 
-  FileDatabase.fromMap(Map<String, dynamic> res)
-      : id = res["id"],
-        name = res["name"],
-        image = res["image"],
-        dateCreate = res["date_create"],
-        dateUpdate = res["date_update"],
-        link = res["link"],
-        size = res["size"],
-        format = res["format"],
-        idFolder = res["idFolder"],
-        tag = res["tag"],
-        favourite = res["favourite"];
+  FileModel.fromMap(Map<String, dynamic> res)
+      : id = res[DbFile.id],
+        name = res[DbFile.name],
+        image = res[DbFile.image],
+        dateCreate = res[DbFile.dateCreate],
+        dateUpdate = res[DbFile.dateUpdate],
+        link = res[DbFile.link],
+        size = res[DbFile.size],
+        format = res[DbFile.format],
+        idFolder = res[DbFile.idFolder],
+        tag = res[DbFile.tag],
+        isFavourite = res[DbFile.isFavourite],
+        isDelete = res[DbFile.isDelete];
 
   Map<String, Object?> toMap() {
     return {
-      'id': id,
-      'image': name,
-      'date_create': dateCreate,
-      'date_update': dateUpdate,
-      'link': link,
-      'size': size,
-      'format': format,
-      'idFolder': idFolder,
-      'tag': tag,
-      'favourite': favourite,
+      DbFile.id: id,
+      DbFile.name: name,
+      DbFile.image: image ??= null,
+      DbFile.dateCreate: dateCreate ??= DateTime.now().toString(),
+      DbFile.dateUpdate: dateUpdate ??= DateTime.now().toString(),
+      DbFile.link: link ??= null,
+      DbFile.size: size ??= null,
+      DbFile.format: format ??= null,
+      DbFile.idFolder: idFolder,
+      DbFile.tag: tag ??= null,
+      DbFile.isFavourite: isFavourite ??= 0,
+      DbFile.isDelete: isDelete ??= 0,
     };
   }
 }
@@ -63,17 +69,30 @@ class FileProvider {
   Future<Database> initializeDB() async {
     String path = await getDatabasesPath();
     return openDatabase(
-      join(path, 'file.db'),
+      join(path, 'files.db'),
       onCreate: (database, version) async {
         await database.execute(
-          "CREATE TABLE file(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL)",
+          """CREATE TABLE files(
+            id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
+            name TEXT NOT NULL,
+            image TEXT,
+            date_create TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            date_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            link TEXT,
+            size SMALLINT,
+            format CHARACTER(20),
+            idFolder INTEGER,
+            tag TEXT,
+            favourite TINYINT DEFAULT 0,
+            is_delete TINYINT DEFAULT 0
+            )""",
         );
       },
       version: 1,
     );
   }
 
-  Future<void> insertFile(FileDatabase file) async {
+  Future<void> insertFile(FileModel file) async {
     final db = await initializeDB();
 
     await db.insert(
@@ -92,7 +111,7 @@ class FileProvider {
     );
   }
 
-  Future<void> updateFile(FileDatabase file) async {
+  Future<void> updateFile(FileModel file) async {
     final db = await initializeDB();
     await db.update(
       'files',
