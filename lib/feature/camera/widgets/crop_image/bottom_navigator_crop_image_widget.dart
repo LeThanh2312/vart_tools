@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 import 'package:image/image.dart' as ImageLib;
 import 'package:flutter/material.dart';
+import 'package:opencv/opencv.dart';
+import 'package:opencv/core/core.dart';
 
 class BottomNavigatorCropImage extends StatefulWidget {
   const BottomNavigatorCropImage({
@@ -42,9 +44,9 @@ class _BottomNavigatorCropImageState extends State<BottomNavigatorCropImage> {
             IconButton(
               onPressed: () {
                 widget.onChangeRotating(true);
+                print('1');
                 setState(() {});
-                _rotateImage(widget.listPictureHandle[widget.index - 1], 90);
-
+                _rotateImage(widget.listPictureHandle[widget.index - 1], ImgProc.ROTATE_90_COUNTERCLOCKWISE);
               },
               iconSize: 27.0,
               icon: const Icon(
@@ -55,7 +57,7 @@ class _BottomNavigatorCropImageState extends State<BottomNavigatorCropImage> {
               onPressed: () {
                 widget.onChangeRotating(true);
                 setState(() {});
-                _rotateImage(widget.listPictureHandle[widget.index - 1], -90);
+                _rotateImage(widget.listPictureHandle[widget.index - 1], -ImgProc.ROTATE_90_CLOCKWISE);
               },
               iconSize: 27.0,
               icon: const Icon(
@@ -86,10 +88,21 @@ class _BottomNavigatorCropImageState extends State<BottomNavigatorCropImage> {
 
   void _rotateImage(Uint8List file, int angle) async {
     try {
-      ImageLib.Image? contrast = ImageLib.decodeImage(file);
-      contrast = ImageLib.copyRotate(contrast!, angle);
-      widget.listPictureHandle[widget.index - 1] = Uint8List.fromList(ImageLib.encodePng(contrast));
+      // ImageLib.Image? contrast = ImageLib.decodeImage(file);
+      // contrast = ImageLib.copyRotate(contrast!, angle);
+      print('2');
+      print('${file}');
+      // ImageLib.Image? contrast = ImageLib.decodeImage(file);
+      // contrast = ImageLib.copyRotate(contrast!, angle);
+      // print('======= ${Uint8List.fromList(ImageLib.encodePng(contrast))}');
+      // widget.listPictureHandle[widget.index - 1] =
+      //     Uint8List.fromList(ImageLib.encodePng(contrast));
+      var res = va ImgProc.rotate(file, angle);
+      print('${res}');
+      widget.listPictureHandle[widget.index - 1] = res as Uint8List;
+      widget.onChangeRotating(false);
       setState(() {});
+      print('3');
     } catch (e) {
       print(e);
     } finally {

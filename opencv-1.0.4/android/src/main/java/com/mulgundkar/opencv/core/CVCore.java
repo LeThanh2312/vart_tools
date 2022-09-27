@@ -55,6 +55,8 @@ public class CVCore {
         return byteArray;
     }
 
+
+
     @SuppressLint("MissingPermission")
     public byte[] blur(byte[] byteData, ArrayList kernelSize, ArrayList anchorPoint, int borderType) {
         byte[] byteArray = new byte[0];
@@ -68,6 +70,31 @@ public class CVCore {
             // Convert the image to Gray
             Imgproc.blur(src, dst, size, point, borderType);
 
+            // instantiating an empty MatOfByte class
+            MatOfByte matOfByte = new MatOfByte();
+            // Converting the Mat object to MatOfByte
+            Imgcodecs.imencode(".jpg", dst, matOfByte);
+            byteArray = matOfByte.toArray();
+        } catch (Exception e) {
+            System.out.println("OpenCV Error: " + e.toString());
+        }
+        return byteArray;
+    }
+
+    // Rotate Image
+    @SuppressLint("MissingPermission")
+    public byte[] rotate(byte[] byteData, int direction) {
+        byte[] byteArray = new byte[0];
+        try {
+            Mat dst = new Mat();
+            // Decode image from input byte array
+            Mat src = Imgcodecs.imdecode(new MatOfByte(byteData), Imgcodecs.IMREAD_UNCHANGED);
+
+            if (direction == 0) {
+                Core.rotate(src, dst, Core.ROTATE_90_COUNTERCLOCKWISE);
+            } else if (direction == 1) {
+                Core.rotate(src, dst, Core.ROTATE_90_CLOCKWISE);
+            }
             // instantiating an empty MatOfByte class
             MatOfByte matOfByte = new MatOfByte();
             // Converting the Mat object to MatOfByte

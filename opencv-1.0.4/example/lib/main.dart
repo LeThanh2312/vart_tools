@@ -168,6 +168,10 @@ class _MyAppState extends State<MyApp> {
           res = await ImgProc.resize(
               await file.readAsBytes(), [500, 500], 0, 0, ImgProc.interArea);
           break;
+        case 'rotate':
+          res = await ImgProc.rotate(
+              await file.readAsBytes(), ImgProc.ROTATE_90_CLOCKWISE);
+          break;
         case 'applyColorMap':
           res = await ImgProc.applyColorMap(
               await file.readAsBytes(), ImgProc.colorMapHot);

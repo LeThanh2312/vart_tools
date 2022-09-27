@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:extended_image_library/extended_image_library.dart';
-import '../../../common/crop_image.dart';
 import '../widgets/crop_image/bottom_navigator_crop_image_widget.dart';
 import '../widgets/crop_image/crop_image_header_widget.dart';
 import '../widgets/crop_image/show_image_handle.dart';
@@ -36,10 +35,6 @@ class _CropImageScreenState extends State<CropImageScreen> {
       index = value;
     });
   }
-
-  final GlobalKey _cropperKey = GlobalKey(debugLabel: 'cropperKey');
-
-  final _cropController = CropController();
 
   @override
   void initState() {

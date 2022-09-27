@@ -6,13 +6,12 @@
  * See LICENSE for more details.
  */
 
-
 import 'package:flutter/services.dart';
 import 'dart:math' as math;
 
 class ImgProc {
   /// Define method channel
-  static const MethodChannel _channel = const MethodChannel('opencv');
+  static const MethodChannel _channel = MethodChannel('opencv');
 
   /// Static variable declarations
   static const int iplBorderConstant = 0,
@@ -157,6 +156,9 @@ class ImgProc {
 
   /// RectanglesIntersectTypes declarations
   static const int intersectN = 0, intersectPartial = 1, intersectFull = 2;
+
+  /// Rotate Image Direction
+  static const int ROTATE_90_COUNTERCLOCKWISE = 0, ROTATE_90_CLOCKWISE = 1;
 
   /// <unnamed> declarations
   static const int cvGAUSSIAN5x5 = 7,
@@ -803,6 +805,18 @@ class ImgProc {
     return result;
   }
 
+  /// Function takes input file's byte array data, Unit8List
+  static Future<dynamic> rotate(byteData, int direction) async {
+    /// Variable to store operation result
+    final dynamic result = await _channel.invokeMethod('rotate', {
+      'byteData': byteData,
+      'direction': direction,
+    });
+
+    /// Function returns the response from method channel
+    return result;
+  }
+
   /// Function takes input file's byte array data & type of color map.
   static Future<dynamic> applyColorMap(Uint8List byteData, int colorMap) async {
     /// Variable to store operation result
@@ -952,10 +966,23 @@ class ImgProc {
     return result;
   }
 
-  static Future<dynamic> grabCut(Uint8List byteData, {int px = 0, int py = 0, int qx = 0, int qy = 0, int itercount = 1, int mode = 0}) async {
+  static Future<dynamic> grabCut(Uint8List byteData,
+      {int px = 0,
+      int py = 0,
+      int qx = 0,
+      int qy = 0,
+      int itercount = 1,
+      int mode = 0}) async {
     /// Variable to store operation result
-    final dynamic result = await _channel.invokeMethod(
-        'grabCut', {'byteData': byteData, 'px': px, 'py': py, 'qx': qx, 'qy': qy, 'itercount': itercount, 'mode': mode});
+    final dynamic result = await _channel.invokeMethod('grabCut', {
+      'byteData': byteData,
+      'px': px,
+      'py': py,
+      'qx': qx,
+      'qy': qy,
+      'itercount': itercount,
+      'mode': mode
+    });
 
     /// Function returns the set String as result, use for debugging
     return result;
