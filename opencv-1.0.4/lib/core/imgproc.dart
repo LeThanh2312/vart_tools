@@ -11,7 +11,7 @@ import 'dart:math' as math;
 
 class ImgProc {
   /// Define method channel
-  static const MethodChannel _channel = MethodChannel('opencv');
+  static const MethodChannel _channel = const MethodChannel('opencv');
 
   /// Static variable declarations
   static const int iplBorderConstant = 0,
@@ -806,11 +806,11 @@ class ImgProc {
   }
 
   /// Function takes input file's byte array data, Unit8List
-  static Future<dynamic> rotate(byteData, int direction) async {
+  static Future<dynamic> rotate(Uint8List byteData, int angle) async {
     /// Variable to store operation result
     final dynamic result = await _channel.invokeMethod('rotate', {
       'byteData': byteData,
-      'direction': direction,
+      'angle': angle,
     });
 
     /// Function returns the response from method channel

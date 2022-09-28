@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
+import 'package:vart_tools/feature/camera/widgets/crop_image/crop_image_widget.dart';
 
 class ShowImageHandle extends StatefulWidget {
   const ShowImageHandle({
@@ -22,58 +23,27 @@ class ShowImageHandle extends StatefulWidget {
 class _ShowImageHandleState extends State<ShowImageHandle> {
   late Rect _rect;
 
-  // set rect(Rect newRect) {
-  //   setState(() {
-  //     _rect = newRect;
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
-    print(' show image');
     return Expanded(
       child: Stack(
         children: [
           Center(
             child: widget.isRotating
                 ? const CircularProgressIndicator()
-                : Image.memory(
-                    widget.listPictureHandle[widget.index - 1],
-                    fit: BoxFit.cover,
-                    width: 65.0.w,
-                    alignment: Alignment.topCenter,
+                :
+                // Image.memory(
+                //     widget.listPictureHandle[widget.index - 1],
+                //     fit: BoxFit.cover,
+                //     width: 65.0.w,
+                //     alignment: Alignment.topCenter,
+                //   ),
+                CropImageWidget(
+                    image: widget.listPictureHandle[widget.index - 1],
+                    height: MediaQuery.of(context).size.height - 230,
+                    width: MediaQuery.of(context).size.width,
                   ),
           ),
-          // IgnorePointer(
-          //   child: ClipPath(
-          //     clipper: _CropAreaClipper(_rect, 0),
-          //     child: Container(
-          //       width: double.infinity,
-          //       height: double.infinity,
-          //       color: Colors.black.withAlpha(100),
-          //     ),
-          //   ),
-          // ),
-          // SizedBox(
-          //   height: 68.0.h,
-          //   child: Crop(
-          //     image: File(widget.picture[index - 1].path).readAsBytesSync(),
-          //     controller: _cropController,
-          //     onCropped: (image) {
-          //     },
-          //     rotationTurns: _rotationTurns,
-          //   ),
-          // ),
-          //
-          // Cropper(
-          //   cropperKey: _cropperKey,
-          //   rotationTurns: _rotationTurns,
-          //   image: Image.memory(
-          //       File(widget.picture[index - 1].path).readAsBytesSync()),
-          //   onScaleStart: (details) {},
-          //   onScaleUpdate: (details) {},
-          //   onScaleEnd: (details) {},
-          // ),
           Positioned(
             bottom: 0,
             left: 0,
@@ -118,38 +88,4 @@ class _ShowImageHandleState extends State<ShowImageHandle> {
       ),
     );
   }
-}
-
-class _CropAreaClipper extends CustomClipper<Path> {
-  _CropAreaClipper(this.rect, this.radius);
-
-  final Rect rect;
-  final double radius;
-
-  @override
-  Path getClip(Size size) {
-    return Path()
-      ..addPath(
-        Path()
-          ..moveTo(rect.left, rect.top + radius)
-          ..arcToPoint(Offset(rect.left + radius, rect.top),
-              radius: Radius.circular(radius))
-          ..lineTo(rect.right - radius, rect.top)
-          ..arcToPoint(Offset(rect.right, rect.top + radius),
-              radius: Radius.circular(radius))
-          ..lineTo(rect.right, rect.bottom - radius)
-          ..arcToPoint(Offset(rect.right - radius, rect.bottom),
-              radius: Radius.circular(radius))
-          ..lineTo(rect.left + radius, rect.bottom)
-          ..arcToPoint(Offset(rect.left, rect.bottom - radius),
-              radius: Radius.circular(radius))
-          ..close(),
-        Offset.zero,
-      )
-      ..addRect(Rect.fromLTWH(0.0, 0.0, size.width, size.height))
-      ..fillType = PathFillType.evenOdd;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => true;
 }
