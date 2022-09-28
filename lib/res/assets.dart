@@ -1,5 +1,6 @@
 class ResAssets {
   static var icons = AssetIcons();
+  static var images = AssetImages();
 }
 
 class AssetIcons {
@@ -10,4 +11,11 @@ class AssetIcons {
   final String folder = "$iconpath/folder.png";
   final String listFolderEmpty = "$iconpath/list_folder_empty.png";
   final String trashEmpty = "$iconpath/trash_empty.png";
+}
+
+class AssetImages {
+  static const imagePath = "assets/images";
+  final String img1 = "$imagePath/avatar.jpg";
+  final String img2 = "$imagePath/avatar2.jpg";
+  final String img3 = "$imagePath/avatar3.png";
 }

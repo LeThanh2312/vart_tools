@@ -1,6 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:vart_tools/res/strings.dart';
+import 'package:intl/intl.dart';
 
 class FileModel {
   final int? id;
@@ -10,7 +11,7 @@ class FileModel {
   String? dateUpdate;
   int? size;
   String? format;
-  String idFolder;
+  int idFolder;
   String? link;
   String? tag;
   int? isFavourite;
@@ -50,8 +51,12 @@ class FileModel {
       DbFile.id: id,
       DbFile.name: name,
       DbFile.image: image ??= null,
-      DbFile.dateCreate: dateCreate ??= DateTime.now().toString(),
-      DbFile.dateUpdate: dateUpdate ??= DateTime.now().toString(),
+      DbFile.dateCreate: dateCreate != null
+          ? dateFormat(dateCreate!)
+          : DateTime.now().toString(),
+      DbFile.dateUpdate: dateUpdate != null
+          ? dateFormat(dateUpdate!)
+          : DateTime.now().toString(),
       DbFile.link: link ??= null,
       DbFile.size: size ??= null,
       DbFile.format: format ??= null,
@@ -60,6 +65,13 @@ class FileModel {
       DbFile.isFavourite: isFavourite ??= 0,
       DbFile.isDelete: isDelete ??= 0,
     };
+  }
+
+  String dateFormat(String date) {
+    print("date: ${date}");
+    String temp = DateFormat("dd-MM-yyyy").format(DateTime.parse(date));
+    print("date fomat ${temp}");
+    return temp;
   }
 }
 
@@ -80,11 +92,12 @@ class FileProvider {
             date_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             link TEXT,
             size SMALLINT,
-            format CHARACTER(20),
-            idFolder INTEGER,
+            format CHARACTER(20) NOT NULL,
+            idFolder INTEGER NOT NULL,
             tag TEXT,
-            favourite TINYINT DEFAULT 0,
-            is_delete TINYINT DEFAULT 0
+            is_favourite TINYINT DEFAULT 0,
+            is_delete TINYINT DEFAULT 0,
+            FOREIGN KEY (idFolder) REFERENCES folders (id)
             )""",
         );
       },
@@ -92,14 +105,60 @@ class FileProvider {
     );
   }
 
-  Future<void> insertFile(FileModel file) async {
+  Future<List<FileModel>> getFiles(int? id) async {
     final db = await initializeDB();
+    final List<Map<String, dynamic>> maps;
+    if (id == null) {
+      maps = await db.query(
+        DbFile.tableName,
+        where: 'is_delete = ?',
+        whereArgs: ['0'],
+      );
+    } else {
+      maps = await db.query(
+        DbFile.tableName,
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+    }
 
-    await db.insert(
-      'files',
-      file.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    return List.generate(maps.length, (i) {
+      return FileModel(
+        id: maps[i][DbFile.id],
+        name: maps[i][DbFile.name],
+        image: maps[i][DbFile.image],
+        dateCreate: maps[i][DbFile.dateCreate],
+        dateUpdate: maps[i][DbFile.dateUpdate],
+        link: maps[i][DbFile.link],
+        size: maps[i][DbFile.size],
+        format: maps[i][DbFile.format],
+        idFolder: maps[i][DbFile.idFolder],
+        tag: maps[i][DbFile.tag],
+        isFavourite: maps[i][DbFile.isFavourite],
+        isDelete: maps[i][DbFile.isDelete],
+      );
+    });
+  }
+
+  Future<void> insertFile(file) async {
+    final db = await initializeDB();
+    try {
+      var rs = await db.insert(
+        'files',
+        file.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+      print("insert rs: ${rs}");
+    } catch (e) {
+      print(e);
+    }
+
+    // var insert = await db.insert(
+    //   'files',
+    //   file.toMap(),
+    //   conflictAlgorithm: ConflictAlgorithm.replace,
+    // );
+    // print(insert);
   }
 
   Future<void> deleteFile(int id) async {

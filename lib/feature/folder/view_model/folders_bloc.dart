@@ -88,18 +88,6 @@ class RenameFolderEvent extends FoldersEvent {
   RenameFolderEvent({required this.folder});
 }
 
-// class LoadingDataFoldersState extends FoldersState {}
-
-// class ErrorLoadDataFoldersState extends FoldersState {
-//   String message;
-//   ErrorLoadDataFoldersState({required this.message});
-// }
-
-// class SuccessLoadDataFoldersState extends FoldersState {
-//   final List<FolderModel> folders;
-//   SuccessLoadDataFoldersState({required this.folders});
-// }
-
 class FavouriteFolderEvent extends FoldersEvent {
   FolderModel folder;
   int isFavourite;
@@ -144,7 +132,7 @@ class FoldersViewModel extends Bloc<FoldersEvent, FoldersState> {
   void _addFolder(AddFolderEvent event, Emitter emit) async {
     try {
       await FolderProvider().insertFolder(event.folder);
-      state.folders.add(event.folder);
+      state.folders = await FolderProvider().getFolders(null);
       emit(state.copyWith(folders: state.filterFolder));
     } catch (e) {
       emit(state.copyWith(message: "add folder error"));

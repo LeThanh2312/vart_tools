@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vart_tools/database/folder_database.dart';
+import 'package:vart_tools/feature/file/view/file_screen.dart';
+import 'package:vart_tools/feature/file/view_model/file_bloc.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_bloc.dart';
 import 'package:vart_tools/feature/folder/widget/folder_item.dart';
 import 'package:vart_tools/feature/folder/widget/panel_control_folder.dart';
@@ -47,8 +49,16 @@ class _FolderScreenState extends State<FolderScreen> {
                         children: [
                           for (var folder in state.filterFolder)
                             Card(
-                              key: ValueKey(folder),
-                              child: FolderItem(folder: folder),
+                              key: ValueKey(folder.name),
+                              child: InkWell(
+                                onTap: () {
+                                  context
+                                      .read<RedirectFileScreenViewModel>()
+                                      .add(RedirectFileScreenEvent(
+                                          redirect: true, folder: folder));
+                                },
+                                child: FolderItem(folder: folder),
+                              ),
                             ),
                         ],
                       );
