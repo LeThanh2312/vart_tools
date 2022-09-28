@@ -36,11 +36,12 @@ class _CropImageWidgetState extends State<CropImageWidget> {
     final imgHeightReal = memoryImageSize.width.toDouble();
     final imgWidthReal = memoryImageSize.height.toDouble();
     print('=== imgHeightReal ${imgHeightReal},${imgWidthReal}');
-    imgHeight = imgHeightReal;
-    imgWidth = imgWidthReal;
 
     double aspectRatioScreen = widget.height / widget.width;
-    double aspectRatioImage = imgHeight / imgWidth;
+    double aspectRatioImage = imgHeightReal / imgWidthReal;
+
+    imgHeight = imgHeightReal;
+    imgWidth = imgWidthReal;
 
     // if (aspectRatioImage == aspectRatioScreen) {
     //   imgHeight = widget.height;
@@ -57,18 +58,22 @@ class _CropImageWidgetState extends State<CropImageWidget> {
 
     imgWidth = widget.width;
     imgHeight = imgWidth * aspectRatioImage;
+    scale = imgHeightReal / imgHeight;
 
     if (imgHeight > widget.height) {
       imgHeight = widget.height;
       imgWidth = imgHeight / aspectRatioImage;
+      print('=== imgHeight ${imgHeight},${imgWidth}');
+
+      scale = imgHeightReal / imgHeight;
+      print('======= 1 ${imgHeightReal / imgHeight}');
+      print('======= 2 ${imgWidthReal / imgWidth}');
     }
 
-    scale = imgHeightReal / imgHeight;
-
     points.add(Offset.zero);
-    points.add(Offset(imgWidth, 0));
-    points.add(Offset(imgWidth, imgHeight));
-    points.add(Offset(0, imgHeight));
+    points.add(Offset(imgHeightReal, 0));
+    points.add(Offset(imgWidthReal, imgHeightReal));
+    points.add(Offset(0, imgHeightReal));
   }
 
   @override
@@ -177,48 +182,43 @@ class _CropImageWidgetState extends State<CropImageWidget> {
             top: widget.width / 2,
             child: IconButton(
               onPressed: () async {
-                print('=== 0x ${points[0].dx.toInt() * scale.toInt()}');
-                print('=== 0y ${points[0].dy.toInt() * scale.toInt()}');
+                print('=== 0x ${((points[0].dx + 3) * scale).toInt()}');
+                print('=== 0y ${((points[0].dy + 3) * scale).toInt()}');
                 //
-                print('=== 1x ${points[1].dx.toInt() * scale.toInt()}');
-                print('=== 1y ${points[1].dy.toInt() * scale.toInt()}');
+                print('=== 1x ${((points[1].dx - 3) * scale).toInt()}');
+                print('=== 1y ${((points[1].dy + 3) * scale).toInt()}');
                 //
-                print('=== 2x ${points[2].dx.toInt() * scale.toInt()}');
-                print('=== 2y ${points[2].dy.toInt() * scale.toInt()}');
+                print('=== 3x ${((points[3].dx - 3) * scale).toInt()}');
+                print('=== 3y ${((points[3].dy - 3) * scale).toInt()}');
                 //
-                print('=== 3x ${points[3].dx.toInt() * scale.toInt()}');
-                print('=== 3y ${points[3].dy.toInt() * scale.toInt()}');
+                print('=== 2x ${((points[2].dx + 3) * scale).toInt()}');
+                print('=== 2y ${((points[2].dy - 3) * scale).toInt()}');
+
 
                 Uint8List res = await ImgProc.warpPerspectiveTransform(
-                  widget.image,
-                  sourcePoints: [
-                    points[0].dx.toInt() * scale.toInt(),
-                    points[0].dy.toInt() * scale.toInt(),
-                    //
-                    points[1].dx.toInt() * scale.toInt(),
-                    points[1].dy.toInt() * scale.toInt(),
-                    //
-                    points[3].dx.toInt() * scale.toInt(),
-                    points[3].dy.toInt() * scale.toInt(),
-                    //
-                    points[2].dx.toInt() * scale.toInt(),
-                    points[2].dy.toInt() * scale.toInt(),
-                  ],
-                  destinationPoints: [
-                    0,
-                    0,
-                    //
-                    612,
-                    0,
-                    //
-                    0,
-                    459,
-                    //
-                    612,
-                    459,
-                  ],
-                  outputSize: [459, 612],
-                );
+                    widget.image,
+                    sourcePoints: [
+                      (points[0].dx * scale).toInt(),
+                      (points[0].dy * scale).toInt(),
+                      //
+                      (points[1].dx * scale).toInt(),
+                      (points[1].dy * scale).toInt(),
+                      //
+                      (points[3].dx * scale).toInt(),
+                      (points[3].dy * scale).toInt(),
+                      //
+                      (points[2].dx * scale).toInt(),
+                      (points[2].dy * scale).toInt(),
+
+                    ],
+                  destinationPoints: [0, 0, 612, 0, 0, 459, 612, 459],
+                  outputSize: [612, 459],
+                    // sourcePoints: [113, 137, 260, 137, 138, 379, 271, 340],
+                    // sourcePoints: [7, 7, 712, 7, -7, 1272, 727, 1272],
+                    // destinationPoints: [0, 0, 612, 0, 0, 459, 612, 459],
+                    // outputSize: [612, 459],
+                ) as Uint8List;
+                res = await ImgProc.rotate(res, 90);
                 Navigator.push(
                     context,
                     MaterialPageRoute(

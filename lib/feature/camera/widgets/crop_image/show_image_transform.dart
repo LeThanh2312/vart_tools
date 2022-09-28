@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
+import 'package:image_size_getter/image_size_getter.dart' as imgsize;
+
 
 class ShowImageTransform extends StatefulWidget {
   const ShowImageTransform({
@@ -14,19 +16,21 @@ class ShowImageTransform extends StatefulWidget {
 }
 
 class _ShowImageTransformState extends State<ShowImageTransform> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SizedBox(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        child: Image.memory(
-          widget.image,
-          fit: BoxFit.scaleDown,
-          width: 65.0.w,
-          alignment: Alignment.topCenter,
-        ),
-      ),
+        body: Container(
+          color: Colors.blue,
+          height: 95.0.h,
+          width: 90.0.w,
+          margin: EdgeInsets.all(10),
+          child: Image.memory(
+            widget.image,
+            width: 70.0.w,
+            fit: BoxFit.contain,
+          ),
+        )
     );
   }
 }
