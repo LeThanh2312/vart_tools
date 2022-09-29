@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vart_tools/feature/file/view/file_screen.dart';
 import 'package:vart_tools/feature/file/view_model/file_bloc.dart';
+import 'package:vart_tools/feature/file/view_model/file_favourite_bloc.dart';
 import 'package:vart_tools/feature/folder/view/folder_favourite_screen.dart';
 import 'package:vart_tools/feature/folder/view/folder_screen.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_favourite_bloc.dart';
@@ -36,6 +37,7 @@ class _BottomNavigationBarMainScreenState
       _currentTab = tabItem;
       if (_currentTab == TabItem.favourite) {
         context.read<FolderFavouriteViewModel>().add(LoadDataFavouriteEvent());
+        context.read<FileFavouriteViewModel>().add(LoadDataFilesFavouriteEvent());
       }
     });
   }

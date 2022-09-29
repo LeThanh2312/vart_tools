@@ -95,22 +95,15 @@ class FileProvider {
     );
   }
 
-  Future<List<FileModel>> getFiles(int? id) async {
+  Future<List<FileModel>> getFiles(int folderId) async {
+    print(folderId);
     final db = await initializeDB();
     final List<Map<String, dynamic>> maps;
-    if (id == null) {
-      maps = await db.query(
+    maps = await db.query(
         DbFile.tableName,
-        where: 'is_delete = ?',
-        whereArgs: ['0'],
-      );
-    } else {
-      maps = await db.query(
-        DbFile.tableName,
-        where: 'id = ?',
-        whereArgs: [id],
-      );
-    }
+        where: 'is_delete = ? and idFolder=?',
+        whereArgs: ['0',folderId],
+    );
 
     return List.generate(maps.length, (i) {
       return FileModel(
@@ -170,8 +163,8 @@ class FileProvider {
     final db = await initializeDB();
     final List<Map<String, dynamic>> maps = await db.query(
       DbFile.tableName,
-      where: 'is_favourite = ?',
-      whereArgs: ['1'],
+      where: 'is_favourite = ? and is_delete = ?',
+      whereArgs: ['1', '0'],
     );
     return List.generate(maps.length, (i) {
       return FileModel(

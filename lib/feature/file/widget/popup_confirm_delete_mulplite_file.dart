@@ -7,9 +7,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class PopUpConfirmDeleteMulpliteFile extends StatefulWidget {
   final VoidCallback onClear;
   const PopUpConfirmDeleteMulpliteFile(
-      {Key? key, required this.idFiles, required this.onClear})
+      {Key? key, required this.idFiles, required this.onClear, required this.folderId})
       : super(key: key);
   final List<int?> idFiles;
+  final int folderId;
 
   @override
   State<PopUpConfirmDeleteMulpliteFile> createState() =>
@@ -18,6 +19,15 @@ class PopUpConfirmDeleteMulpliteFile extends StatefulWidget {
 
 class _PopUpConfirmDeleteMulpliteFileState
     extends State<PopUpConfirmDeleteMulpliteFile> {
+  
+  // Future<bool> deleteDate(int id) async {
+  //   await context.read<FilesViewModel>().add(DeleteMulpliteEvent(fileId: widget.idFiles, folderId: widget.folderId));
+  //   if(data.isEmpty){
+  //     return true;
+  //   }else {
+  //     return false;
+  //   }
+  // }
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -58,9 +68,10 @@ class _PopUpConfirmDeleteMulpliteFileState
                     onPressed: () {
                       context
                           .read<FilesViewModel>()
-                          .add(DeleteMulpliteEvent(fileId: widget.idFiles));
-                      Navigator.of(context).popUntil((route) => route.isFirst);
-                      widget.onClear();
+                          .add(DeleteMulpliteEvent(fileId: widget.idFiles, folderId: widget.folderId));
+                      Navigator.of(context).pop();
+                      Future.delayed(const Duration(milliseconds: 100),() => widget.onClear());
+                      // widget.onClear();
                     },
                     child: const Text(
                       "Đồng Ý",

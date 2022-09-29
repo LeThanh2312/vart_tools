@@ -5,14 +5,11 @@ import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/database/folder_database.dart';
 import 'package:vart_tools/feature/file/view/file_detail_screen.dart';
 import 'package:vart_tools/feature/file/view_model/file_bloc.dart';
-import 'package:vart_tools/feature/file/widget/popup_confirm_delete_file.dart';
 import 'package:vart_tools/feature/file/widget/popup_confirm_delete_mulplite_file.dart';
 import 'package:vart_tools/feature/home/widgets/search_widget.dart';
-import 'package:vart_tools/res/app_color.dart';
 import 'package:vart_tools/res/assets.dart';
 import 'package:vart_tools/res/font_size.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:top_modal_sheet/top_modal_sheet.dart';
 
 class FileScreen extends StatefulWidget {
   const FileScreen({Key? key, required this.folder}) : super(key: key);
@@ -88,12 +85,21 @@ class _FileScreenState extends State<FileScreen> {
         dateUpdate: '2022-09-24 08:28:58',
       ),
     ];
-    files = context.read<FilesViewModel>().state.files;
-    print('file data init : ${files}');
-    if (files.isEmpty) {
-      context.read<FilesViewModel>().add(AddFilesEvent(files: filesData));
+    checkDataExist(widget.folder.id!).then((value) {
+      if (value) {
+        context.read<FilesViewModel>().add(AddFilesEvent(files: filesData, folderId: widget.folder.id!));
+      }
+    });
+    context.read<FilesViewModel>().add(LoadFilesEvent(folderId: widget.folder.id!));
+  }
+
+  Future<bool> checkDataExist(int id) async {
+    List<FileModel> data = await FileProvider().getFiles(id);
+    if(data.isEmpty){
+      return true;
+    }else {
+      return false;
     }
-    context.read<FilesViewModel>().add(LoadFilesEvent());
   }
 
   bool checkIdExistIdSelected(int id) {
@@ -164,10 +170,16 @@ class _FileScreenState extends State<FileScreen> {
                                       PopUpConfirmDeleteMulpliteFile(
                                     idFiles: _idSelected,
                                     onClear: () {
+                                      setState(() {
+                                        isSelectionMode = false;
+                                        _selectAll = false;
+                                      });
                                       _idSelected.clear();
                                     },
+                                    folderId: widget.folder.id!,
                                   ),
                                 );
+
                               },
                       ),
                       SizedBox(

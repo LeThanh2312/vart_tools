@@ -90,11 +90,15 @@ class FilesViewState {
   bool get isFailure => status == FilesStatus.failure;
 }
 
-class LoadFilesEvent extends FileViewEvent {}
+class LoadFilesEvent extends FileViewEvent {
+  final int folderId;
+  LoadFilesEvent({required this.folderId});
+}
 
 class AddFilesEvent extends FileViewEvent {
   List<FileModel> files;
-  AddFilesEvent({required this.files});
+  int folderId;
+  AddFilesEvent({required this.files,required this.folderId});
 }
 
 class DeleteFileEvent extends FileViewEvent {
@@ -110,7 +114,8 @@ class FavouriteFileEvent extends FileViewEvent {
 
 class DeleteMulpliteEvent extends FileViewEvent {
   List<int?> fileId;
-  DeleteMulpliteEvent({required this.fileId});
+  int folderId;
+  DeleteMulpliteEvent({required this.fileId, required this.folderId});
 }
 
 class FilesViewModel extends Bloc<FileViewEvent, FilesViewState> {
@@ -126,7 +131,7 @@ class FilesViewModel extends Bloc<FileViewEvent, FilesViewState> {
   void _loadDataFiles(LoadFilesEvent event, Emitter emit) async {
     emit(state.copyWith(status: FilesStatus.loading));
     try {
-      final files = await FileProvider().getFiles(null);
+      final files = await FileProvider().getFiles(event.folderId);
       state.files = files;
       emit(state.copyWith(files: state.files, status: FilesStatus.success));
     } catch (e) {
@@ -139,7 +144,7 @@ class FilesViewModel extends Bloc<FileViewEvent, FilesViewState> {
     try {
       event.file.isDelete = 1;
       await FileProvider().updateFile(event.file);
-      state.files = await FileProvider().getFiles(null);
+      state.files = await FileProvider().getFiles(event.file.idFolder);
       emit(state.copyWith(files: state.files));
     } catch (e) {
       emit(state.copyWith(message: "delete folder fail"));
@@ -148,14 +153,10 @@ class FilesViewModel extends Bloc<FileViewEvent, FilesViewState> {
 
   void _favouriteFile(FavouriteFileEvent event, Emitter emit) async {
     try {
-      print(event.isFavourite);
       event.file.isFavourite = event.isFavourite;
       await FileProvider().updateFile(event.file);
-      state.files = await FileProvider().getFiles(null);
-      for(FileModel file in state.files){
-        print(file.toMap());
-      }
-      emit(state.copyWith(files: state.files));
+      state.files = await FileProvider().getFiles(event.file.idFolder);
+      emit(state.copyWith(files: state.files, status: FilesStatus.success));
     } catch (e) {
       emit(state.copyWith(message: "delete folder fail"));
     }
@@ -163,9 +164,13 @@ class FilesViewModel extends Bloc<FileViewEvent, FilesViewState> {
 
   void _deleteMulpliteFile(DeleteMulpliteEvent event, Emitter emit) async {
     try {
+      print("delete file");
+      print(event.fileId);
+      print(event.folderId);
       await FileProvider().deleteFile(event.fileId);
-      state.files = await FileProvider().getFiles(null);
-      emit(state.copyWith(files: state.files));
+      state.files = await FileProvider().getFiles(event.folderId);
+      print(state.files.length);
+      emit(state.copyWith(files: state.files, status: FilesStatus.success));
     } catch (e) {
       emit(state.copyWith(message: "delete folder fail"));
     }
@@ -173,11 +178,10 @@ class FilesViewModel extends Bloc<FileViewEvent, FilesViewState> {
 
   void _addFiles(AddFilesEvent event, Emitter emit) async {
     try {
-      print(event.files.length);
       for (FileModel file in event.files) {
         await FileProvider().insertFile(file);
       }
-      state.files = await FileProvider().getFiles(null);
+      state.files = await FileProvider().getFiles(event.folderId);
       emit(state.copyWith(files: state.files));
     } catch (e) {
       emit(state.copyWith(message: "add folder error"));
