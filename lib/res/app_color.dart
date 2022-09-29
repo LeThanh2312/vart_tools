@@ -15,4 +15,5 @@ class AppColors {
 
   static Color grayColor = HexColor('#D9D9D9');
   static Color colorBackgroundPopup = HexColor("#D1DCDB");
+  static Color bottomSheetFileDetailColor = HexColor("#ECBA39");
 }

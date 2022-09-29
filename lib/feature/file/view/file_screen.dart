@@ -1,11 +1,18 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/database/folder_database.dart';
+import 'package:vart_tools/feature/file/view/file_detail_screen.dart';
 import 'package:vart_tools/feature/file/view_model/file_bloc.dart';
+import 'package:vart_tools/feature/file/widget/popup_confirm_delete_file.dart';
+import 'package:vart_tools/feature/file/widget/popup_confirm_delete_mulplite_file.dart';
 import 'package:vart_tools/feature/home/widgets/search_widget.dart';
+import 'package:vart_tools/res/app_color.dart';
 import 'package:vart_tools/res/assets.dart';
 import 'package:vart_tools/res/font_size.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:top_modal_sheet/top_modal_sheet.dart';
 
 class FileScreen extends StatefulWidget {
   const FileScreen({Key? key, required this.folder}) : super(key: key);
@@ -18,6 +25,10 @@ class FileScreen extends StatefulWidget {
 class _FileScreenState extends State<FileScreen> {
   late List<FileModel> filesData;
   late List<FileModel> files;
+  bool isSelectionMode = false;
+  List<int?> _idSelected = [];
+  bool _selectAll = false;
+
   @override
   void initState() {
     super.initState();
@@ -27,44 +38,89 @@ class _FileScreenState extends State<FileScreen> {
         idFolder: widget.folder.id!,
         image: ResAssets.images.img1,
         format: "JPG",
-        dateCreate: DateTime.now().toString(),
-        dateUpdate: DateTime.now().toString(),
+        size: 250,
+        dateCreate: '2022-09-29 08:28:58',
+        dateUpdate: '2022-09-29 08:28:58',
       ),
       FileModel(
         name: "file 2",
         idFolder: widget.folder.id!,
         image: ResAssets.images.img2,
         format: "JPG",
-        dateCreate: DateTime.now().toString(),
-        dateUpdate: DateTime.now().toString(),
+        size: 550,
+        dateCreate: '2022-09-29 08:29:58',
+        dateUpdate: '2022-09-29 08:29:58',
       ),
       FileModel(
         name: "file 3",
         idFolder: widget.folder.id!,
         image: ResAssets.images.img3,
         format: "PNG",
-        dateCreate: DateTime.now().toString(),
-        dateUpdate: DateTime.now().toString(),
+        size: 200,
+        dateCreate: '2022-09-28 08:28:58',
+        dateUpdate: '2022-09-28 08:28:58',
+      ),
+      FileModel(
+        name: "file 4",
+        idFolder: widget.folder.id!,
+        image: ResAssets.images.img3,
+        format: "PNG",
+        size: 200,
+        dateCreate: '2022-09-25 08:31:58',
+        dateUpdate: '2022-09-25 08:31:58',
+      ),
+      FileModel(
+        name: "file 5",
+        idFolder: widget.folder.id!,
+        image: ResAssets.images.img3,
+        format: "PNG",
+        size: 200,
+        dateCreate: '2022-09-25 08:30:58',
+        dateUpdate: '2022-09-25 08:30:58',
+      ),
+      FileModel(
+        name: "file 6",
+        idFolder: widget.folder.id!,
+        image: ResAssets.images.img3,
+        format: "PNG",
+        size: 200,
+        dateCreate: '2022-09-24 08:28:58',
+        dateUpdate: '2022-09-24 08:28:58',
       ),
     ];
     files = context.read<FilesViewModel>().state.files;
     if (files.isEmpty) {
-      createDbAndInsertData(filesData);
+      context.read<FilesViewModel>().add(AddFilesEvent(files: filesData));
+    }
+    context.read<FilesViewModel>().add(LoadFilesEvent());
+  }
+
+  // void createDbAndInsertData(List<FileModel> files) async {
+  //   try {
+  //     int i = 0;
+  //     for (FileModel file in files) {
+  //       print(file.dateCreate);
+  //       print(file.dateUpdate);
+  //       await FileProvider().insertFile(file);
+  //     }
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  //   context.read<FilesViewModel>().add(LoadFilesEvent());
+  // }
+
+  bool checkIdExistIdSelected(int id) {
+    if (_idSelected.contains(id)) {
+      return true;
+    } else {
+      return false;
     }
   }
 
-  void createDbAndInsertData(List<FileModel> files) async {
-    try {
-      print("insert data init");
-      int i = 0;
-      for (FileModel file in files) {
-        await FileProvider().insertFile(file);
-      }
-      print("insert data success");
-    } catch (e) {
-      print(e);
-    }
-    context.read<FilesViewModel>().add(LoadFilesEvent());
+  @override
+  void dispose() {
+    super.dispose();
+    _idSelected.clear();
   }
 
   @override
@@ -73,91 +129,219 @@ class _FileScreenState extends State<FileScreen> {
         child: SizedBox(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
-      child: Padding(
-        padding: const EdgeInsets.only(left: 15, right: 15, top: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SearchWidget(),
-            const SizedBox(height: 5),
-            Padding(
-              padding: const EdgeInsets.only(top: 15, left: 15, right: 15),
-              child: Row(
-                children: [
-                  InkWell(
-                      onTap: () {
-                        context
-                            .read<RedirectFileScreenViewModel>()
-                            .add(RedirectFileScreenEvent(redirect: false));
-                      },
-                      child: const Icon(Icons.arrow_back_ios)),
-                  Text(
-                    widget.folder.name!,
-                    style: ResStyle.h6,
-                  ),
-                ],
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.only(top: 10, left: 15, bottom: 5),
-              child: Text(
-                "ngay tao",
-                style: ResStyle.h2,
-              ),
-            ),
-            Expanded(
-              child: BlocBuilder<FilesViewModel, FilesViewState>(
-                builder: (context, state) {
-                  if (state.isSuccess) {
-                    print("group by");
-                    print(state.groupByDateUpdate);
-                    return GridView.count(
-                      primary: false,
-                      // padding: const EdgeInsets.all(10),
-                      // crossAxisSpacing: 10,
-                      // mainAxisSpacing: 10,
-                      crossAxisCount: 2,
-                      children: <Widget>[
-                        for (var file in state.files)
-                          Image.asset(
-                            file.image!,
-                            width: MediaQuery.of(context).size.width / 3,
-                            height: MediaQuery.of(context).size.width / 3,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          isSelectionMode
+              ? Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 50,
+                  color: const Color.fromARGB(255, 6, 122, 255),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.close,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            isSelectionMode = false;
+                            _idSelected.clear();
+                          });
+                        },
+                      ),
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Selection (${_idSelected.length})',
+                            style: const TextStyle(
+                              fontSize: 15,
+                              color: Colors.white,
+                            ),
                           ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                        ),
+                        onPressed: _idSelected.isEmpty
+                            ? null
+                            : () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) =>
+                                      PopUpConfirmDeleteMulpliteFile(
+                                    idFiles: _idSelected,
+                                    onClear: () {
+                                      _idSelected.clear();
+                                    },
+                                  ),
+                                );
+                              },
+                      ),
+                      SizedBox(
+                        width: 100,
+                        child: TextButton(
+                          child: !_selectAll
+                              ? const Text(
+                                  'Select All',
+                                  style: TextStyle(
+                                      fontSize: 15, color: Colors.white),
+                                )
+                              : const Text(
+                                  'Unselect All',
+                                  style: TextStyle(
+                                      fontSize: 15, color: Colors.white),
+                                ),
+                          onPressed: () {
+                            _selectAll = !_selectAll;
+                            setState(() {
+                              if (_selectAll) {
+                                _idSelected = files.map((e) => e.id).toList();
+                              } else {
+                                _idSelected.clear();
+                              }
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : const Padding(
+                  padding: EdgeInsets.all(20),
+                  child: SearchWidget(),
+                ),
+          const SizedBox(height: 5),
+          Padding(
+            padding: const EdgeInsets.only(left: 15, right: 15),
+            child: Row(
+              children: [
+                InkWell(
+                    onTap: () {
+                      context
+                          .read<RedirectFileScreenViewModel>()
+                          .add(RedirectFileScreenEvent(redirect: false));
+                    },
+                    child: const Icon(Icons.arrow_back_ios)),
+                Text(
+                  widget.folder.name!,
+                  style: ResStyle.h6,
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: BlocBuilder<FilesViewModel, FilesViewState>(
+              builder: (context, state) {
+                if (state.isSuccess) {
+                  files = state.files;
+                  return ListView(
+                      children: state.groupByDateUpdate.keys.map((key) {
+                    final value = state.groupByDateUpdate[key];
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20, left: 20),
+                          child: Text(key.toString()),
+                        ),
+                        GridView.count(
+                          primary: false,
+                          padding: EdgeInsets.all(20),
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 20,
+                          crossAxisSpacing: 20,
+                          shrinkWrap: true,
+                          children: <Widget>[
+                            for (var file in value!)
+                              InkWell(
+                                onTap: isSelectionMode
+                                    ? () {
+                                        int id =
+                                            int.parse(file["id"].toString());
+                                        if (checkIdExistIdSelected(id)) {
+                                          setState(() {
+                                            _idSelected.remove(id);
+                                          });
+                                        } else {
+                                          setState(() {
+                                            _idSelected.add(int.parse(
+                                                file["id"].toString()));
+                                          });
+                                        }
+                                      }
+                                    : () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                FileDetailScrenn(
+                                              file: FileModel.fromMap(file),
+                                            ),
+                                          ),
+                                        ),
+                                onLongPress: () {
+                                  setState(() {
+                                    isSelectionMode = true;
+                                    _idSelected
+                                        .add(int.parse(file["id"].toString()));
+                                  });
+                                },
+                                child: Stack(
+                                  children: [
+                                    Image.asset(
+                                      '${file["image"]}',
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                    ),
+                                    Positioned(
+                                      right: 0,
+                                      top: 0,
+                                      child: SizedBox(
+                                        child: isSelectionMode
+                                            ? checkIdExistIdSelected(int.parse(
+                                                    file["id"].toString()))
+                                                ? const Icon(
+                                                    Icons.check_box,
+                                                    color: Color.fromARGB(
+                                                        255, 0, 170, 255),
+                                                  )
+                                                : const Icon(
+                                                    Icons
+                                                        .check_box_outline_blank,
+                                                    color: Colors.black,
+                                                  )
+                                            : null,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                          ],
+                        )
                       ],
                     );
-                    // print("xxx");
-                    // print(state.files.length);
-                    // return ListView(
-                    //   children: [
-                    //     for (var file in state.files)
-                    //       Image.asset(
-                    //         file.image!,
-                    //         width: MediaQuery.of(context).size.width / 3,
-                    //         height: MediaQuery.of(context).size.width / 3,
-                    //       ),
-                    //   ],
-                    // );
-                    // for (var file in state.files) {
-                    //   Image.asset(
-                    //     file.image!,
-                    //     width: MediaQuery.of(context).size.width / 3,
-                    //     height: MediaQuery.of(context).size.width / 3,
-                    //   );
-                    // }
-                  } else if (state.isFailure) {
-                    return Text(state.message);
-                  } else {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                },
-              ),
-            )
-          ],
-        ),
+                  }).toList());
+                } else if (state.isFailure) {
+                  return Text(state.message);
+                } else {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+              },
+            ),
+          ),
+        ],
       ),
     ));
   }
 }
+
+typedef ClearIdSelectedCallback = void Function();

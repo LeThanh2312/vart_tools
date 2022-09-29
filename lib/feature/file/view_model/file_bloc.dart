@@ -1,10 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/database/folder_database.dart';
-import 'package:collection/collection.dart';
 import 'package:vart_tools/res/strings.dart';
+import "package:collection/collection.dart";
 
 class FirstInitScreenState {
   bool firstInitScreen = false;
@@ -65,40 +66,12 @@ class FilesViewState {
     this.message = '',
   });
 
-  List<FileModel>? get groupByDateUpdate {
-    print("maps");
+  Map<dynamic, List<Map<String, Object?>>> get groupByDateUpdate {
     var maps = files.map((e) => e.toMap());
-    print("data map");
-    print(maps);
-    var newFiles = groupBy(maps, (Map obj) => obj['date_update']);
-    // print(newFiles);
-    return null;
-    // return List.generate(newFiles.length, (i) {
-    //   return FileModel(
-    //     id: newFiles[i][DbFile.id],
-    //     name: newFiles[i][''].toString(),
-    //     image: newFiles[i][DbFile.image],
-    //     dateCreate: newFiles[i][DbFile.dateCreate],
-    //     dateUpdate: newFiles[i][DbFile.dateUpdate],
-    //     link: newFiles[i][DbFile.link],
-    //     size: newFiles[i][DbFile.size],
-    //     format: newFiles[i][DbFile.format],
-    //     idFolder: newFiles[i][DbFile.idFolder],
-    //     tag: newFiles[i][DbFile.tag],
-    //     isFavourite: newFiles[i][DbFile.isFavourite],
-    //     isDelete: newFiles[i][DbFile.isDelete],
-    //   );
-    // });
+    var newFiles =
+        groupBy(maps, (Map obj) => obj['date_create'].substring(0, 10));
+    return newFiles;
   }
-
-  // int _compareByDate(FolderModel f1, FolderModel f2) {
-  //   return DateTime.parse(f1.dateUpdate!)
-  //       .compareTo(DateTime.parse(f2.dateUpdate!));
-  // }
-
-  // int _compareByAZ(FolderModel f1, FolderModel f2) {
-  //   return f1.name!.compareTo(f2.name!);
-  // }
 
   FilesViewState copyWith({
     List<FileModel>? files,
@@ -119,15 +92,35 @@ class FilesViewState {
 
 class LoadFilesEvent extends FileViewEvent {}
 
-class AddFileEvent extends FileViewEvent {
+class AddFilesEvent extends FileViewEvent {
   List<FileModel> files;
-  AddFileEvent({required this.files});
+  AddFilesEvent({required this.files});
+}
+
+class DeleteFileEvent extends FileViewEvent {
+  FileModel file;
+  DeleteFileEvent({required this.file});
+}
+
+class FavouriteFileEvent extends FileViewEvent {
+  FileModel file;
+  int isFavourite;
+  FavouriteFileEvent({required this.file, required this.isFavourite});
+}
+
+class DeleteMulpliteEvent extends FileViewEvent {
+  List<int?> fileId;
+  DeleteMulpliteEvent({required this.fileId});
 }
 
 class FilesViewModel extends Bloc<FileViewEvent, FilesViewState> {
   FilesViewModel()
       : super(FilesViewState().copyWith(status: FilesStatus.initialize)) {
     on<LoadFilesEvent>(_loadDataFiles);
+    on<DeleteFileEvent>(_deleteFile);
+    on<FavouriteFileEvent>(_favouriteFile);
+    on<DeleteMulpliteEvent>(_deleteMulpliteFile);
+    on<AddFilesEvent>(_addFiles);
   }
 
   void _loadDataFiles(LoadFilesEvent event, Emitter emit) async {
@@ -139,6 +132,51 @@ class FilesViewModel extends Bloc<FileViewEvent, FilesViewState> {
     } catch (e) {
       emit(state.copyWith(
           status: FilesStatus.failure, message: "loading error!"));
+    }
+  }
+
+  void _deleteFile(DeleteFileEvent event, Emitter emit) async {
+    try {
+      event.file.isDelete = 1;
+      await FileProvider().updateFile(event.file);
+      state.files = await FileProvider().getFiles(null);
+      emit(state.copyWith(files: state.files));
+    } catch (e) {
+      emit(state.copyWith(message: "delete folder fail"));
+    }
+  }
+
+  void _favouriteFile(FavouriteFileEvent event, Emitter emit) async {
+    try {
+      event.file.isFavourite = event.isFavourite;
+      await FileProvider().updateFile(event.file);
+      state.files = await FileProvider().getFiles(null);
+      emit(state.copyWith(files: state.files));
+    } catch (e) {
+      emit(state.copyWith(message: "delete folder fail"));
+    }
+  }
+
+  void _deleteMulpliteFile(DeleteMulpliteEvent event, Emitter emit) async {
+    try {
+      await FileProvider().deleteFile(event.fileId);
+      state.files = await FileProvider().getFiles(null);
+      emit(state.copyWith(files: state.files));
+    } catch (e) {
+      emit(state.copyWith(message: "delete folder fail"));
+    }
+  }
+
+  void _addFiles(AddFilesEvent event, Emitter emit) async {
+    try {
+      print(event.files.length);
+      for (FileModel file in event.files) {
+        await FileProvider().insertFile(file);
+      }
+      state.files = await FileProvider().getFiles(null);
+      emit(state.copyWith(files: state.files));
+    } catch (e) {
+      emit(state.copyWith(message: "add folder error"));
     }
   }
 }

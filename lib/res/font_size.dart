@@ -23,4 +23,6 @@ class ResStyle {
     color: Colors.grey,
     fontWeight: FontWeight.w800,
   );
+  static const fileDetailText =
+      TextStyle(fontSize: 15, fontWeight: FontWeight.w300);
 }

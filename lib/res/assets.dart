@@ -11,6 +11,10 @@ class AssetIcons {
   final String folder = "$iconpath/folder.png";
   final String listFolderEmpty = "$iconpath/list_folder_empty.png";
   final String trashEmpty = "$iconpath/trash_empty.png";
+  final String iconDowload = "$iconpath/icon_dowload.png";
+  final String iconShare = "$iconpath/icon_share.png";
+  final String iconDelete = "$iconpath/icon_delete.png";
+  final String iconFavourite = "$iconpath/icon_favourite.png";
 }
 
 class AssetImages {

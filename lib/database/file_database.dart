@@ -47,16 +47,13 @@ class FileModel {
         isDelete = res[DbFile.isDelete];
 
   Map<String, Object?> toMap() {
+    String datetime_tmp = DateTime.now().toString();
     return {
       DbFile.id: id,
       DbFile.name: name,
       DbFile.image: image ??= null,
-      DbFile.dateCreate: dateCreate != null
-          ? dateFormat(dateCreate!)
-          : DateTime.now().toString(),
-      DbFile.dateUpdate: dateUpdate != null
-          ? dateFormat(dateUpdate!)
-          : DateTime.now().toString(),
+      DbFile.dateCreate: dateCreate ??= datetime_tmp,
+      DbFile.dateUpdate: dateUpdate ??= datetime_tmp,
       DbFile.link: link ??= null,
       DbFile.size: size ??= null,
       DbFile.format: format ??= null,
@@ -65,13 +62,6 @@ class FileModel {
       DbFile.isFavourite: isFavourite ??= 0,
       DbFile.isDelete: isDelete ??= 0,
     };
-  }
-
-  String dateFormat(String date) {
-    print("date: ${date}");
-    String temp = DateFormat("dd-MM-yyyy").format(DateTime.parse(date));
-    print("date fomat ${temp}");
-    return temp;
   }
 }
 
@@ -140,44 +130,70 @@ class FileProvider {
     });
   }
 
-  Future<void> insertFile(file) async {
+  Future<void> insertFile(FileModel file) async {
     final db = await initializeDB();
     try {
+      print(file.dateCreate);
+      print(file.dateUpdate);
+      print(file.toMap());
       var rs = await db.insert(
         'files',
         file.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
-      print("insert rs: ${rs}");
     } catch (e) {
       print(e);
     }
-
-    // var insert = await db.insert(
-    //   'files',
-    //   file.toMap(),
-    //   conflictAlgorithm: ConflictAlgorithm.replace,
-    // );
-    // print(insert);
   }
 
-  Future<void> deleteFile(int id) async {
+  Future<void> deleteFile(List<int?> ids) async {
+    var data = {DbFile.isDelete: '1'};
     final db = await initializeDB();
-    await db.delete(
-      'files',
-      where: "id = ?",
-      whereArgs: [id],
-    );
+    for (int? id in ids) {
+      await db.update(
+        DbFile.tableName,
+        data,
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+    }
   }
 
   Future<void> updateFile(FileModel file) async {
     final db = await initializeDB();
+    print(DateTime.now().toString());
+    print(file.toMap());
     await db.update(
       'files',
       file.toMap(),
       where: 'id = ?',
       whereArgs: [file.id],
     );
+  }
+
+  Future<List<FileModel>> getFilesFavourite() async {
+    final db = await initializeDB();
+    final List<Map<String, dynamic>> maps = await db.query(
+      DbFile.tableName,
+      where: 'is_favourite = ?',
+      whereArgs: ['1'],
+    );
+    return List.generate(maps.length, (i) {
+      return FileModel(
+        id: maps[i][DbFile.id],
+        name: maps[i][DbFile.name],
+        image: maps[i][DbFile.image],
+        dateCreate: maps[i][DbFile.dateCreate],
+        dateUpdate: maps[i][DbFile.dateUpdate],
+        link: maps[i][DbFile.link],
+        size: maps[i][DbFile.size],
+        format: maps[i][DbFile.format],
+        idFolder: maps[i][DbFile.idFolder],
+        tag: maps[i][DbFile.tag],
+        isFavourite: maps[i][DbFile.isFavourite],
+        isDelete: maps[i][DbFile.isDelete],
+      );
+    });
   }
 
   Future close() async => db.close();
