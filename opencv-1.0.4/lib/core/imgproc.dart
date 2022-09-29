@@ -787,6 +787,16 @@ class ImgProc {
     return result;
   }
 
+  static Future<dynamic> grayScale(Uint8List byteData) async {
+    /// Variable to store operation result
+    final dynamic result = await _channel.invokeMethod('grayScale', {
+      'byteData': byteData,
+    });
+
+    /// Function returns the response from method channel
+    return result;
+  }
+
 //  static Future<dynamic> warpAffine() async {}
 
   /// Function takes input file's byte array data, output size, values of fx & fy & interpolation value.

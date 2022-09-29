@@ -1,43 +1,64 @@
+import 'dart:typed_data';
+import 'dart:ui';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+enum CameraStatus { loading, success, failure, initialize }
 
-abstract class CameraPictureEvent{
-
-}
-
-enum CameraPictureStatus { loading, success, failure, initialize }
+abstract class CameraPictureEvent{}
 
 class CameraPictureState {
-  final CameraPictureStatus status;
-  List<String> data;
+  List<Uint8List> pictureCrop;
+  CameraStatus status;
+  List<Offset> points;
+  String message;
 
   CameraPictureState({
-    this.status = CameraPictureStatus.initialize,
-    required this.data,
+    this.pictureCrop =  const [],
+    this.message = '',
+    this.points = const [],
+    this.status = CameraStatus.initialize,
   });
 
-  factory CameraPictureState.initialize() {
-    return CameraPictureState(data: [], status: CameraPictureStatus.initialize);
+  CameraPictureState copyWith({
+    List<Uint8List>? pictureCrop,
+    String? message,
+    List<Offset>? points,
+    CameraStatus? status,
+
+  }) {
+    return CameraPictureState(
+      pictureCrop: pictureCrop ?? this.pictureCrop,
+      message: message ?? this.message,
+      points: points ?? this.points,
+      status: status ?? this.status,
+    );
   }
 
-  factory CameraPictureState.loading() {
-    return CameraPictureState(data: [], status: CameraPictureStatus.loading);
-  }
-
-  factory CameraPictureState.success(List<String> data) {
-    return CameraPictureState(data: data, status: CameraPictureStatus.success);
-  }
-
-  factory CameraPictureState.failure() {
-    return CameraPictureState(data: [], status: CameraPictureStatus.failure);
-  }
-
-  bool get isLoading => status == CameraPictureStatus.loading;
-  bool get isSuccess => status == CameraPictureStatus.success;
-  bool get isFailure => status == CameraPictureStatus.failure;
+  bool get isLoading => status == CameraStatus.loading;
+  bool get isSuccess => status == CameraStatus.success;
+  bool get isFailure => status == CameraStatus.failure;
 }
 
-class CameraPictureBloc extends Bloc<CameraPictureEvent, CameraPictureState> {
-  CameraPictureBloc() : super(CameraPictureState.initialize()) {
+
+class CropImageEvent extends CameraPictureEvent {
+  List<Uint8List> image;
+  List<Offset> points;
+  CropImageEvent({required this.image, required this.points});
+}
+
+
+
+class CameraPictureViewModel extends Bloc<CameraPictureEvent, CameraPictureState> {
+  CameraPictureViewModel() : super(CameraPictureState().copyWith( status: CameraStatus.initialize)) {
+    on<CropImageEvent>(_CropImageHandle);
+  }
+
+  void _CropImageHandle(CropImageEvent event, Emitter emit) async {
+    try {
+      state.pictureCrop = event.image;
+      emit(state.copyWith(pictureCrop: state.pictureCrop));
+    } catch (e) {
+      emit(state.copyWith(message: 'error'));
+    }
   }
 }
