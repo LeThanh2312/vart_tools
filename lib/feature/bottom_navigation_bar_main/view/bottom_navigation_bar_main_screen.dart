@@ -9,7 +9,6 @@ import '../../home/view/home_screen.dart';
 import '../../setting/settings_screen.dart';
 import 'package:camera/camera.dart';
 
-
 class BottomNavigationBarMainScreen extends StatefulWidget {
   const BottomNavigationBarMainScreen({Key? key}) : super(key: key);
 
@@ -58,8 +57,14 @@ class _BottomNavigationBarMainScreenState
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          await availableCameras().then((value) => Navigator.push(context,
-              MaterialPageRoute(builder: (_) => CameraScreen(cameras: value))));
+          await availableCameras().then(
+            (value) => {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => CameraScreen(cameras: value)))
+            },
+          );
         },
         elevation: 4.0,
         child: Container(
@@ -100,7 +105,6 @@ class _BottomNavigationBarMainScreenState
                       : Colors.grey.shade400,
                 ),
               ),
-              //to leave space in between the bottom app bar items and below the FAB
               const SizedBox(
                 width: 50.0,
               ),

@@ -1,7 +1,9 @@
-import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
 import 'package:flutter/material.dart';
 import 'package:vart_tools/common/enum/camera_type.dart';
+import 'package:vart_tools/feature/camera/view_model/camera_bloc.dart';
 
 class PreviewPicture extends StatefulWidget {
   const PreviewPicture({
@@ -10,7 +12,7 @@ class PreviewPicture extends StatefulWidget {
     required this.picture,
   }) : super(key: key);
   final CameraType type;
-  final List<File> picture;
+  final List<Uint8List> picture;
 
   @override
   State<PreviewPicture> createState() => _PreviewPictureState();
@@ -32,12 +34,12 @@ class _PreviewPictureState extends State<PreviewPicture> {
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Image.file(File(widget.picture[0].path),
+                    Image.memory(widget.picture[0],
                         fit: BoxFit.cover, width: 100),
                     const SizedBox(
                       height: 20,
                     ),
-                    Image.file(File(widget.picture[1].path),
+                    Image.memory(widget.picture[1],
                         fit: BoxFit.cover, width: 100),
                   ],
                 ),
@@ -48,21 +50,25 @@ class _PreviewPictureState extends State<PreviewPicture> {
                 shrinkWrap: true,
                 scrollDirection: Axis.vertical,
                 children: widget.picture.map((e) {
-                  String index = '${widget.picture.indexOf(e) + 1}';
+                  int index = widget.picture.indexOf(e);
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _numbered(index),
+                      _numbered((index + 1).toString()),
                       Container(
-                        margin: const EdgeInsets.only(bottom: 10,left: 10),
-                        child: Image.file(File(e.path),
-                            fit: BoxFit.cover, width: 30.0.w),
+                        margin:
+                        const EdgeInsets.only(bottom: 10, left: 10),
+                        child: Image.memory(
+                          widget.picture[index],
+                          fit: BoxFit.cover,
+                          width: 30.0.w,
+                        ),
                       ),
                     ],
                   );
                 }).toList(),
-              ),
+              )
             ),
     );
   }

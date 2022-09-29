@@ -22,7 +22,7 @@ void main() {
   runApp(
     MultiBlocProvider(providers: [
       BlocProvider(
-        create: (context) => CameraPictureBloc(),
+        create: (context) => CameraPictureViewModel(),
       ),
       BlocProvider(
         create: (context) => FoldersViewModel(),

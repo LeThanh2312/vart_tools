@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:opencv/opencv.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../view_model/camera_bloc.dart';
 
 class BottomNavigatorCropImage extends StatefulWidget {
   const BottomNavigatorCropImage({
@@ -44,65 +46,71 @@ class _BottomNavigatorCropImageState extends State<BottomNavigatorCropImage> {
 
   @override
   Widget build(BuildContext context) {
-    return BottomAppBar(
-      shape: const CircularNotchedRectangle(),
-      color: Colors.white,
-      child: Container(
-        margin: const EdgeInsets.only(left: 12.0, right: 12.0),
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            IconButton(
-              onPressed: () {},
-              iconSize: 27.0,
-              icon: const Icon(
-                Icons.camera_alt,
-              ),
+    return BlocBuilder<CameraPictureViewModel,CameraPictureState>(
+      builder: (context, state){
+        return BottomAppBar(
+          shape: const CircularNotchedRectangle(),
+          color: Colors.white,
+          child: Container(
+            margin: const EdgeInsets.only(left: 12.0, right: 12.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                IconButton(
+                  onPressed: () {},
+                  iconSize: 27.0,
+                  icon: const Icon(
+                    Icons.camera_alt,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    widget.onChangeRotating(true);
+                    print('1');
+                    setState(() {});
+                    _rotateImage(widget.listPictureHandle[widget.index - 1], 90);
+                  },
+                  iconSize: 27.0,
+                  icon: const Icon(
+                    Icons.rotate_left,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    widget.onChangeRotating(true);
+                    setState(() {});
+                    print('1');
+                    _rotateImage(widget.listPictureHandle[widget.index - 1], -90);
+                  },
+                  iconSize: 27.0,
+                  icon: const Icon(
+                    Icons.rotate_right,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {},
+                  iconSize: 27.0,
+                  icon: const Icon(
+                    Icons.select_all,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    context
+                        .read<CameraPictureViewModel>()
+                        .add(CropImageEvent( image: widget.listPictureHandle, points: []));
+                  },
+                  iconSize: 27.0,
+                  icon: const Icon(
+                    Icons.check,
+                  ),
+                ),
+              ],
             ),
-            IconButton(
-              onPressed: () {
-                widget.onChangeRotating(true);
-                print('1');
-                setState(() {});
-                _rotateImage(widget.listPictureHandle[widget.index - 1], 90);
-              },
-              iconSize: 27.0,
-              icon: const Icon(
-                Icons.rotate_left,
-              ),
-            ),
-            IconButton(
-              onPressed: () {
-                widget.onChangeRotating(true);
-                setState(() {});
-                print('1');
-                _rotateImage(widget.listPictureHandle[widget.index - 1], -90);
-              },
-              iconSize: 27.0,
-              icon: const Icon(
-                Icons.rotate_right,
-              ),
-            ),
-            IconButton(
-              onPressed: () {},
-              iconSize: 27.0,
-              icon: const Icon(
-                Icons.select_all,
-              ),
-            ),
-            IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              iconSize: 27.0,
-              icon: const Icon(
-                Icons.check,
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      }
     );
   }
 

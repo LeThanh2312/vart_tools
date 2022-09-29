@@ -81,6 +81,26 @@ public class CVCore {
         return byteArray;
     }
 
+    // GrayScale Image
+    @SuppressLint("MissingPermission")
+    public byte[] grayScale(byte[] byteData) {
+        byte[] byteArray = new byte[0];
+        try {
+            Mat dst = new Mat();
+            // Decode image from input byte array
+            Mat src = Imgcodecs.imdecode(new MatOfByte(byteData), Imgcodecs.IMREAD_UNCHANGED);
+            Imgproc.cvtColor(src, dst, Imgproc.COLOR_RGB2GRAY);
+            // instantiating an empty MatOfByte class
+            MatOfByte matOfByte = new MatOfByte();
+            // Converting the Mat object to MatOfByte
+            Imgcodecs.imencode(".jpg", dst, matOfByte);
+            byteArray = matOfByte.toArray();
+        } catch (Exception e) {
+            System.out.println("OpenCV Error: " + e.toString());
+        }
+        return byteArray;
+    }
+
     // Rotate Image
     @SuppressLint("MissingPermission")
     public byte[] rotate(byte[] byteData, int angle) {
@@ -131,26 +151,6 @@ public class CVCore {
                 // following: Imgproc.warpAffine(src, dst,
                 // rotMat, src.size());
             }
-            // instantiating an empty MatOfByte class
-            MatOfByte matOfByte = new MatOfByte();
-            // Converting the Mat object to MatOfByte
-            Imgcodecs.imencode(".jpg", dst, matOfByte);
-            byteArray = matOfByte.toArray();
-        } catch (Exception e) {
-            System.out.println("OpenCV Error: " + e.toString());
-        }
-        return byteArray;
-    }
-
-    // Rotate Image
-    @SuppressLint("MissingPermission")
-    public byte[] grayScale(byte[] byteData) {
-        byte[] byteArray = new byte[0];
-        try {
-            Mat dst = new Mat();
-            // Decode image from input byte array
-            Mat src = Imgcodecs.imdecode(new MatOfByte(byteData), Imgcodecs.IMREAD_UNCHANGED);
-            Imgproc.cvtColor(src, dst, Imgproc.COLOR_RGB2GRAY);
             // instantiating an empty MatOfByte class
             MatOfByte matOfByte = new MatOfByte();
             // Converting the Mat object to MatOfByte
