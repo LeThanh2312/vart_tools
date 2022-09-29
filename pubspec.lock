@@ -219,6 +219,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  hashcodes:
+    dependency: transitive
+    description:
+      name: hashcodes
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   html:
     dependency: transitive
     description:
@@ -275,6 +282,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.2"
+  image_size_getter:
+    dependency: "direct dev"
+    description:
+      name: image_size_getter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.2"
   intl:
     dependency: "direct main"
     description:
@@ -327,9 +341,9 @@ packages:
   opencv:
     dependency: "direct dev"
     description:
-      name: opencv
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "opencv-1.0.4"
+      relative: true
+    source: path
     version: "1.0.4"
   path:
     dependency: transitive
