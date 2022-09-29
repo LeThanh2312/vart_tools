@@ -71,9 +71,9 @@ class _CropImageWidgetState extends State<CropImageWidget> {
     }
 
     points.add(Offset.zero);
-    points.add(Offset(imgHeightReal, 0));
-    points.add(Offset(imgWidthReal, imgHeightReal));
-    points.add(Offset(0, imgHeightReal));
+    points.add(Offset(imgWidth, 0));
+    points.add(Offset(imgWidth, imgHeight));
+    points.add(Offset(0, imgHeight));
   }
 
   @override
@@ -182,17 +182,17 @@ class _CropImageWidgetState extends State<CropImageWidget> {
             top: widget.width / 2,
             child: IconButton(
               onPressed: () async {
-                print('=== 0x ${((points[0].dx + 3) * scale).toInt()}');
-                print('=== 0y ${((points[0].dy + 3) * scale).toInt()}');
+                print('=== 0x ${((points[0].dx) * scale).toInt()}');
+                print('=== 0y ${((points[0].dy) * scale).toInt()}');
                 //
-                print('=== 1x ${((points[1].dx - 3) * scale).toInt()}');
-                print('=== 1y ${((points[1].dy + 3) * scale).toInt()}');
+                print('=== 1x ${((points[1].dx) * scale).toInt()}');
+                print('=== 1y ${((points[1].dy) * scale).toInt()}');
                 //
-                print('=== 3x ${((points[3].dx - 3) * scale).toInt()}');
-                print('=== 3y ${((points[3].dy - 3) * scale).toInt()}');
+                print('=== 3x ${((points[3].dx) * scale).toInt()}');
+                print('=== 3y ${((points[3].dy) * scale).toInt()}');
                 //
-                print('=== 2x ${((points[2].dx + 3) * scale).toInt()}');
-                print('=== 2y ${((points[2].dy - 3) * scale).toInt()}');
+                print('=== 2x ${((points[2].dx) * scale).toInt()}');
+                print('=== 2y ${((points[2].dy) * scale).toInt()}');
 
 
                 Uint8List res = await ImgProc.warpPerspectiveTransform(
@@ -211,8 +211,8 @@ class _CropImageWidgetState extends State<CropImageWidget> {
                       (points[2].dy * scale).toInt(),
 
                     ],
-                  destinationPoints: [0, 0, 612, 0, 0, 459, 612, 459],
-                  outputSize: [612, 459],
+                  destinationPoints: [0, 0, 720, 0, 0, 1280, 720, 1280],
+                  outputSize: [1280, 720],
                     // sourcePoints: [113, 137, 260, 137, 138, 379, 271, 340],
                     // sourcePoints: [7, 7, 712, 7, -7, 1272, 727, 1272],
                     // destinationPoints: [0, 0, 612, 0, 0, 459, 612, 459],
