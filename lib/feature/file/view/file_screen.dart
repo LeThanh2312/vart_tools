@@ -89,25 +89,12 @@ class _FileScreenState extends State<FileScreen> {
       ),
     ];
     files = context.read<FilesViewModel>().state.files;
+    print('file data init : ${files}');
     if (files.isEmpty) {
       context.read<FilesViewModel>().add(AddFilesEvent(files: filesData));
     }
     context.read<FilesViewModel>().add(LoadFilesEvent());
   }
-
-  // void createDbAndInsertData(List<FileModel> files) async {
-  //   try {
-  //     int i = 0;
-  //     for (FileModel file in files) {
-  //       print(file.dateCreate);
-  //       print(file.dateUpdate);
-  //       await FileProvider().insertFile(file);
-  //     }
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  //   context.read<FilesViewModel>().add(LoadFilesEvent());
-  // }
 
   bool checkIdExistIdSelected(int id) {
     if (_idSelected.contains(id)) {
@@ -239,7 +226,8 @@ class _FileScreenState extends State<FileScreen> {
             child: BlocBuilder<FilesViewModel, FilesViewState>(
               builder: (context, state) {
                 if (state.isSuccess) {
-                  files = state.files;
+                  if(state.files.isNotEmpty){
+                    files = state.files;
                   return ListView(
                       children: state.groupByDateUpdate.keys.map((key) {
                     final value = state.groupByDateUpdate[key];
@@ -328,6 +316,33 @@ class _FileScreenState extends State<FileScreen> {
                       ],
                     );
                   }).toList());
+                  }else {
+                    return SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const SizedBox(
+                              height: 100,
+                            ),
+                            Image.asset(
+                              ResAssets.icons.listFileEmpty, 
+                              height: 200,
+                              width: 200,
+                              fit: BoxFit.fill,
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            const Text(
+                              "Chưa có file trong mục này",
+                              style: ResStyle.blur_Text,
+                            ),
+                          ],
+                        ),
+                      );
+                  }
+                  
                 } else if (state.isFailure) {
                   return Text(state.message);
                 } else {
@@ -343,5 +358,3 @@ class _FileScreenState extends State<FileScreen> {
     ));
   }
 }
-
-typedef ClearIdSelectedCallback = void Function();

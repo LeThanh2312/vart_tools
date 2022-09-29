@@ -33,6 +33,7 @@ class FileFavouriteViewModel
     emit(LoadingDataFileFavouriteState());
     try {
       state.files = await FileProvider().getFilesFavourite();
+      print(state.files.length);
       emit(LoadingDataFileFavouriteSuccessState(files: state.files));
     } catch (e) {
       print(e);

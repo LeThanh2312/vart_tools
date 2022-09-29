@@ -133,9 +133,6 @@ class FileProvider {
   Future<void> insertFile(FileModel file) async {
     final db = await initializeDB();
     try {
-      print(file.dateCreate);
-      print(file.dateUpdate);
-      print(file.toMap());
       var rs = await db.insert(
         'files',
         file.toMap(),
@@ -161,8 +158,6 @@ class FileProvider {
 
   Future<void> updateFile(FileModel file) async {
     final db = await initializeDB();
-    print(DateTime.now().toString());
-    print(file.toMap());
     await db.update(
       'files',
       file.toMap(),

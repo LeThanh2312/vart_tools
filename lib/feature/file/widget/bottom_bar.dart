@@ -51,10 +51,14 @@ class _BottomBarFileDetailState extends State<BottomBarFileDetail> {
           ),
           InkWell(
             onTap: () {
-              _favouriteFile();
               setState(() {
-                isFavourite = !isFavourite;
+                if(isFavourite) {
+                  isFavourite = false;
+                }else{
+                  isFavourite = true;
+                }
               });
+              _favouriteFile();
             },
             child: isFavourite
                 ? const Icon(

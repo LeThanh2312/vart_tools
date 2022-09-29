@@ -15,6 +15,7 @@ class AssetIcons {
   final String iconShare = "$iconpath/icon_share.png";
   final String iconDelete = "$iconpath/icon_delete.png";
   final String iconFavourite = "$iconpath/icon_favourite.png";
+  final String listFileEmpty = "$iconpath/list_file_empty.png";
 }
 
 class AssetImages {

@@ -57,12 +57,6 @@ class _FolderScreenState extends State<FolderScreen> {
                                       .read<RedirectFileScreenViewModel>()
                                       .add(RedirectFileScreenEvent(
                                           redirect: true, folder: folder));
-                                  // Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(
-                                  //       builder: (context) =>
-                                  //           const ListTileSelectExample()),
-                                  // );
                                 },
                                 child: FolderItem(folder: folder),
                               ),

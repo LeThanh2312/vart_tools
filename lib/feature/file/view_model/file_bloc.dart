@@ -148,9 +148,13 @@ class FilesViewModel extends Bloc<FileViewEvent, FilesViewState> {
 
   void _favouriteFile(FavouriteFileEvent event, Emitter emit) async {
     try {
+      print(event.isFavourite);
       event.file.isFavourite = event.isFavourite;
       await FileProvider().updateFile(event.file);
       state.files = await FileProvider().getFiles(null);
+      for(FileModel file in state.files){
+        print(file.toMap());
+      }
       emit(state.copyWith(files: state.files));
     } catch (e) {
       emit(state.copyWith(message: "delete folder fail"));
