@@ -14,7 +14,7 @@ class FolderItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(top: 10),
+      margin: const EdgeInsets.all(10),
       child: Row(
         children: [
           SizedBox(
@@ -33,8 +33,8 @@ class FolderItem extends StatelessWidget {
               const SizedBox(
                 height: 5,
               ),
-              Text(
-                  "${DateFormat('dd/MM/yyyy hh:mm').format(DateTime.parse(folder.dateCreate!))}")
+              Text(DateFormat('dd/MM/yyyy hh:mm')
+                  .format(DateTime.parse(folder.dateUpdate!)))
             ],
           )),
           OutlinedButton(

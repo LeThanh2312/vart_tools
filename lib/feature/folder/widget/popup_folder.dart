@@ -38,16 +38,17 @@ class _PopUpFolderState extends State<PopUpFolder> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Center(
-          child: Column(
-        children: [
-          Text(widget.title),
-          Divider(
-            height: 15,
-            thickness: 1,
-            color: AppColors.grayColor,
-          ),
-        ],
-      )),
+        child: Column(
+          children: [
+            Text(widget.title),
+            Divider(
+              height: 15,
+              thickness: 1,
+              color: AppColors.grayColor,
+            ),
+          ],
+        ),
+      ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -115,9 +116,7 @@ class _PopUpFolderState extends State<PopUpFolder> {
                           });
                         } else {
                           if (!_isContain) {
-                            print("vo day");
                             if (widget.folder == null) {
-                              print("add");
                               context.read<FoldersViewModel>().add(
                                     AddFolderEvent(
                                       folder: FolderModel(
@@ -128,7 +127,6 @@ class _PopUpFolderState extends State<PopUpFolder> {
                                     ),
                                   );
                             } else {
-                              print("update");
                               List<FolderModel> folders = await FolderProvider()
                                   .getFolders(widget.folder!.id);
                               FolderModel data = folders.first;
@@ -146,9 +144,6 @@ class _PopUpFolderState extends State<PopUpFolder> {
                         }
                       }
                     : null,
-                // style: ElevatedButton.styleFrom(
-                //   backgroundColor: AppColors.grayColor,
-                // ),
                 child: const Text('Đồng ý'),
               ),
             ],

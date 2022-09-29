@@ -75,8 +75,6 @@ class FolderProvider {
 
   Future<void> insertFolder(FolderModel folder) async {
     final db = await initializeDB();
-    print(folder.toMap());
-
     await db.insert(
       DbFolder.tableName,
       folder.toMap(),

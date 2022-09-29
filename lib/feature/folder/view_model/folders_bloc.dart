@@ -35,13 +35,15 @@ class FoldersState {
       case SortType.byZA:
         folders.sort((f1, f2) => _compareByAZ(f2, f1));
         break;
+      case SortType.drag:
+        break;
     }
     return folders;
   }
 
   int _compareByDate(FolderModel f1, FolderModel f2) {
-    return DateTime.parse(f1.dateCreate!)
-        .compareTo(DateTime.parse(f2.dateCreate!));
+    return DateTime.parse(f1.dateUpdate!)
+        .compareTo(DateTime.parse(f2.dateUpdate!));
   }
 
   int _compareByAZ(FolderModel f1, FolderModel f2) {
@@ -67,7 +69,7 @@ class FoldersState {
   bool get isFailure => status == FolderStatus.failure;
 }
 
-enum SortType { byCreatedDateACS, byCreatedDateDESC, byAZ, byZA }
+enum SortType { byCreatedDateACS, byCreatedDateDESC, byAZ, byZA, drag }
 
 class LoadFoldersEvent extends FoldersEvent {}
 
@@ -86,18 +88,6 @@ class RenameFolderEvent extends FoldersEvent {
   RenameFolderEvent({required this.folder});
 }
 
-// class LoadingDataFoldersState extends FoldersState {}
-
-// class ErrorLoadDataFoldersState extends FoldersState {
-//   String message;
-//   ErrorLoadDataFoldersState({required this.message});
-// }
-
-// class SuccessLoadDataFoldersState extends FoldersState {
-//   final List<FolderModel> folders;
-//   SuccessLoadDataFoldersState({required this.folders});
-// }
-
 class FavouriteFolderEvent extends FoldersEvent {
   FolderModel folder;
   int isFavourite;
@@ -109,6 +99,12 @@ class SortFolderEvent extends FoldersEvent {
   SortFolderEvent({required this.type});
 }
 
+class DragSortFolderEvent extends FoldersEvent {
+  int oldIndex;
+  int newIndex;
+  DragSortFolderEvent({required this.oldIndex, required this.newIndex});
+}
+
 class FoldersViewModel extends Bloc<FoldersEvent, FoldersState> {
   FoldersViewModel()
       : super(FoldersState().copyWith(status: FolderStatus.initialize)) {
@@ -118,6 +114,7 @@ class FoldersViewModel extends Bloc<FoldersEvent, FoldersState> {
     on<DeleteFolderEvent>(_deleteFolder);
     on<FavouriteFolderEvent>(_favouriteFolder);
     on<SortFolderEvent>(_sortFolders);
+    on<DragSortFolderEvent>(_dragSortFolder);
   }
 
   void _loadDataFolders(FoldersEvent event, Emitter emit) async {
@@ -135,7 +132,7 @@ class FoldersViewModel extends Bloc<FoldersEvent, FoldersState> {
   void _addFolder(AddFolderEvent event, Emitter emit) async {
     try {
       await FolderProvider().insertFolder(event.folder);
-      state.folders.add(event.folder);
+      state.folders = await FolderProvider().getFolders(null);
       emit(state.copyWith(folders: state.filterFolder));
     } catch (e) {
       emit(state.copyWith(message: "add folder error"));
@@ -181,5 +178,16 @@ class FoldersViewModel extends Bloc<FoldersEvent, FoldersState> {
     } catch (e) {
       emit(state.copyWith(message: "loading error!"));
     }
+  }
+
+  void _dragSortFolder(DragSortFolderEvent event, Emitter emit) async {
+    if (event.newIndex > event.oldIndex) {
+      event.newIndex -= 1;
+    }
+
+    final tmp = state.folders[event.oldIndex];
+    state.folders[event.oldIndex] = state.folders[event.newIndex];
+    state.folders[event.newIndex] = tmp;
+    emit(state.copyWith(folders: state.folders, sortType: SortType.drag));
   }
 }

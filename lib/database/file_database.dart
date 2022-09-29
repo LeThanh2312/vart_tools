@@ -1,58 +1,66 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:vart_tools/res/strings.dart';
+import 'package:intl/intl.dart';
 
-class FileDatabase {
-  final String id;
-  final String name;
-  final String image;
-  final DateTime? dateCreate;
-  final DateTime? dateUpdate;
-  final int? size;
-  final String? format;
-  final String? idFolder;
-  final String? link;
-  final String? tag;
-  final bool? favourite;
+class FileModel {
+  final int? id;
+  String name;
+  String? image;
+  String? dateCreate;
+  String? dateUpdate;
+  int? size;
+  String? format;
+  int idFolder;
+  String? link;
+  String? tag;
+  int? isFavourite;
+  int? isDelete;
 
-  FileDatabase({
-    required this.id,
+  FileModel({
+    this.id,
     required this.name,
-    required this.image,
+    this.image,
     this.dateCreate,
     this.dateUpdate,
     this.size,
     this.format,
-    this.idFolder,
+    required this.idFolder,
     this.link,
     this.tag,
-    this.favourite,
+    this.isFavourite,
+    this.isDelete,
   });
 
-  FileDatabase.fromMap(Map<String, dynamic> res)
-      : id = res["id"],
-        name = res["name"],
-        image = res["image"],
-        dateCreate = res["date_create"],
-        dateUpdate = res["date_update"],
-        link = res["link"],
-        size = res["size"],
-        format = res["format"],
-        idFolder = res["idFolder"],
-        tag = res["tag"],
-        favourite = res["favourite"];
+  FileModel.fromMap(Map<String, dynamic> res)
+      : id = res[DbFile.id],
+        name = res[DbFile.name],
+        image = res[DbFile.image],
+        dateCreate = res[DbFile.dateCreate],
+        dateUpdate = res[DbFile.dateUpdate],
+        link = res[DbFile.link],
+        size = res[DbFile.size],
+        format = res[DbFile.format],
+        idFolder = res[DbFile.idFolder],
+        tag = res[DbFile.tag],
+        isFavourite = res[DbFile.isFavourite],
+        isDelete = res[DbFile.isDelete];
 
   Map<String, Object?> toMap() {
+    String datetime_tmp = DateTime.now().toString();
     return {
-      'id': id,
-      'image': name,
-      'date_create': dateCreate,
-      'date_update': dateUpdate,
-      'link': link,
-      'size': size,
-      'format': format,
-      'idFolder': idFolder,
-      'tag': tag,
-      'favourite': favourite,
+      DbFile.id: id,
+      DbFile.name: name,
+      DbFile.image: image ??= null,
+      DbFile.dateCreate: dateCreate ??= datetime_tmp,
+      DbFile.dateUpdate: dateUpdate ??= datetime_tmp,
+      DbFile.link: link ??= null,
+      DbFile.size: size ??= null,
+      DbFile.format: format ??= null,
+      DbFile.idFolder: idFolder,
+      DbFile.tag: tag ??= null,
+      DbFile.isFavourite: isFavourite ??= 0,
+      DbFile.isDelete: isDelete ??= 0,
     };
   }
 }
@@ -63,36 +71,92 @@ class FileProvider {
   Future<Database> initializeDB() async {
     String path = await getDatabasesPath();
     return openDatabase(
-      join(path, 'file.db'),
+      join(path, 'files.db'),
       onCreate: (database, version) async {
         await database.execute(
-          "CREATE TABLE file(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL)",
+          """CREATE TABLE files(
+            id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
+            name TEXT NOT NULL,
+            image TEXT,
+            date_create TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            date_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            link TEXT,
+            size SMALLINT,
+            format CHARACTER(20) NOT NULL,
+            idFolder INTEGER NOT NULL,
+            tag TEXT,
+            is_favourite TINYINT DEFAULT 0,
+            is_delete TINYINT DEFAULT 0,
+            FOREIGN KEY (idFolder) REFERENCES folders (id)
+            )""",
         );
       },
       version: 1,
     );
   }
 
-  Future<void> insertFile(FileDatabase file) async {
+  Future<List<FileModel>> getFiles(int? id) async {
     final db = await initializeDB();
+    final List<Map<String, dynamic>> maps;
+    if (id == null) {
+      maps = await db.query(
+        DbFile.tableName,
+        where: 'is_delete = ?',
+        whereArgs: ['0'],
+      );
+    } else {
+      maps = await db.query(
+        DbFile.tableName,
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+    }
 
-    await db.insert(
-      'files',
-      file.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    return List.generate(maps.length, (i) {
+      return FileModel(
+        id: maps[i][DbFile.id],
+        name: maps[i][DbFile.name],
+        image: maps[i][DbFile.image],
+        dateCreate: maps[i][DbFile.dateCreate],
+        dateUpdate: maps[i][DbFile.dateUpdate],
+        link: maps[i][DbFile.link],
+        size: maps[i][DbFile.size],
+        format: maps[i][DbFile.format],
+        idFolder: maps[i][DbFile.idFolder],
+        tag: maps[i][DbFile.tag],
+        isFavourite: maps[i][DbFile.isFavourite],
+        isDelete: maps[i][DbFile.isDelete],
+      );
+    });
   }
 
-  Future<void> deleteFile(int id) async {
+  Future<void> insertFile(FileModel file) async {
     final db = await initializeDB();
-    await db.delete(
-      'files',
-      where: "id = ?",
-      whereArgs: [id],
-    );
+    try {
+      var rs = await db.insert(
+        'files',
+        file.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    } catch (e) {
+      print(e);
+    }
   }
 
-  Future<void> updateFile(FileDatabase file) async {
+  Future<void> deleteFile(List<int?> ids) async {
+    var data = {DbFile.isDelete: '1'};
+    final db = await initializeDB();
+    for (int? id in ids) {
+      await db.update(
+        DbFile.tableName,
+        data,
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+    }
+  }
+
+  Future<void> updateFile(FileModel file) async {
     final db = await initializeDB();
     await db.update(
       'files',
@@ -100,6 +164,31 @@ class FileProvider {
       where: 'id = ?',
       whereArgs: [file.id],
     );
+  }
+
+  Future<List<FileModel>> getFilesFavourite() async {
+    final db = await initializeDB();
+    final List<Map<String, dynamic>> maps = await db.query(
+      DbFile.tableName,
+      where: 'is_favourite = ?',
+      whereArgs: ['1'],
+    );
+    return List.generate(maps.length, (i) {
+      return FileModel(
+        id: maps[i][DbFile.id],
+        name: maps[i][DbFile.name],
+        image: maps[i][DbFile.image],
+        dateCreate: maps[i][DbFile.dateCreate],
+        dateUpdate: maps[i][DbFile.dateUpdate],
+        link: maps[i][DbFile.link],
+        size: maps[i][DbFile.size],
+        format: maps[i][DbFile.format],
+        idFolder: maps[i][DbFile.idFolder],
+        tag: maps[i][DbFile.tag],
+        isFavourite: maps[i][DbFile.isFavourite],
+        isDelete: maps[i][DbFile.isDelete],
+      );
+    });
   }
 
   Future close() async => db.close();

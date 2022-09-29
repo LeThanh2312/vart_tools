@@ -18,4 +18,11 @@ class ResStyle {
     color: Colors.black,
     fontWeight: FontWeight.bold,
   );
+  static const blur_Text = TextStyle(
+    fontSize: 15,
+    color: Colors.grey,
+    fontWeight: FontWeight.w800,
+  );
+  static const fileDetailText =
+      TextStyle(fontSize: 15, fontWeight: FontWeight.w300);
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:vart_tools/feature/file/view/file_screen.dart';
+import 'package:vart_tools/feature/file/view_model/file_bloc.dart';
 import 'package:vart_tools/feature/folder/view/folder_favourite_screen.dart';
 import 'package:vart_tools/feature/folder/view/folder_screen.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_favourite_bloc.dart';
@@ -8,7 +10,6 @@ import '../../camera/view/camera_screen.dart';
 import '../../home/view/home_screen.dart';
 import '../../setting/settings_screen.dart';
 import 'package:camera/camera.dart';
-
 
 class BottomNavigationBarMainScreen extends StatefulWidget {
   const BottomNavigationBarMainScreen({Key? key}) : super(key: key);
@@ -21,6 +22,14 @@ class BottomNavigationBarMainScreen extends StatefulWidget {
 class _BottomNavigationBarMainScreenState
     extends State<BottomNavigationBarMainScreen> {
   TabItem _currentTab = TabItem.home;
+  late bool fileScreenRedirect;
+
+  @override
+  void initState() {
+    super.initState();
+    fileScreenRedirect =
+        context.read<RedirectFileScreenViewModel>().state.redirect;
+  }
 
   void updateTabSelection(TabItem tabItem) {
     setState(() {
@@ -43,7 +52,20 @@ class _BottomNavigationBarMainScreenState
           ),
           Offstage(
             offstage: _currentTab != TabItem.file,
-            child: const FolderScreen(),
+            child: BlocBuilder<RedirectFileScreenViewModel,
+                OnRedirectFileScreenState>(
+              builder: (context, state) {
+                if (state.redirect) {
+                  return FileScreen(
+                      folder: context
+                          .read<RedirectFileScreenViewModel>()
+                          .state
+                          .folder);
+                } else {
+                  return const FolderScreen();
+                }
+              },
+            ),
           ),
           Offstage(
             offstage: _currentTab != TabItem.favourite,
