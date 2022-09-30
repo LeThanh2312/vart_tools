@@ -5,9 +5,12 @@ import 'package:vart_tools/res/font_size.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PopUpConfirmDeleteMulpliteFile extends StatefulWidget {
-  final VoidCallback onClear;
+  // final VoidCallback onClear;
   const PopUpConfirmDeleteMulpliteFile(
-      {Key? key, required this.idFiles, required this.onClear, required this.folderId})
+      {Key? key,
+      required this.idFiles,
+      // required this.onClear,
+      required this.folderId})
       : super(key: key);
   final List<int?> idFiles;
   final int folderId;
@@ -19,7 +22,6 @@ class PopUpConfirmDeleteMulpliteFile extends StatefulWidget {
 
 class _PopUpConfirmDeleteMulpliteFileState
     extends State<PopUpConfirmDeleteMulpliteFile> {
-  
   // Future<bool> deleteDate(int id) async {
   //   await context.read<FilesViewModel>().add(DeleteMulpliteEvent(fileId: widget.idFiles, folderId: widget.folderId));
   //   if(data.isEmpty){
@@ -28,6 +30,12 @@ class _PopUpConfirmDeleteMulpliteFileState
   //     return false;
   //   }
   // }
+  Future<bool> _deleteData() async {
+    context.read<FilesViewModel>().add(
+        DeleteMulpliteEvent(fileId: widget.idFiles, folderId: widget.folderId));
+    return Future.value(true);
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -66,12 +74,9 @@ class _PopUpConfirmDeleteMulpliteFileState
                     style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.grayColor),
                     onPressed: () {
-                      context
-                          .read<FilesViewModel>()
-                          .add(DeleteMulpliteEvent(fileId: widget.idFiles, folderId: widget.folderId));
+                      context.read<FilesViewModel>().add(DeleteMulpliteEvent(
+                          fileId: widget.idFiles, folderId: widget.folderId));
                       Navigator.of(context).pop();
-                      Future.delayed(const Duration(milliseconds: 100),() => widget.onClear());
-                      // widget.onClear();
                     },
                     child: const Text(
                       "Đồng Ý",

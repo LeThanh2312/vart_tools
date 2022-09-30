@@ -37,7 +37,9 @@ class _BottomNavigationBarMainScreenState
       _currentTab = tabItem;
       if (_currentTab == TabItem.favourite) {
         context.read<FolderFavouriteViewModel>().add(LoadDataFavouriteEvent());
-        context.read<FileFavouriteViewModel>().add(LoadDataFilesFavouriteEvent());
+        context
+            .read<FileFavouriteViewModel>()
+            .add(LoadDataFilesFavouriteEvent());
       }
     });
   }

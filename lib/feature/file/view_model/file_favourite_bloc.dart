@@ -2,13 +2,14 @@ import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/database/folder_database.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-enum FileFavouriteStatus { loading, success, failure, initialize } 
+enum FileFavouriteStatus { loading, success, failure, initialize }
 
 class FileFavouriteState {
   List<FileModel> files;
   FileFavouriteStatus status;
   String message = '';
-  FileFavouriteState({this.files = const [],required this.status, String? message});
+  FileFavouriteState(
+      {this.files = const [], required this.status, String? message});
 
   FileFavouriteState copyWith({
     List<FileModel>? files,
@@ -33,7 +34,8 @@ class LoadDataFilesFavouriteEvent extends FileFavouriteEvent {}
 
 class FileFavouriteViewModel
     extends Bloc<FileFavouriteEvent, FileFavouriteState> {
-  FileFavouriteViewModel() : super(FileFavouriteState(status: FileFavouriteStatus.initialize)) {
+  FileFavouriteViewModel()
+      : super(FileFavouriteState(status: FileFavouriteStatus.initialize)) {
     on<LoadDataFilesFavouriteEvent>(_loadDataFilesFavourite);
   }
 
@@ -41,8 +43,8 @@ class FileFavouriteViewModel
     emit(state.copyWith(status: FileFavouriteStatus.loading));
     try {
       state.files = await FileProvider().getFilesFavourite();
-      print("get data ok");
-      emit(state.copyWith(files: state.files, status: FileFavouriteStatus.success));
+      emit(state.copyWith(
+          files: state.files, status: FileFavouriteStatus.success));
     } catch (e) {
       print(e);
       emit(state.copyWith(status: FileFavouriteStatus.failure));

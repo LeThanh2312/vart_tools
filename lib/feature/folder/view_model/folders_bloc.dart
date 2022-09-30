@@ -165,7 +165,8 @@ class FoldersViewModel extends Bloc<FoldersEvent, FoldersState> {
       event.folder.favourite = event.isFavourite;
       await FolderProvider().update(event.folder);
       state.folders = await FolderProvider().getFolders(null);
-      emit(state.copyWith(folders: state.folders, status: FolderStatus.success));
+      emit(
+          state.copyWith(folders: state.folders, status: FolderStatus.success));
     } catch (e) {
       emit(state.copyWith(message: "delete folder fail"));
     }

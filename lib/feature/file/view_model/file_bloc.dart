@@ -53,7 +53,7 @@ class RedirectFileScreenViewModel
 
 abstract class FileViewEvent {}
 
-enum FilesStatus { loading, success, failure, initialize }
+enum FilesStatus { loading, success, failure, initialize, deleteSuccess }
 
 class FilesViewState {
   List<FileModel> files = [];
@@ -88,6 +88,7 @@ class FilesViewState {
   bool get isLoading => status == FilesStatus.loading;
   bool get isSuccess => status == FilesStatus.success;
   bool get isFailure => status == FilesStatus.failure;
+  bool get isDeleteSucees => status == FilesStatus.deleteSuccess;
 }
 
 class LoadFilesEvent extends FileViewEvent {
@@ -98,7 +99,7 @@ class LoadFilesEvent extends FileViewEvent {
 class AddFilesEvent extends FileViewEvent {
   List<FileModel> files;
   int folderId;
-  AddFilesEvent({required this.files,required this.folderId});
+  AddFilesEvent({required this.files, required this.folderId});
 }
 
 class DeleteFileEvent extends FileViewEvent {
@@ -162,15 +163,16 @@ class FilesViewModel extends Bloc<FileViewEvent, FilesViewState> {
     }
   }
 
-  void _deleteMulpliteFile(DeleteMulpliteEvent event, Emitter emit) async {
+  Future<void> _deleteMulpliteFile(
+      DeleteMulpliteEvent event, Emitter emit) async {
     try {
-      print("delete file");
-      print(event.fileId);
-      print(event.folderId);
+      print("delete");
       await FileProvider().deleteFile(event.fileId);
       state.files = await FileProvider().getFiles(event.folderId);
-      print(state.files.length);
-      emit(state.copyWith(files: state.files, status: FilesStatus.success));
+      print("delete1");
+      emit(state.copyWith(
+          files: state.files, status: FilesStatus.deleteSuccess));
+      print("delete ok");
     } catch (e) {
       emit(state.copyWith(message: "delete folder fail"));
     }
