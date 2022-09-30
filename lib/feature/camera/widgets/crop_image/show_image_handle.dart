@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:sizer/sizer.dart';
-import 'package:vart_tools/feature/camera/widgets/crop_image/crop_image_widget.dart';
+import 'crop_image_widget.dart';
 
 class ShowImageHandle extends StatefulWidget {
   const ShowImageHandle({
@@ -21,7 +20,6 @@ class ShowImageHandle extends StatefulWidget {
 }
 
 class _ShowImageHandleState extends State<ShowImageHandle> {
-  late Rect _rect;
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +40,7 @@ class _ShowImageHandleState extends State<ShowImageHandle> {
                     image: widget.listPictureHandle[widget.index - 1],
                     height: MediaQuery.of(context).size.height - 230,
                     width: MediaQuery.of(context).size.width,
+                    index: widget.index - 1,
                   ),
           ),
           Positioned(

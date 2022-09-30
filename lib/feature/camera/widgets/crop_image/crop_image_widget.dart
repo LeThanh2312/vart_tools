@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:typed_data';
 import 'package:image_size_getter/image_size_getter.dart' as imgsize;
 import 'package:opencv/opencv.dart';
-import 'package:vart_tools/feature/camera/view_model/camera_bloc.dart';
-import 'package:vart_tools/feature/camera/widgets/crop_image/show_image_transform.dart';
+import 'package:vart_tools/feature/camera/view_model/crop_picture_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 double cropPointSize = 12;
@@ -12,12 +11,14 @@ class CropImageWidget extends StatefulWidget {
   final Uint8List image;
   final double height;
   final double width;
+  final int index;
 
   const CropImageWidget({
     Key? key,
     required this.height,
     required this.width,
     required this.image,
+    required this.index,
   }) : super(key: key);
 
   @override
@@ -71,14 +72,15 @@ class _CropImageWidgetState extends State<CropImageWidget> {
 
     scale = imgHeightReal / imgHeight;
 
-    print(
-        "scale: $scale, real-height: $imgHeightReal, image-height: $imgHeight");
+    print("scale: $scale, real-height: $imgHeightReal, image-height: $imgHeight");
     print("scale: $scale, real-height: $imgWidthReal, image-height: $imgWidth");
 
     points.add(Offset.zero);
     points.add(Offset(imgWidth, 0));
     points.add(Offset(imgWidth, imgHeight));
     points.add(Offset(0, imgHeight));
+
+    context.read<CameraPictureViewModel>().add(GetPointsCropEvent(points: [points[0],points[1],points[2],points[3]], scale: scale, index: 0));
   }
 
   @override
@@ -95,8 +97,8 @@ class _CropImageWidgetState extends State<CropImageWidget> {
     setState(() {
       points[index] = newPoint;
     });
-
-    context.read<CameraPictureViewModel>().add(CropImageEvent(points: [], image: []));
+    print(' ====== index ${widget.index.toString()}');
+    context.read<CameraPictureViewModel>().add(GetPointsCropEvent(points: [points[0],points[1],points[2],points[3]], scale: scale, index: 0));
   }
 
   @override
@@ -190,42 +192,7 @@ class _CropImageWidgetState extends State<CropImageWidget> {
                   ),
                 ),
               ),
-              Positioned(
-                left: widget.height / 2,
-                top: widget.width / 2,
-                child: IconButton(
-                  onPressed: () async {
-                    if (image == null) return;
-                    Uint8List res = await ImgProc.warpPerspectiveTransform(
-                      image!,
-                      sourcePoints: [
-                        (points[0].dx * scale).toInt(),
-                        (points[0].dy * scale).toInt(),
-                        //
-                        (points[1].dx * scale).toInt(),
-                        (points[1].dy * scale).toInt(),
-                        //
-                        (points[3].dx * scale).toInt(),
-                        (points[3].dy * scale).toInt(),
-                        //
-                        (points[2].dx * scale).toInt(),
-                        (points[2].dy * scale).toInt(),
-                      ],
-                      destinationPoints: [0, 0, 300, 0, 0, 400, 300, 400],
-                      outputSize: [300, 400],
-                    ) as Uint8List;
-                    // res = await ImgProc.rotate(res, 90);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => ShowImageTransform(
-                                  image: res,
-                                )));
-                  },
-                  icon: const Icon(Icons.add_circle),
-                ),
-              ),
-            ],
+              ],
           ),
         ),
       ),
