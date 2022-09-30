@@ -95,22 +95,15 @@ class FileProvider {
     );
   }
 
-  Future<List<FileModel>> getFiles(int? id) async {
+  Future<List<FileModel>> getFiles(int folderId) async {
+    print(folderId);
     final db = await initializeDB();
     final List<Map<String, dynamic>> maps;
-    if (id == null) {
-      maps = await db.query(
-        DbFile.tableName,
-        where: 'is_delete = ?',
-        whereArgs: ['0'],
-      );
-    } else {
-      maps = await db.query(
-        DbFile.tableName,
-        where: 'id = ?',
-        whereArgs: [id],
-      );
-    }
+    maps = await db.query(
+      DbFile.tableName,
+      where: 'is_delete = ? and idFolder=?',
+      whereArgs: ['0', folderId],
+    );
 
     return List.generate(maps.length, (i) {
       return FileModel(
@@ -166,11 +159,58 @@ class FileProvider {
     );
   }
 
+  Future<void> permanentlyDeletefiles(List<int> ids) async {
+    final db = await initializeDB();
+    await db.delete(
+      DbFile.tableName,
+      where: "id IN (${List.filled(ids.length, '?').join(',')})",
+      whereArgs: ids,
+    );
+  }
+
+  Future<void> recoveryFiles(List<int> ids) async {
+    final db = await initializeDB();
+    final data = {"is_delete": '0'};
+    for (int id in ids) {
+      final result = await db.update(
+        DbFile.tableName,
+        data,
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+    }
+  }
+
   Future<List<FileModel>> getFilesFavourite() async {
     final db = await initializeDB();
     final List<Map<String, dynamic>> maps = await db.query(
       DbFile.tableName,
-      where: 'is_favourite = ?',
+      where: 'is_favourite = ? and is_delete = ?',
+      whereArgs: ['1', '0'],
+    );
+    return List.generate(maps.length, (i) {
+      return FileModel(
+        id: maps[i][DbFile.id],
+        name: maps[i][DbFile.name],
+        image: maps[i][DbFile.image],
+        dateCreate: maps[i][DbFile.dateCreate],
+        dateUpdate: maps[i][DbFile.dateUpdate],
+        link: maps[i][DbFile.link],
+        size: maps[i][DbFile.size],
+        format: maps[i][DbFile.format],
+        idFolder: maps[i][DbFile.idFolder],
+        tag: maps[i][DbFile.tag],
+        isFavourite: maps[i][DbFile.isFavourite],
+        isDelete: maps[i][DbFile.isDelete],
+      );
+    });
+  }
+
+  Future<List<FileModel>> getFilesTrash() async {
+    final db = await initializeDB();
+    final List<Map<String, dynamic>> maps = await db.query(
+      DbFile.tableName,
+      where: 'is_delete = ?',
       whereArgs: ['1'],
     );
     return List.generate(maps.length, (i) {
@@ -192,4 +232,20 @@ class FileProvider {
   }
 
   Future close() async => db.close();
+}
+
+enum IdType { folder, file }
+
+class SelectIdTrashModel {
+  final int id;
+  final IdType type;
+  SelectIdTrashModel({required this.id, required this.type});
+
+  Map<String, Object?> toMap() {
+    String datetime_tmp = DateTime.now().toString();
+    return {
+      "id": id,
+      "type": type,
+    };
+  }
 }

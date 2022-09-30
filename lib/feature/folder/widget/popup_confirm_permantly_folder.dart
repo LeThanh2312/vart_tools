@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:vart_tools/database/folder_database.dart';
-import 'package:vart_tools/feature/folder/view_model/folders_bloc.dart';
+import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_trash_bloc.dart';
 import 'package:vart_tools/res/app_color.dart';
 import 'package:vart_tools/res/font_size.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PopupConfirmPermantlyFolder extends StatelessWidget {
-  const PopupConfirmPermantlyFolder({Key? key, required this.selectedFolderIds})
+  const PopupConfirmPermantlyFolder({Key? key, required this.selectedIdObject})
       : super(key: key);
-  final List<int> selectedFolderIds;
+  final List<SelectIdTrashModel> selectedIdObject;
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +50,7 @@ class PopupConfirmPermantlyFolder extends StatelessWidget {
                     onPressed: () {
                       context.read<FolderTrashViewModel>().add(
                           PermanentlyDeleteEvent(
-                              selectedIds: selectedFolderIds));
+                              selectedIdsObject: selectedIdObject));
                       Navigator.of(context).pop();
                     },
                     child: const Text(

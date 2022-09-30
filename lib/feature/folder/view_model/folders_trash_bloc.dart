@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/database/folder_database.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_bloc.dart';
 
@@ -11,42 +12,46 @@ enum FolderRecoverStatus { processing, success, failure, initialize }
 class LoadFolderTrashEvent extends FolderTrashEvent {}
 
 class ToggleSelectFolderTrashEvent extends FolderTrashEvent {
-  final FolderModel folder;
-  ToggleSelectFolderTrashEvent({required this.folder});
+  final SelectIdTrashModel selectedIdsObject;
+  ToggleSelectFolderTrashEvent({required this.selectedIdsObject});
 }
 
 class PermanentlyDeleteEvent extends FolderTrashEvent {
-  final List<int> selectedIds;
-  PermanentlyDeleteEvent({required this.selectedIds});
+  final List<SelectIdTrashModel> selectedIdsObject;
+  PermanentlyDeleteEvent({required this.selectedIdsObject});
 }
 
 class RecoverFolderEvent extends FolderTrashEvent {
-  final List<int> selectedIds;
-  RecoverFolderEvent({required this.selectedIds});
+  final List<SelectIdTrashModel> selectedIdsObject;
+  RecoverFolderEvent({required this.selectedIdsObject});
 }
 
 class FolderTrashState {
   final List<FolderModel> folders;
-  final List<int> selectedFolderIds;
+  final List<FileModel> files;
+  final List<SelectIdTrashModel> selectedIdObject;
   final FolderTrashStatus status;
   final FolderRecoverStatus recoverStatus;
 
   FolderTrashState({
+    required this.files,
     required this.folders,
-    required this.selectedFolderIds,
+    required this.selectedIdObject,
     this.recoverStatus = FolderRecoverStatus.initialize,
     this.status = FolderTrashStatus.initialize,
   });
 
   FolderTrashState copyWith({
     List<FolderModel>? folders,
-    List<int>? selectedFolderIds,
+    List<FileModel>? files,
+    List<SelectIdTrashModel>? selectedIdObject,
     FolderTrashStatus? status,
     FolderRecoverStatus? recoverStatus,
   }) {
     return FolderTrashState(
+      files: files ?? this.files,
       folders: folders ?? this.folders,
-      selectedFolderIds: selectedFolderIds ?? this.selectedFolderIds,
+      selectedIdObject: selectedIdObject ?? this.selectedIdObject,
       status: status ?? this.status,
       recoverStatus: recoverStatus ?? FolderRecoverStatus.initialize,
     );
@@ -54,38 +59,67 @@ class FolderTrashState {
 
   factory FolderTrashState.loading() {
     return FolderTrashState(
+      files: [],
       folders: [],
-      selectedFolderIds: [],
+      selectedIdObject: [],
       status: FolderTrashStatus.loading,
     );
   }
-  factory FolderTrashState.success(List<FolderModel> folders) {
+  factory FolderTrashState.success(
+      List<FolderModel> folders, List<FileModel> files) {
     return FolderTrashState(
+      files: files,
       folders: folders,
-      selectedFolderIds: [],
+      selectedIdObject: [],
       status: FolderTrashStatus.success,
     );
   }
   factory FolderTrashState.failure() {
     return FolderTrashState(
+      files: [],
       folders: [],
-      selectedFolderIds: [],
+      selectedIdObject: [],
       status: FolderTrashStatus.failure,
     );
   }
 
   factory FolderTrashState.initialize() {
     return FolderTrashState(
+      files: [],
       folders: [],
-      selectedFolderIds: [],
+      selectedIdObject: [],
       status: FolderTrashStatus.initialize,
     );
   }
+  bool _checkContains(
+      List<SelectIdTrashModel> listIdSelected, SelectIdTrashModel idSelected) {
+    print("-----------");
+    bool flag = false;
+    listIdSelected.forEach((element) {
+      print(element.id);
+      print(idSelected.id);
+      print(element.type);
+      print(idSelected.type);
+      if (element.id == idSelected.id && element.type == idSelected.type) {
+        flag = true;
+        return;
+      }
+    });
+    print(flag);
+    return flag;
+  }
 
-  bool get isEmptySelectedId => selectedFolderIds.isEmpty;
-  bool isChecked(FolderModel folder) => selectedFolderIds.contains(folder.id);
-  void deleteFolders(List<int> ids) {
-    folders.removeWhere((element) => ids.contains(element.id));
+  bool get isEmptySelectedId => selectedIdObject.isEmpty;
+  bool isChecked(SelectIdTrashModel selectedId) =>
+      _checkContains(selectedIdObject, selectedId);
+  void deleteFolders(List<SelectIdTrashModel> selectedId) {
+    for (SelectIdTrashModel obId in selectedId) {
+      if (obId.type == IdType.folder) {
+        folders.removeWhere((element) => obId.id == element.id);
+      } else {
+        files.removeWhere((element) => obId.id == element.id);
+      }
+    }
   }
 
   bool get isLoading => status == FolderTrashStatus.loading;
@@ -105,7 +139,8 @@ class FolderTrashViewModel extends Bloc<FolderTrashEvent, FolderTrashState> {
     emit(FolderTrashState.loading());
     try {
       final folders = await FolderProvider().getFoldersTrash();
-      emit(FolderTrashState.success(folders));
+      final files = await FileProvider().getFilesTrash();
+      emit(FolderTrashState.success(folders, files));
     } catch (e) {
       emit(FolderTrashState.failure());
     }
@@ -113,20 +148,42 @@ class FolderTrashViewModel extends Bloc<FolderTrashEvent, FolderTrashState> {
 
   void _toggleSelectFolderTrash(
       ToggleSelectFolderTrashEvent event, Emitter emit) async {
-    if (state.selectedFolderIds.contains(event.folder.id)) {
-      final selectedIds = state.selectedFolderIds..remove(event.folder.id!);
-      emit(state.copyWith(selectedFolderIds: selectedIds));
+    if (state._checkContains(state.selectedIdObject, event.selectedIdsObject)) {
+      final selectedIds = state.selectedIdObject
+        ..removeWhere(
+          (element) =>
+              element.id == event.selectedIdsObject.id &&
+              element.type == event.selectedIdsObject.type,
+        );
+      emit(state.copyWith(selectedIdObject: selectedIds));
     } else {
-      final selectedIds = state.selectedFolderIds..add(event.folder.id!);
-      emit(state.copyWith(selectedFolderIds: selectedIds));
+      final selectedIds = state.selectedIdObject..add(event.selectedIdsObject);
+      emit(state.copyWith(selectedIdObject: selectedIds));
     }
   }
 
   void _permanentlyDelete(PermanentlyDeleteEvent event, Emitter emit) async {
     try {
-      await FolderProvider().permanentlyDeleteFolders(event.selectedIds);
+      List<int> idFolders = [];
+      List<int> idFiles = [];
+      event.selectedIdsObject.forEach(
+        (element) {
+          if (element.type == IdType.folder) {
+            idFolders.add(element.id);
+          } else {
+            idFiles.add(element.id);
+          }
+        },
+      );
+      if (idFolders.isNotEmpty) {
+        await FolderProvider().permanentlyDeleteFolders(idFolders);
+      }
+      if (idFiles.isNotEmpty) {
+        await FileProvider().permanentlyDeletefiles(idFiles);
+      }
       final folders = await FolderProvider().getFoldersTrash();
-      emit(FolderTrashState.success(folders));
+      final files = await FileProvider().getFilesTrash();
+      emit(FolderTrashState.success(folders, files));
     } catch (e) {
       emit(FolderTrashState.failure());
     }
@@ -134,9 +191,25 @@ class FolderTrashViewModel extends Bloc<FolderTrashEvent, FolderTrashState> {
 
   void _recoverFolders(RecoverFolderEvent event, Emitter emit) async {
     try {
+      List<int> idFolders = [];
+      List<int> idFiles = [];
+      event.selectedIdsObject.forEach(
+        (element) {
+          if (element.type == IdType.folder) {
+            idFolders.add(element.id);
+          } else {
+            idFiles.add(element.id);
+          }
+        },
+      );
       emit(state.copyWith(recoverStatus: FolderRecoverStatus.processing));
-      await FolderProvider().recoveryFolders(event.selectedIds);
-      state.deleteFolders(event.selectedIds);
+      if (idFolders.isNotEmpty) {
+        await FolderProvider().recoveryFolders(idFolders);
+      }
+      if (idFiles.isNotEmpty) {
+        await FileProvider().recoveryFiles(idFiles);
+      }
+      state.deleteFolders(event.selectedIdsObject);
       emit(state.copyWith(
         folders: state.folders,
         recoverStatus: FolderRecoverStatus.success,
