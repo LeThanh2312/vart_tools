@@ -1,4 +1,4 @@
-enum CameraType { cardID, passport, document }
+enum CameraType { cardID, passport, document, unSelect}
 
 extension CameraTypeExtention on CameraType? {
   String get name {
@@ -9,6 +9,8 @@ extension CameraTypeExtention on CameraType? {
         return 'Hộ chiếu';
       case CameraType.document:
         return 'Văn bản';
+      case CameraType.unSelect:
+        return '';
       default:
     }
     return '';

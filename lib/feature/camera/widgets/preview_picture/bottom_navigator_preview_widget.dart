@@ -1,26 +1,30 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../view/crop_image_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../view_model/crop_picture_bloc.dart';
+
 
 class BottomNavigatorPreviewWidget extends StatefulWidget {
   const BottomNavigatorPreviewWidget({
     Key? key,
     required this.onShowPopupFilter,
-    required this.listImage,
+    required this.listPictureHandle,
   }) : super(key: key);
   final void Function(bool value) onShowPopupFilter;
-  final List<File> listImage;
+  final List<Uint8List> listPictureHandle;
 
   @override
   State<BottomNavigatorPreviewWidget> createState() =>
       _BottomNavigatorPreviewWidgetState();
 }
 
-class _BottomNavigatorPreviewWidgetState
-    extends State<BottomNavigatorPreviewWidget> {
+class _BottomNavigatorPreviewWidgetState extends State<BottomNavigatorPreviewWidget> {
+
   @override
   Widget build(BuildContext context) {
+    print('======== ${widget.listPictureHandle.length}');
     return BottomAppBar(
       shape: const CircularNotchedRectangle(),
       color: Colors.white,
@@ -36,7 +40,7 @@ class _BottomNavigatorPreviewWidgetState
                   context,
                   MaterialPageRoute(
                     builder: (context) => CropImageScreen(
-                      listPictureOrigin: widget.listImage,
+                      listPictureHandle: widget.listPictureHandle,
                     ),
                   ),
                 );

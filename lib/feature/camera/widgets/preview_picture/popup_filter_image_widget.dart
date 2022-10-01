@@ -1,10 +1,13 @@
 import 'dart:typed_data';
-import 'package:opencv/opencv.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import '../../../../common/enum/filter_item.dart';
 import '../../../../res/app_color.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../view_model/crop_picture_bloc.dart';
+import 'package:opencv/opencv.dart';
 import 'package:opencv/core/core.dart';
+
 
 class PopupFilterImageWidget extends StatefulWidget {
   const PopupFilterImageWidget({
@@ -58,6 +61,9 @@ class _PopupFilterImageWidgetState extends State<PopupFilterImageWidget> {
   Widget filterItem(BuildContext context, FilterItem filter) {
     return InkWell(
       onTap: () async {
+        // print('===== filter $filter}');
+        // context.read<CameraPictureViewModel>().add(FilterPictureEvent(filter: filter));
+        // widget.onChangeImage(filter);
         widget.listPictureHandle.clear();
         widget.listPictureHandle.addAll(widget.listPictureOrigin);
         if (filter == FilterItem.blur) {
