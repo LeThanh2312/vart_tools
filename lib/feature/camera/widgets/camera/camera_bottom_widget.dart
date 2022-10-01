@@ -120,7 +120,7 @@ class _CameraBottomWidgetState extends State<CameraBottomWidget> {
                               alignment: Alignment.center,
                               children: [
                                 Image.file(
-                                  File(listPicture[0].path),
+                                  File(listPicture.last.path),
                                   fit: BoxFit.cover,
                                   width: 40,
                                 ),

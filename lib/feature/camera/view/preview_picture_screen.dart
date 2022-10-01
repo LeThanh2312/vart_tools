@@ -30,7 +30,6 @@ class _PreviewPictureScreenState extends State<PreviewPictureScreen> {
   bool isShowPopupFilter = false;
 
   List<Uint8List> listPictureOrigin = [];
-  List<Uint8List> listPictureHandle = [];
 
   @override
   void initState() {
@@ -38,16 +37,13 @@ class _PreviewPictureScreenState extends State<PreviewPictureScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _copyFile();
     });
-    context
-        .read<CameraPictureViewModel>()
-        .add(GetImageCropEvent(picture: listPictureHandle, style: widget.style, pictureOrigin: listPictureOrigin));
   }
 
   void _copyFile() async {
     for (var item in widget.listPicture) {
       var image = await item.readAsBytes();
       final memoryImageSize =
-      imgsize.ImageSizeGetter.getSize(imgsize.MemoryInput(image));
+          imgsize.ImageSizeGetter.getSize(imgsize.MemoryInput(image));
       double imgHeightReal = memoryImageSize.height.toDouble();
       double imgWidthReal = memoryImageSize.width.toDouble();
 
@@ -60,8 +56,9 @@ class _PreviewPictureScreenState extends State<PreviewPictureScreen> {
         image = image;
       }
       listPictureOrigin.add(image);
-      listPictureHandle.add(image);
     }
+    context.read<CameraPictureViewModel>().add(GetImageEvent(
+        style: widget.style, pictureOrigin: listPictureOrigin, index: 1));
     setState(() {});
   }
 
@@ -78,17 +75,15 @@ class _PreviewPictureScreenState extends State<PreviewPictureScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: Stack(
         children: [
           Column(
             children: [
               const PreviewPictureHeader(),
-              if (listPictureHandle.isNotEmpty)
+              if (listPictureOrigin.isNotEmpty)
                 PreviewPicture(
                   type: widget.style,
-                  picture: listPictureHandle,
                 )
               else
                 Container(
@@ -104,7 +99,6 @@ class _PreviewPictureScreenState extends State<PreviewPictureScreen> {
       ),
       bottomNavigationBar: BottomNavigatorPreviewWidget(
         onShowPopupFilter: onShowPopupFilter,
-        listPictureHandle: listPictureHandle,
       ),
     );
   }
@@ -121,13 +115,10 @@ class _PreviewPictureScreenState extends State<PreviewPictureScreen> {
                 BorderRadius.circular(isShowPopupFilter ? 0.0 : 300.0),
             color: Colors.transparent),
         child: PopupFilterImageWidget(
-          listPictureOrigin: listPictureOrigin,
-          listPictureHandle: listPictureHandle,
           onChangeImage: onChangeImage,
           isShowPopupFilter: isShowPopupFilter,
         ),
       ),
     );
   }
-
 }

@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
 import 'package:flutter/material.dart';
@@ -9,10 +8,8 @@ class PreviewPicture extends StatefulWidget {
   const PreviewPicture({
     Key? key,
     required this.type,
-    required this.picture,
   }) : super(key: key);
   final CameraType type;
-  final List<Uint8List> picture;
 
   @override
   State<PreviewPicture> createState() => _PreviewPictureState();
@@ -23,12 +20,10 @@ class _PreviewPictureState extends State<PreviewPicture> {
   Widget build(BuildContext context) {
     return BlocBuilder<CameraPictureViewModel, CropAndFilterPictureState>(
       builder: (context, state) {
-        print('==== list image ${state.pictureCrop.length}');
         switch (state.status) {
           case CropAndFilterPictureStatus.loading:
             return const Center(child: CircularProgressIndicator());
           case CropAndFilterPictureStatus.success:
-            print('==== list image ${state.pictureCrop.length}');
             return Container(
               child: widget.type == CameraType.cardID
                   ? Row(

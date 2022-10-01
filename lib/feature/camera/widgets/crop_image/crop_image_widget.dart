@@ -56,9 +56,6 @@ class _CropImageWidgetState extends State<CropImageWidget> {
       image = widget.image;
     }
 
-    print("image height: $imgHeightReal");
-    print("image width: $imgWidthReal");
-
     double aspectRatioScreen = widget.height / widget.width;
     double aspectRatioImage = imgHeightReal / imgWidthReal;
 
@@ -72,21 +69,18 @@ class _CropImageWidgetState extends State<CropImageWidget> {
 
     scale = imgHeightReal / imgHeight;
 
-    print("scale: $scale, real-height: $imgHeightReal, image-height: $imgHeight");
-    print("scale: $scale, real-height: $imgWidthReal, image-height: $imgWidth");
-
     points.add(Offset.zero);
     points.add(Offset(imgWidth, 0));
     points.add(Offset(imgWidth, imgHeight));
     points.add(Offset(0, imgHeight));
 
-    context.read<CameraPictureViewModel>().add(GetPointsCropEvent(points: [points[0],points[1],points[2],points[3]], scale: scale, index: 0));
+    context.read<CameraPictureViewModel>().add(GetPointsCropEvent(points: [points[0],points[1],points[2],points[3]], scale: scale));
   }
 
   @override
   void initState() {
-    getImageSize();
     super.initState();
+    getImageSize();
   }
 
   void onPanUpdate(DragUpdateDetails details, int index) {
@@ -97,8 +91,7 @@ class _CropImageWidgetState extends State<CropImageWidget> {
     setState(() {
       points[index] = newPoint;
     });
-    print(' ====== index ${widget.index.toString()}');
-    context.read<CameraPictureViewModel>().add(GetPointsCropEvent(points: [points[0],points[1],points[2],points[3]], scale: scale, index: 0));
+    context.read<CameraPictureViewModel>().add(GetPointsCropEvent(points: [points[0],points[1],points[2],points[3]], scale: scale));
   }
 
   @override
@@ -207,17 +200,17 @@ class CustomCropImagePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final detalSize = cropPointSize / 2;
+    final deltaSize = cropPointSize / 2;
     var paint = Paint()
       ..style = PaintingStyle.stroke
       ..color = Colors.blue
       ..strokeWidth = 2;
 
     var path = Path();
-    path.moveTo(points[0].dx + detalSize, points[0].dy + detalSize);
-    path.lineTo(points[1].dx - detalSize, points[1].dy + detalSize);
-    path.lineTo(points[2].dx - detalSize, points[2].dy - detalSize);
-    path.lineTo(points[3].dx + detalSize, points[3].dy - detalSize);
+    path.moveTo(points[0].dx + deltaSize, points[0].dy + deltaSize);
+    path.lineTo(points[1].dx - deltaSize, points[1].dy + deltaSize);
+    path.lineTo(points[2].dx - deltaSize, points[2].dy - deltaSize);
+    path.lineTo(points[3].dx + deltaSize, points[3].dy - deltaSize);
     path.close();
     canvas.drawPath(path, paint);
   }

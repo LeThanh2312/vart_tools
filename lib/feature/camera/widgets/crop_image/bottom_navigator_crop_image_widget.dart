@@ -7,13 +7,9 @@ import '../../view_model/crop_picture_bloc.dart';
 class BottomNavigatorCropImage extends StatefulWidget {
   const BottomNavigatorCropImage({
     Key? key,
-    required this.listPictureHandle,
-    required this.index,
     required this.isRotating,
     required this.onChangeRotating,
   }) : super(key: key);
-  final List<Uint8List> listPictureHandle;
-  final int index;
   final bool isRotating;
   final void Function(bool value) onChangeRotating;
 
@@ -68,7 +64,7 @@ class _BottomNavigatorCropImageState extends State<BottomNavigatorCropImage> {
                   widget.onChangeRotating(true);
                   print('1');
                   setState(() {});
-                  _rotateImage(widget.listPictureHandle[widget.index - 1], 90);
+                  //_rotateImage(widget.listPictureHandle[widget.index - 1], 90);
                 },
                 iconSize: 27.0,
                 icon: const Icon(
@@ -80,7 +76,7 @@ class _BottomNavigatorCropImageState extends State<BottomNavigatorCropImage> {
                   widget.onChangeRotating(true);
                   setState(() {});
                   print('1');
-                  _rotateImage(widget.listPictureHandle[widget.index - 1], -90);
+                  //_rotateImage(widget.listPictureHandle[widget.index - 1], -90);
                 },
                 iconSize: 27.0,
                 icon: const Icon(
@@ -96,7 +92,7 @@ class _BottomNavigatorCropImageState extends State<BottomNavigatorCropImage> {
               ),
               IconButton(
                 onPressed: () {
-                  context.read<CameraPictureViewModel>().add(ImageCropEvent());
+                  context.read<CameraPictureViewModel>().add(CropImageEvent());
                   Navigator.of(context).pop();
                 },
                 iconSize: 27.0,
@@ -115,7 +111,7 @@ class _BottomNavigatorCropImageState extends State<BottomNavigatorCropImage> {
     if (_platformVersion) {
       try {
         var res = await ImgProc.rotate(file, angle);
-        widget.listPictureHandle[widget.index - 1] = res as Uint8List;
+        //widget.listPictureHandle[widget.index - 1] = res as Uint8List;
         widget.onChangeRotating(false);
         setState(() {});
       } catch (e) {

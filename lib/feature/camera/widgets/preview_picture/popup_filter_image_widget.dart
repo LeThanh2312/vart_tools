@@ -1,23 +1,16 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import '../../../../common/enum/filter_item.dart';
 import '../../../../res/app_color.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../view_model/crop_picture_bloc.dart';
-import 'package:opencv/opencv.dart';
-import 'package:opencv/core/core.dart';
-
 
 class PopupFilterImageWidget extends StatefulWidget {
   const PopupFilterImageWidget({
     Key? key,
-    required this.listPictureOrigin,
     required this.onChangeImage,
-    required this.listPictureHandle, required this.isShowPopupFilter,
+    required this.isShowPopupFilter,
   }) : super(key: key);
-  final List<Uint8List> listPictureOrigin;
-  final List<Uint8List> listPictureHandle;
   final void Function(FilterItem value) onChangeImage;
   final bool isShowPopupFilter;
 
@@ -61,37 +54,8 @@ class _PopupFilterImageWidgetState extends State<PopupFilterImageWidget> {
   Widget filterItem(BuildContext context, FilterItem filter) {
     return InkWell(
       onTap: () async {
-        // print('===== filter $filter}');
-        // context.read<CameraPictureViewModel>().add(FilterPictureEvent(filter: filter));
-        // widget.onChangeImage(filter);
-        widget.listPictureHandle.clear();
-        widget.listPictureHandle.addAll(widget.listPictureOrigin);
-        if (filter == FilterItem.blur) {
-          for (var item in widget.listPictureHandle) {
-            Uint8List res = await ImgProc.blur(item, [45, 45], [20, 30], Core.borderReflect) as Uint8List;
-            widget.listPictureHandle[widget.listPictureHandle.indexOf(item)] = res;
-          }
-          widget.onChangeImage(FilterItem.blur);
-        } else if (filter == FilterItem.shadows) {
-          for (var item in widget.listPictureHandle) {
-            Uint8List res = await ImgProc.grayScale(item) as Uint8List;
-            widget.listPictureHandle[widget.listPictureHandle.indexOf(item)] = res;
-          }
-          widget.onChangeImage(FilterItem.shadows);
-        } else if (filter == FilterItem.fullAngle) {
-          widget.onChangeImage(FilterItem.fullAngle);
-        } else if (filter == FilterItem.brighten) {
-
-        } else if (filter == FilterItem.ecological) {
-
-        } else if (filter == FilterItem.bVW) {
-          for (var item in widget.listPictureHandle) {
-            Uint8List res = await ImgProc.adaptiveThreshold(item, 125,
-                ImgProc.adaptiveThreshMeanC, ImgProc.threshBinary, 11, 12) as Uint8List;
-            widget.listPictureHandle[widget.listPictureHandle.indexOf(item)] = res;
-          }
-          widget.onChangeImage(FilterItem.bVW);
-        } else {}
+        context.read<CameraPictureViewModel>().add(FilterPictureEvent(filter: filter));
+        widget.onChangeImage(filter);
       },
       child: Column(
         children: [

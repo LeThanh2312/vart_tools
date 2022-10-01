@@ -33,7 +33,7 @@ class CropAndFilterPictureState {
     this.scale = 1,
     this.status = CropAndFilterPictureStatus.initialize,
     this.style = CameraType.unSelect,
-    this.filter = FilterItem.unSelect
+    this.filter = FilterItem.blur,
   });
 
   CropAndFilterPictureState copyWith({
@@ -58,11 +58,13 @@ class CropAndFilterPictureState {
   }
 
   factory CropAndFilterPictureState.initialize() {
-    return CropAndFilterPictureState(status: CropAndFilterPictureStatus.initialize);
+    return CropAndFilterPictureState(
+        status: CropAndFilterPictureStatus.initialize);
   }
 
   factory CropAndFilterPictureState.loading() {
-    return CropAndFilterPictureState(status: CropAndFilterPictureStatus.loading);
+    return CropAndFilterPictureState(
+        status: CropAndFilterPictureStatus.loading);
   }
 
   factory CropAndFilterPictureState.success(List<Uint8List> data) {
@@ -71,7 +73,8 @@ class CropAndFilterPictureState {
   }
 
   factory CropAndFilterPictureState.failure() {
-    return CropAndFilterPictureState(status: CropAndFilterPictureStatus.failure);
+    return CropAndFilterPictureState(
+        status: CropAndFilterPictureStatus.failure);
   }
 
   bool get isLoading => status == CropAndFilterPictureStatus.loading;
@@ -82,50 +85,87 @@ class CropAndFilterPictureState {
 }
 
 class GetPointsCropEvent extends CameraPictureEvent {
-  int index;
   List<Offset> points;
   double scale;
 
   GetPointsCropEvent({
     required this.points,
     required this.scale,
-    required this.index,
   });
 }
 
-class GetImageCropEvent extends CameraPictureEvent {
-  List<Uint8List> picture;
+class GetImageEvent extends CameraPictureEvent {
   List<Uint8List> pictureOrigin;
   CameraType style;
+  int index;
 
-  GetImageCropEvent({required this.picture ,required this.pictureOrigin, required this.style});
+  GetImageEvent({required this.pictureOrigin, required this.style, required this.index});
 }
 
-class ImageCropEvent extends CameraPictureEvent {
-  ImageCropEvent();
+class CropImageEvent extends CameraPictureEvent {
+  CropImageEvent();
+}
+class Increment extends CameraPictureEvent {
+  int index;
+  Increment({required this.index});
+}
+class Decrement extends CameraPictureEvent {
+  int index;
+  Decrement({required this.index});
+}
+
+class RotateImageEvent extends CameraPictureEvent {
+  int angle;
+  RotateImageEvent({required this.angle});
 }
 
 class FilterPictureEvent extends CameraPictureEvent {
   FilterItem filter;
+
   FilterPictureEvent({required this.filter});
 }
 
 class CameraPictureViewModel
     extends Bloc<CameraPictureEvent, CropAndFilterPictureState> {
   CameraPictureViewModel()
-      : super(
-            CropAndFilterPictureState().copyWith(status: CropAndFilterPictureStatus.initialize)) {
+      : super(CropAndFilterPictureState()
+            .copyWith(status: CropAndFilterPictureStatus.initialize)) {
     on<GetPointsCropEvent>(_getPointsCropEvent);
-    on<GetImageCropEvent>(_getImageCropEvent);
-    on<ImageCropEvent>(_cropImageEvent);
+    on<GetImageEvent>(_getImageEvent);
+    on<CropImageEvent>(_cropImageEvent);
     on<FilterPictureEvent>(_filterPictureEvent);
+    on<RotateImageEvent>(_rotateImageEvent);
+    on<Decrement>(decrement);
+    on<Increment>(increment);
+
+  }
+
+  void increment(Increment event, Emitter emitter) async {
+    try{
+      emit(state.copyWith(status: CropAndFilterPictureStatus.loading));
+      state.index = event.index;
+      emit(state.copyWith(
+          index: state.index, status: CropAndFilterPictureStatus.success));
+    } catch (e){
+      emit(state.copyWith(message: 'error'));
+    }
+  }
+
+  void decrement(Decrement event, Emitter emitter) async {
+    try{
+      emit(state.copyWith(status: CropAndFilterPictureStatus.loading));
+      state.index = event.index;
+      emit(state.copyWith(
+          index: state.index, status: CropAndFilterPictureStatus.success));
+    }catch (e){
+      emit(state.copyWith(message: 'error'));
+    }
   }
 
   void _getPointsCropEvent(GetPointsCropEvent event, Emitter emit) async {
     try {
       state.points = event.points;
       state.scale = event.scale;
-      state.index = event.index;
       emit(state.copyWith(
           points: state.points,
           scale: state.scale,
@@ -136,22 +176,27 @@ class CameraPictureViewModel
     }
   }
 
-  void _getImageCropEvent(GetImageCropEvent event, Emitter emit) async {
+  void _getImageEvent(GetImageEvent event, Emitter emit) async {
     try {
-      state.pictureCrop = event.picture;
-      state.pictureOrigin = event.picture;
+      state.pictureCrop = [...event.pictureOrigin];
+      state.pictureOrigin = [...event.pictureOrigin];
       state.style = event.style;
+      state.index = event.index;
       emit(state.copyWith(
-          pictureCrop: state.pictureCrop, pictureOrigin: state.pictureOrigin, status: CropAndFilterPictureStatus.success));
+          pictureCrop: state.pictureCrop,
+          pictureOrigin: state.pictureOrigin,
+          index: state.index,
+          status: CropAndFilterPictureStatus.success));
     } catch (e) {
       emit(state.copyWith(message: 'error'));
     }
   }
 
-  void _cropImageEvent(ImageCropEvent event, Emitter emitter) async {
+  void _cropImageEvent(CropImageEvent event, Emitter emitter) async {
+    print('======== event ${state.index}');
     emit(state.copyWith(status: CropAndFilterPictureStatus.loading));
     final memoryImageSize = imgsize.ImageSizeGetter.getSize(
-        imgsize.MemoryInput(state.pictureCrop[state.index]));
+        imgsize.MemoryInput(state.pictureCrop[state.index - 1]));
     double imgHeightReal = memoryImageSize.height.toDouble();
     double imgWidthReal = memoryImageSize.width.toDouble();
 
@@ -159,12 +204,12 @@ class CameraPictureViewModel
       final tmp = imgWidthReal;
       imgWidthReal = imgHeightReal;
       imgHeightReal = tmp;
-      state.pictureCrop[state.index] =
-          await ImgProc.rotate(state.pictureCrop[state.index], 90);
+      state.pictureCrop[state.index - 1] =
+          await ImgProc.rotate(state.pictureCrop[state.index - 1], 90);
     } else {}
     try {
       Uint8List res = await ImgProc.warpPerspectiveTransform(
-        state.pictureCrop[state.index],
+        state.pictureCrop[state.index - 1],
         sourcePoints: [
           (state.points[0].dx * state.scale).toInt(),
           (state.points[0].dy * state.scale).toInt(),
@@ -181,53 +226,69 @@ class CameraPictureViewModel
         destinationPoints: [0, 0, 300, 0, 0, 400, 300, 400],
         outputSize: [300, 400],
       ) as Uint8List;
-      state.pictureCrop[state.index] = res;
+      state.pictureCrop[state.index - 1] = res;
+      state.pictureOrigin[state.index - 1] = res;
       emit(state.copyWith(
-          pictureCrop: state.pictureCrop,pictureOrigin: state.pictureCrop, status: CropAndFilterPictureStatus.success));
+          pictureCrop: state.pictureCrop,
+          pictureOrigin: state.pictureOrigin,
+          status: CropAndFilterPictureStatus.success));
     } catch (e) {
       emit(state.copyWith(message: 'error'));
     }
   }
 
-  void _filterPictureEvent(FilterPictureEvent event, Emitter emitter) async{
+  void _filterPictureEvent(FilterPictureEvent event, Emitter emitter) async {
+    int index;
     emit(state.copyWith(status: CropAndFilterPictureStatus.loading));
     state.filter = event.filter;
-    print('====== ${state.filter}');
-    try{
-      // state.pictureCrop = state.pictureOrigin;
+    state.pictureCrop.clear();
+    state.pictureCrop = [...state.pictureOrigin];
+    try {
       if (state.filter == FilterItem.blur) {
         for (var item in state.pictureCrop) {
-          Uint8List res = await ImgProc.blur(item, [45, 45], [20, 30], Core.borderReflect) as Uint8List;
-          state.pictureCrop[state.index] = res;
-          print('==== ');
+          index = state.pictureCrop.indexOf(item);
+          Uint8List res =
+              await ImgProc.blur(item, [45, 45], [20, 30], Core.borderReflect)
+                  as Uint8List;
+          state.pictureCrop[index] = res;
         }
-        //widget.onChangeImage(FilterItem.blur);
       } else if (state.filter == FilterItem.shadows) {
         for (var item in state.pictureCrop) {
+          index = state.pictureCrop.indexOf(item);
           Uint8List res = await ImgProc.grayScale(item) as Uint8List;
-          state.pictureCrop[state.index] = res;
+          state.pictureCrop[index] = res;
         }
-        //widget.onChangeImage(FilterItem.shadows);
       } else if (state.filter == FilterItem.fullAngle) {
-        //widget.onChangeImage(FilterItem.fullAngle);
+        state.pictureCrop = [...state.pictureOrigin];
       } else if (state.filter == FilterItem.brighten) {
-
       } else if (state.filter == FilterItem.ecological) {
-
       } else if (state.filter == FilterItem.bVW) {
         for (var item in state.pictureCrop) {
-          Uint8List res = await ImgProc.adaptiveThreshold(item, 125,
-              ImgProc.adaptiveThreshMeanC, ImgProc.threshBinary, 11, 12) as Uint8List;
-          state.pictureCrop[state.index] = res;
+          index = state.pictureCrop.indexOf(item);
+          Uint8List res = await ImgProc.adaptiveThreshold(
+            item,
+            125,
+            ImgProc.adaptiveThreshMeanC,
+            ImgProc.threshBinary,
+            11,
+            12,
+          ) as Uint8List;
+          state.pictureCrop[index] = res;
         }
-        //widget.onChangeImage(FilterItem.bVW);
       } else {}
-      emit(state.copyWith(pictureCrop: state.pictureCrop, status: CropAndFilterPictureStatus.success));
-    } catch (e){
-      print('=========== e');
+      emit(state.copyWith(
+          pictureCrop: state.pictureCrop,
+          status: CropAndFilterPictureStatus.success));
+    } catch (e) {
       emit(state.copyWith(message: 'error'));
     }
   }
+
+  void _rotateImageEvent(RotateImageEvent event, Emitter emitter) async {
+
+    emit(state.copyWith(status: CropAndFilterPictureStatus.loading));
+  }
+
 }
 
 Future<Uint8List> rotateImage(Uint8List image) async {

@@ -7,16 +7,13 @@ import '../widgets/crop_image/show_image_handle.dart';
 class CropImageScreen extends StatefulWidget {
   const CropImageScreen({
     Key? key,
-    required this.listPictureHandle,
   }) : super(key: key);
-  final List<Uint8List> listPictureHandle;
 
   @override
   State<CropImageScreen> createState() => _CropImageScreenState();
 }
 
 class _CropImageScreenState extends State<CropImageScreen> {
-  int index = 1;
 
   bool isRotating = false;
 
@@ -26,20 +23,13 @@ class _CropImageScreenState extends State<CropImageScreen> {
     });
   }
 
-  void onChangeIndex(int value) {
-    setState(() {
-      index = value;
-    });
-  }
-
   @override
   void initState() {
     isRotating = true;
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       isRotating = false;
-      setState(() {
-      });
+      setState(() {});
     });
   }
 
@@ -48,18 +38,13 @@ class _CropImageScreenState extends State<CropImageScreen> {
     return Scaffold(
         body: Column(
           children: [
-            CropImageHeaderWidget(listPictureHandle: widget.listPictureHandle),
+            const CropImageHeaderWidget(),
             ShowImageHandle(
-              listPictureHandle: widget.listPictureHandle,
               isRotating: isRotating,
-              index: index,
-              onChangeIndex: onChangeIndex,
             ),
           ],
         ),
         bottomNavigationBar: BottomNavigatorCropImage(
-          listPictureHandle: widget.listPictureHandle,
-          index: index,
           isRotating: isRotating,
           onChangeRotating: onChangeRotating,
         ));

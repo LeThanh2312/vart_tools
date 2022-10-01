@@ -1,19 +1,13 @@
-import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../view/crop_image_screen.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../view_model/crop_picture_bloc.dart';
-
 
 class BottomNavigatorPreviewWidget extends StatefulWidget {
   const BottomNavigatorPreviewWidget({
     Key? key,
     required this.onShowPopupFilter,
-    required this.listPictureHandle,
   }) : super(key: key);
   final void Function(bool value) onShowPopupFilter;
-  final List<Uint8List> listPictureHandle;
 
   @override
   State<BottomNavigatorPreviewWidget> createState() =>
@@ -24,7 +18,6 @@ class _BottomNavigatorPreviewWidgetState extends State<BottomNavigatorPreviewWid
 
   @override
   Widget build(BuildContext context) {
-    print('======== ${widget.listPictureHandle.length}');
     return BottomAppBar(
       shape: const CircularNotchedRectangle(),
       color: Colors.white,
@@ -39,9 +32,7 @@ class _BottomNavigatorPreviewWidgetState extends State<BottomNavigatorPreviewWid
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => CropImageScreen(
-                      listPictureHandle: widget.listPictureHandle,
-                    ),
+                    builder: (context) => CropImageScreen(),
                   ),
                 );
               },
@@ -102,14 +93,6 @@ class _BottomNavigatorPreviewWidgetState extends State<BottomNavigatorPreviewWid
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () {
-                // Navigator.pushAndRemoveUntil(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (contextMain) =>
-                //     const BottomBarMainScreen(indexTabItem: TabItem.file),
-                //   ),
-                //   ModalRoute.withName('/'),
-                // );
                 Navigator.of(context).pop();
               },
             ),
