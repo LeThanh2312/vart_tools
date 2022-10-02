@@ -42,6 +42,13 @@ class _CropImageWidgetState extends State<CropImageWidget> {
   }
 
   void getImageSize() {
+    BlocListener<CameraPictureViewModel, CropAndFilterPictureState>(
+        listener: (context, state) {
+            image = state.pictureCrop[state.index - 1];
+        }
+    );
+
+    print('======== image 2 $image');
     final memoryImageSize =
         imgsize.ImageSizeGetter.getSize(imgsize.MemoryInput(widget.image));
     double imgHeightReal = memoryImageSize.height.toDouble();

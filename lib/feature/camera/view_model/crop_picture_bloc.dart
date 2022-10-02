@@ -105,6 +105,11 @@ class GetImageEvent extends CameraPictureEvent {
 class CropImageEvent extends CameraPictureEvent {
   CropImageEvent();
 }
+
+class ResetListImageEvent extends CameraPictureEvent {
+  ResetListImageEvent();
+}
+
 class Increment extends CameraPictureEvent {
   int index;
   Increment({required this.index});
@@ -137,6 +142,7 @@ class CameraPictureViewModel
     on<RotateImageEvent>(_rotateImageEvent);
     on<Decrement>(decrement);
     on<Increment>(increment);
+    on<ResetListImageEvent>(_resetListImageEvent);
 
   }
 
@@ -146,6 +152,17 @@ class CameraPictureViewModel
       state.index = event.index;
       emit(state.copyWith(
           index: state.index, status: CropAndFilterPictureStatus.success));
+    } catch (e){
+      emit(state.copyWith(message: 'error'));
+    }
+  }
+
+  void _resetListImageEvent(ResetListImageEvent event, Emitter emitter) async {
+    try{
+      emit(state.copyWith(status: CropAndFilterPictureStatus.loading));
+      state.pictureCrop = [...state.pictureOrigin];
+      emit(state.copyWith(
+          pictureCrop: state.pictureCrop, status: CropAndFilterPictureStatus.success));
     } catch (e){
       emit(state.copyWith(message: 'error'));
     }
@@ -285,8 +302,16 @@ class CameraPictureViewModel
   }
 
   void _rotateImageEvent(RotateImageEvent event, Emitter emitter) async {
-
     emit(state.copyWith(status: CropAndFilterPictureStatus.loading));
+    try {
+      var res = await ImgProc.rotate(state.pictureCrop[state.index - 1], event.angle);
+      state.pictureCrop[state.index - 1] = res;
+      emit(state.copyWith(
+          pictureCrop: state.pictureCrop,
+          status: CropAndFilterPictureStatus.success));
+    } catch (e) {
+      emit(state.copyWith(message: 'error'));
+    }
   }
 
 }

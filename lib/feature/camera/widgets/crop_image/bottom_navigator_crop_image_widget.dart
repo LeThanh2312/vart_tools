@@ -62,9 +62,8 @@ class _BottomNavigatorCropImageState extends State<BottomNavigatorCropImage> {
               IconButton(
                 onPressed: () {
                   widget.onChangeRotating(true);
-                  print('1');
+                  context.read<CameraPictureViewModel>().add(RotateImageEvent(angle: -90));
                   setState(() {});
-                  //_rotateImage(widget.listPictureHandle[widget.index - 1], 90);
                 },
                 iconSize: 27.0,
                 icon: const Icon(
@@ -74,9 +73,8 @@ class _BottomNavigatorCropImageState extends State<BottomNavigatorCropImage> {
               IconButton(
                 onPressed: () {
                   widget.onChangeRotating(true);
+                  context.read<CameraPictureViewModel>().add(RotateImageEvent(angle: 90));
                   setState(() {});
-                  print('1');
-                  //_rotateImage(widget.listPictureHandle[widget.index - 1], -90);
                 },
                 iconSize: 27.0,
                 icon: const Icon(
@@ -92,7 +90,6 @@ class _BottomNavigatorCropImageState extends State<BottomNavigatorCropImage> {
               ),
               IconButton(
                 onPressed: () {
-                  context.read<CameraPictureViewModel>().add(CropImageEvent());
                   Navigator.of(context).pop();
                 },
                 iconSize: 27.0,
