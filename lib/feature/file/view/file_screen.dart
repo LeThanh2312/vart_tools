@@ -23,6 +23,8 @@ class _FileScreenState extends State<FileScreen> {
   bool isSelectionMode = false;
   List<int?> _idSelected = [];
   bool _selectAll = false;
+  bool progress = true;
+  bool onClear = false;
 
   @override
   void initState() {
@@ -83,12 +85,25 @@ class _FileScreenState extends State<FileScreen> {
         dateUpdate: '2022-09-24 08:28:58',
       ),
     ];
-    files = context.read<FilesViewModel>().state.files;
-    print('file data init : ${files}');
-    if (files.isEmpty) {
-      context.read<FilesViewModel>().add(AddFilesEvent(files: filesData));
+    checkDataExist(widget.folder.id!).then((value) {
+      if (value) {
+        context.read<FilesViewModel>().add(
+              AddFilesEvent(files: filesData, folderId: widget.folder.id!),
+            );
+      }
+    });
+    context
+        .read<FilesViewModel>()
+        .add(LoadFilesEvent(folderId: widget.folder.id!));
+  }
+
+  Future<bool> checkDataExist(int id) async {
+    List<FileModel> data = await FileProvider().getFiles(id);
+    if (data.isEmpty) {
+      return true;
+    } else {
+      return false;
     }
-    context.read<FilesViewModel>().add(LoadFilesEvent());
   }
 
   bool checkIdExistIdSelected(int id) {
@@ -111,208 +126,230 @@ class _FileScreenState extends State<FileScreen> {
         child: SizedBox(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          isSelectionMode
-              ? Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 50,
-                  color: const Color.fromARGB(255, 6, 122, 255),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(
-                          Icons.close,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            isSelectionMode = false;
-                            _idSelected.clear();
-                          });
-                        },
-                      ),
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            'Selection (${_idSelected.length})',
-                            style: const TextStyle(
-                              fontSize: 15,
-                              color: Colors.white,
-                            ),
+      child: BlocListener<FilesViewModel, FilesViewState>(
+        listener: (context, state) {
+          if (state.isDeleteSucees) {
+            // setState(() {
+            //   isSelectionMode = false;
+            //   _selectAll = false;
+            // });
+            setState(() {
+              _idSelected.clear();
+            });
+
+            context
+                .read<FilesViewModel>()
+                .add(LoadFilesEvent(folderId: widget.folder.id!));
+          }
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            isSelectionMode
+                ? Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: 50,
+                    color: const Color.fromARGB(255, 6, 122, 255),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.close,
+                            color: Colors.white,
                           ),
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.delete,
-                          color: Colors.white,
-                        ),
-                        onPressed: _idSelected.isEmpty
-                            ? null
-                            : () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) =>
-                                      PopUpConfirmDeleteMulpliteFile(
-                                    idFiles: _idSelected,
-                                    onClear: () {
-                                      _idSelected.clear();
-                                    },
-                                  ),
-                                );
-                              },
-                      ),
-                      SizedBox(
-                        width: 100,
-                        child: TextButton(
-                          child: !_selectAll
-                              ? const Text(
-                                  'Select All',
-                                  style: TextStyle(
-                                      fontSize: 15, color: Colors.white),
-                                )
-                              : const Text(
-                                  'Unselect All',
-                                  style: TextStyle(
-                                      fontSize: 15, color: Colors.white),
-                                ),
                           onPressed: () {
-                            _selectAll = !_selectAll;
                             setState(() {
-                              if (_selectAll) {
-                                _idSelected = files.map((e) => e.id).toList();
-                              } else {
-                                _idSelected.clear();
-                              }
+                              isSelectionMode = false;
+                              _idSelected.clear();
                             });
                           },
                         ),
-                      ),
-                    ],
-                  ),
-                )
-              : const Padding(
-                  padding: EdgeInsets.all(20),
-                  child: SearchWidget(),
-                ),
-          const SizedBox(height: 5),
-          Padding(
-            padding: const EdgeInsets.only(left: 15, right: 15),
-            child: Row(
-              children: [
-                InkWell(
-                    onTap: () {
-                      context
-                          .read<RedirectFileScreenViewModel>()
-                          .add(RedirectFileScreenEvent(redirect: false));
-                    },
-                    child: const Icon(Icons.arrow_back_ios)),
-                Text(
-                  widget.folder.name!,
-                  style: ResStyle.h6,
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: BlocBuilder<FilesViewModel, FilesViewState>(
-              builder: (context, state) {
-                if (state.isSuccess) {
-                  if(state.files.isNotEmpty){
-                    files = state.files;
-                  return ListView(
-                      children: state.groupByDateUpdate.keys.map((key) {
-                    final value = state.groupByDateUpdate[key];
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 20, left: 20),
-                          child: Text(key.toString()),
-                        ),
-                        GridView.count(
-                          primary: false,
-                          padding: EdgeInsets.all(20),
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 20,
-                          crossAxisSpacing: 20,
-                          shrinkWrap: true,
-                          children: <Widget>[
-                            for (var file in value!)
-                              InkWell(
-                                onTap: isSelectionMode
-                                    ? () {
-                                        int id =
-                                            int.parse(file["id"].toString());
-                                        if (checkIdExistIdSelected(id)) {
-                                          setState(() {
-                                            _idSelected.remove(id);
-                                          });
-                                        } else {
-                                          setState(() {
-                                            _idSelected.add(int.parse(
-                                                file["id"].toString()));
-                                          });
-                                        }
-                                      }
-                                    : () => Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                FileDetailScrenn(
-                                              file: FileModel.fromMap(file),
-                                            ),
-                                          ),
-                                        ),
-                                onLongPress: () {
-                                  setState(() {
-                                    isSelectionMode = true;
-                                    _idSelected
-                                        .add(int.parse(file["id"].toString()));
-                                  });
-                                },
-                                child: Stack(
-                                  children: [
-                                    Image.asset(
-                                      '${file["image"]}',
-                                      fit: BoxFit.cover,
-                                      width: double.infinity,
-                                      height: double.infinity,
-                                    ),
-                                    Positioned(
-                                      right: 0,
-                                      top: 0,
-                                      child: SizedBox(
-                                        child: isSelectionMode
-                                            ? checkIdExistIdSelected(int.parse(
-                                                    file["id"].toString()))
-                                                ? const Icon(
-                                                    Icons.check_box,
-                                                    color: Color.fromARGB(
-                                                        255, 0, 170, 255),
-                                                  )
-                                                : const Icon(
-                                                    Icons
-                                                        .check_box_outline_blank,
-                                                    color: Colors.black,
-                                                  )
-                                            : null,
-                                      ),
-                                    )
-                                  ],
-                                ),
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              'Selection (${_idSelected.length})',
+                              style: const TextStyle(
+                                fontSize: 15,
+                                color: Colors.white,
                               ),
-                          ],
-                        )
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.delete,
+                            color: Colors.white,
+                          ),
+                          onPressed: _idSelected.isEmpty
+                              ? null
+                              : () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) =>
+                                        PopUpConfirmDeleteMulpliteFile(
+                                      idFiles: _idSelected,
+                                      // onClear: () {
+                                      //   setState(() {
+                                      //     isSelectionMode = false;
+                                      //     _selectAll = false;
+                                      //   });
+                                      //   _idSelected.clear();
+                                      // },
+                                      folderId: widget.folder.id!,
+                                    ),
+                                  );
+                                },
+                        ),
+                        SizedBox(
+                          width: 100,
+                          child: TextButton(
+                            child: !_selectAll
+                                ? const Text(
+                                    'Select All',
+                                    style: TextStyle(
+                                        fontSize: 15, color: Colors.white),
+                                  )
+                                : const Text(
+                                    'Unselect All',
+                                    style: TextStyle(
+                                        fontSize: 15, color: Colors.white),
+                                  ),
+                            onPressed: () {
+                              _selectAll = !_selectAll;
+                              setState(() {
+                                if (_selectAll) {
+                                  _idSelected = files.map((e) => e.id).toList();
+                                } else {
+                                  _idSelected.clear();
+                                }
+                              });
+                            },
+                          ),
+                        ),
                       ],
-                    );
-                  }).toList());
-                  }else {
-                    return SizedBox(
+                    ),
+                  )
+                : const Padding(
+                    padding: EdgeInsets.all(20),
+                    child: SearchWidget(),
+                  ),
+            const SizedBox(height: 5),
+            Padding(
+              padding: const EdgeInsets.only(left: 15, right: 15),
+              child: Row(
+                children: [
+                  InkWell(
+                      onTap: () {
+                        context
+                            .read<RedirectFileScreenViewModel>()
+                            .add(RedirectFileScreenEvent(redirect: false));
+                      },
+                      child: const Icon(Icons.arrow_back_ios)),
+                  Text(
+                    widget.folder.name!,
+                    style: ResStyle.h6,
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: BlocBuilder<FilesViewModel, FilesViewState>(
+                builder: (context, state) {
+                  if (state.isSuccess) {
+                    if (state.files.isNotEmpty) {
+                      files = state.files;
+                      return ListView(
+                          children: state.groupByDateUpdate.keys.map((key) {
+                        final value = state.groupByDateUpdate[key];
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(top: 20, left: 20),
+                              child: Text(key.toString()),
+                            ),
+                            GridView.count(
+                              primary: false,
+                              padding: EdgeInsets.all(20),
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 20,
+                              crossAxisSpacing: 20,
+                              shrinkWrap: true,
+                              children: <Widget>[
+                                for (var file in value!)
+                                  InkWell(
+                                    onTap: isSelectionMode
+                                        ? () {
+                                            int id = int.parse(
+                                                file["id"].toString());
+                                            if (checkIdExistIdSelected(id)) {
+                                              setState(() {
+                                                _idSelected.remove(id);
+                                              });
+                                            } else {
+                                              setState(() {
+                                                _idSelected.add(int.parse(
+                                                    file["id"].toString()));
+                                              });
+                                            }
+                                          }
+                                        : () => Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    FileDetailScrenn(
+                                                  file: FileModel.fromMap(file),
+                                                ),
+                                              ),
+                                            ),
+                                    onLongPress: () {
+                                      setState(() {
+                                        isSelectionMode = true;
+                                        _idSelected.add(
+                                            int.parse(file["id"].toString()));
+                                      });
+                                    },
+                                    child: Stack(
+                                      children: [
+                                        Image.asset(
+                                          '${file["image"]}',
+                                          fit: BoxFit.cover,
+                                          width: double.infinity,
+                                          height: double.infinity,
+                                        ),
+                                        Positioned(
+                                          right: 0,
+                                          top: 0,
+                                          child: SizedBox(
+                                            child: isSelectionMode
+                                                ? checkIdExistIdSelected(
+                                                        int.parse(file["id"]
+                                                            .toString()))
+                                                    ? const Icon(
+                                                        Icons.check_box,
+                                                        color: Color.fromARGB(
+                                                            255, 0, 170, 255),
+                                                      )
+                                                    : const Icon(
+                                                        Icons
+                                                            .check_box_outline_blank,
+                                                        color: Colors.black,
+                                                      )
+                                                : null,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                              ],
+                            )
+                          ],
+                        );
+                      }).toList());
+                    } else {
+                      return SizedBox(
                         width: MediaQuery.of(context).size.width,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -321,7 +358,7 @@ class _FileScreenState extends State<FileScreen> {
                               height: 100,
                             ),
                             Image.asset(
-                              ResAssets.icons.listFileEmpty, 
+                              ResAssets.icons.listFileEmpty,
                               height: 200,
                               width: 200,
                               fit: BoxFit.fill,
@@ -336,19 +373,19 @@ class _FileScreenState extends State<FileScreen> {
                           ],
                         ),
                       );
+                    }
+                  } else if (state.isFailure) {
+                    return Text(state.message);
+                  } else {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
                   }
-                  
-                } else if (state.isFailure) {
-                  return Text(state.message);
-                } else {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-              },
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     ));
   }
