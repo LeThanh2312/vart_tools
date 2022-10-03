@@ -39,7 +39,7 @@ class PanelControlFolder extends StatelessWidget {
           color: AppColors.grayColor,
           shape: const CircleBorder(),
           child: Image.asset(
-            ResAssets.icons.new_folder,
+            ResAssets.icons.newFolder,
             height: 30,
             width: 30,
           ),
@@ -62,7 +62,7 @@ class PanelControlFolder extends StatelessWidget {
           color: AppColors.grayColor,
           shape: const CircleBorder(),
           child: Image.asset(
-            ResAssets.icons.sort_folder,
+            ResAssets.icons.sortFolder,
             height: 30,
             width: 30,
           ),

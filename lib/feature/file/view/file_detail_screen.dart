@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/feature/file/widget/bottom_bar.dart';
 import 'package:vart_tools/feature/home/widgets/search_widget.dart';
@@ -27,7 +25,10 @@ class _FileDetailScrennState extends State<FileDetailScrenn> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SearchWidget(),
+                const Padding(
+                  padding: EdgeInsets.only(left: 15, right: 15, top: 20),
+                  child: SearchWidget(),
+                ),
                 const SizedBox(height: 5),
                 Padding(
                   padding: const EdgeInsets.only(top: 15, left: 15, right: 15),

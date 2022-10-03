@@ -5,8 +5,8 @@ class ResAssets {
 
 class AssetIcons {
   static const iconpath = "assets/icons";
-  final String new_folder = "$iconpath/new_folder.png";
-  final String sort_folder = "$iconpath/sort_folder.png";
+  final String newFolder = "$iconpath/new_folder.png";
+  final String sortFolder = "$iconpath/sort_folder.png";
   final String delete = "$iconpath/delete.png";
   final String folder = "$iconpath/folder.png";
   final String listFolderEmpty = "$iconpath/list_folder_empty.png";
@@ -16,6 +16,13 @@ class AssetIcons {
   final String iconDelete = "$iconpath/icon_delete.png";
   final String iconFavourite = "$iconpath/icon_favourite.png";
   final String listFileEmpty = "$iconpath/list_file_empty.png";
+  final String iconFavouriteEmpty = "$iconpath/favourite_empty.png";
+  final String iconFacebook = "$iconpath/facebook.png";
+  final String iconGmail = "$iconpath/gmail.png";
+  final String iconSky = "$iconpath/sky.png";
+  final String iconTweet = "$iconpath/tweet.png";
+  final String iconZalo = "$iconpath/zalo.png";
+  final String iconExportPdf = "$iconpath/export_pdf.png";
 }
 
 class AssetImages {

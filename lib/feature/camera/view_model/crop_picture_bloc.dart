@@ -12,15 +12,19 @@ enum CropAndFilterPictureStatus { loading, success, failure, initialize }
 
 abstract class CameraPictureEvent {}
 
+enum CropAndFilterPictureType { normal, crop, rotate, filter }
+
 class CropAndFilterPictureState {
   List<Uint8List> pictureCrop;
   List<Uint8List> pictureOrigin;
   CropAndFilterPictureStatus status;
+
   List<Offset> points;
   int index;
   double scale;
   CameraType style;
   FilterItem filter;
+  CropAndFilterPictureType type;
 
   String message;
 
@@ -34,6 +38,7 @@ class CropAndFilterPictureState {
     this.status = CropAndFilterPictureStatus.initialize,
     this.style = CameraType.unSelect,
     this.filter = FilterItem.blur,
+    this.type = CropAndFilterPictureType.normal,
   });
 
   CropAndFilterPictureState copyWith({
@@ -45,6 +50,7 @@ class CropAndFilterPictureState {
     double? scale,
     CropAndFilterPictureStatus? status,
     CameraType? style,
+    CropAndFilterPictureType? type,
   }) {
     return CropAndFilterPictureState(
       pictureCrop: pictureCrop ?? this.pictureCrop,
@@ -54,6 +60,7 @@ class CropAndFilterPictureState {
       index: index ?? this.index,
       scale: scale ?? this.scale,
       status: status ?? this.status,
+      type: type ?? CropAndFilterPictureType.normal,
     );
   }
 
@@ -82,6 +89,8 @@ class CropAndFilterPictureState {
   bool get isSuccess => status == CropAndFilterPictureStatus.success;
 
   bool get isFailure => status == CropAndFilterPictureStatus.failure;
+
+  bool get isDoneRotate => type == CropAndFilterPictureType.rotate;
 }
 
 class GetPointsCropEvent extends CameraPictureEvent {
@@ -99,7 +108,8 @@ class GetImageEvent extends CameraPictureEvent {
   CameraType style;
   int index;
 
-  GetImageEvent({required this.pictureOrigin, required this.style, required this.index});
+  GetImageEvent(
+      {required this.pictureOrigin, required this.style, required this.index});
 }
 
 class CropImageEvent extends CameraPictureEvent {
@@ -112,15 +122,19 @@ class ResetListImageEvent extends CameraPictureEvent {
 
 class Increment extends CameraPictureEvent {
   int index;
+
   Increment({required this.index});
 }
+
 class Decrement extends CameraPictureEvent {
   int index;
+
   Decrement({required this.index});
 }
 
 class RotateImageEvent extends CameraPictureEvent {
   int angle;
+
   RotateImageEvent({required this.angle});
 }
 
@@ -143,38 +157,38 @@ class CameraPictureViewModel
     on<Decrement>(decrement);
     on<Increment>(increment);
     on<ResetListImageEvent>(_resetListImageEvent);
-
   }
 
-  void increment(Increment event, Emitter emitter) async {
-    try{
+  void increment(Increment event, Emitter emit) async {
+    try {
       emit(state.copyWith(status: CropAndFilterPictureStatus.loading));
       state.index = event.index;
       emit(state.copyWith(
           index: state.index, status: CropAndFilterPictureStatus.success));
-    } catch (e){
+    } catch (e) {
       emit(state.copyWith(message: 'error'));
     }
   }
 
-  void _resetListImageEvent(ResetListImageEvent event, Emitter emitter) async {
-    try{
+  void _resetListImageEvent(ResetListImageEvent event, Emitter emit) async {
+    try {
       emit(state.copyWith(status: CropAndFilterPictureStatus.loading));
       state.pictureCrop = [...state.pictureOrigin];
       emit(state.copyWith(
-          pictureCrop: state.pictureCrop, status: CropAndFilterPictureStatus.success));
-    } catch (e){
+          pictureCrop: state.pictureCrop,
+          status: CropAndFilterPictureStatus.success));
+    } catch (e) {
       emit(state.copyWith(message: 'error'));
     }
   }
 
-  void decrement(Decrement event, Emitter emitter) async {
-    try{
+  void decrement(Decrement event, Emitter emit) async {
+    try {
       emit(state.copyWith(status: CropAndFilterPictureStatus.loading));
       state.index = event.index;
       emit(state.copyWith(
           index: state.index, status: CropAndFilterPictureStatus.success));
-    }catch (e){
+    } catch (e) {
       emit(state.copyWith(message: 'error'));
     }
   }
@@ -209,7 +223,7 @@ class CameraPictureViewModel
     }
   }
 
-  void _cropImageEvent(CropImageEvent event, Emitter emitter) async {
+  void _cropImageEvent(CropImageEvent event, Emitter emit) async {
     print('======== event ${state.index}');
     emit(state.copyWith(status: CropAndFilterPictureStatus.loading));
     final memoryImageSize = imgsize.ImageSizeGetter.getSize(
@@ -222,7 +236,7 @@ class CameraPictureViewModel
       imgWidthReal = imgHeightReal;
       imgHeightReal = tmp;
       state.pictureCrop[state.index - 1] =
-          await ImgProc.rotate(state.pictureCrop[state.index - 1], 90);
+          await ImgProc.rotate(state.pictureCrop[state.index - 1], 0);
     } else {}
     try {
       Uint8List res = await ImgProc.warpPerspectiveTransform(
@@ -254,7 +268,7 @@ class CameraPictureViewModel
     }
   }
 
-  void _filterPictureEvent(FilterPictureEvent event, Emitter emitter) async {
+  void _filterPictureEvent(FilterPictureEvent event, Emitter emit) async {
     int index;
     emit(state.copyWith(status: CropAndFilterPictureStatus.loading));
     state.filter = event.filter;
@@ -301,22 +315,24 @@ class CameraPictureViewModel
     }
   }
 
-  void _rotateImageEvent(RotateImageEvent event, Emitter emitter) async {
+  void _rotateImageEvent(RotateImageEvent event, Emitter emit) async {
     emit(state.copyWith(status: CropAndFilterPictureStatus.loading));
     try {
-      var res = await ImgProc.rotate(state.pictureCrop[state.index - 1], event.angle);
+      var res =
+          await ImgProc.rotate(state.pictureCrop[state.index - 1], event.angle);
       state.pictureCrop[state.index - 1] = res;
       emit(state.copyWith(
-          pictureCrop: state.pictureCrop,
-          status: CropAndFilterPictureStatus.success));
+        pictureCrop: state.pictureCrop,
+        status: CropAndFilterPictureStatus.success,
+        type: CropAndFilterPictureType.rotate,
+      ));
     } catch (e) {
       emit(state.copyWith(message: 'error'));
     }
   }
-
 }
 
 Future<Uint8List> rotateImage(Uint8List image) async {
-  image = await ImgProc.rotate(image, 90);
+  image = await ImgProc.rotate(image, 0);
   return image;
 }

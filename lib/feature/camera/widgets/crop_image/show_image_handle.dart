@@ -27,11 +27,14 @@ class _ShowImageHandleState extends State<ShowImageHandle> {
               child: Stack(
                 children: [
                   Center(
-                    child: CropImageWidget(
+                    child:
+                    CropImageWidget(
                       image: state.pictureCrop[state.index - 1],
                       height: MediaQuery.of(context).size.height - 230,
                       width: MediaQuery.of(context).size.width,
                       index: state.index,
+                      isRotate: !state.isDoneRotate,
+                      key: Key(state.index.toString()),
                     ),
                   ),
                   Positioned(

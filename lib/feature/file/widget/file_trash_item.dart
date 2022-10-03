@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:vart_tools/database/file_database.dart';
-import 'package:vart_tools/database/folder_database.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_trash_bloc.dart';
 import 'package:vart_tools/res/assets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class FolderTrashItem extends StatefulWidget {
-  const FolderTrashItem(
-      {Key? key, required this.folder, required this.selectIdObject})
+class FileTrashItem extends StatefulWidget {
+  const FileTrashItem(
+      {Key? key, required this.slectIdObject, required this.file})
       : super(key: key);
-  final FolderModel folder;
-  final SelectIdTrashModel selectIdObject;
+  final SelectIdTrashModel slectIdObject;
+  final FileModel file;
 
   @override
-  State<FolderTrashItem> createState() => _FolderTrashItemState();
+  State<FileTrashItem> createState() => _FileTrashItemState();
 }
 
-class _FolderTrashItemState extends State<FolderTrashItem> {
+class _FileTrashItemState extends State<FileTrashItem> {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -25,24 +24,24 @@ class _FolderTrashItemState extends State<FolderTrashItem> {
           create: (context) => CheckViewModel(),
         ),
       ],
-      child: FolderTrashItemBody(
-          folder: widget.folder, selectIdObject: widget.selectIdObject),
+      child: FileTrashItemBody(
+          slectIdObject: widget.slectIdObject, file: widget.file),
     );
   }
 }
 
-class FolderTrashItemBody extends StatefulWidget {
-  const FolderTrashItemBody(
-      {Key? key, required this.folder, required this.selectIdObject})
+class FileTrashItemBody extends StatefulWidget {
+  const FileTrashItemBody(
+      {Key? key, required this.slectIdObject, required this.file})
       : super(key: key);
-  final FolderModel folder;
-  final SelectIdTrashModel selectIdObject;
+  final SelectIdTrashModel slectIdObject;
+  final FileModel file;
 
   @override
-  State<FolderTrashItemBody> createState() => _FolderTrashItemBodyState();
+  State<FileTrashItemBody> createState() => _FileTrashItemBodyState();
 }
 
-class _FolderTrashItemBodyState extends State<FolderTrashItemBody> {
+class _FileTrashItemBodyState extends State<FileTrashItemBody> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<FolderTrashViewModel, FolderTrashState>(
@@ -55,27 +54,24 @@ class _FolderTrashItemBodyState extends State<FolderTrashItemBody> {
             onTap: () {
               context.read<FolderTrashViewModel>().add(
                     ToggleSelectFolderTrashEvent(
-                        selectedIdsObject: widget.selectIdObject),
+                        selectedIdsObject: widget.slectIdObject),
                   );
             },
             child: Row(
               children: [
                 SizedBox(
-                  child: Image.asset(ResAssets.icons.folder),
+                  child: Image.asset(widget.file.image!),
                 ),
                 const SizedBox(
                   width: 30,
                 ),
-                Expanded(child: Text(widget.folder.name!)),
+                Expanded(child: Text(widget.file.name)),
                 const SizedBox(
                   height: 30,
                   width: 30,
                 ),
-                state.isChecked(widget.selectIdObject)
-                    ? const Icon(
-                        Icons.task_alt,
-                        color: Color.fromARGB(255, 3, 112, 255),
-                      )
+                state.isChecked(widget.slectIdObject)
+                    ? const Icon(Icons.task_alt)
                     : const Icon(Icons.radio_button_unchecked),
               ],
             ),

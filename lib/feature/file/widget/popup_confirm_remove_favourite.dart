@@ -1,15 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:vart_tools/database/file_database.dart';
-import 'package:vart_tools/feature/folder/view_model/folders_trash_bloc.dart';
+import 'package:vart_tools/database/folder_database.dart';
+import 'package:vart_tools/feature/file/view_model/file_bloc.dart';
+import 'package:vart_tools/feature/file/view_model/file_favourite_bloc.dart';
+import 'package:vart_tools/feature/folder/view_model/folders_bloc.dart';
+import 'package:vart_tools/feature/folder/view_model/folders_favourite_bloc.dart';
 import 'package:vart_tools/res/app_color.dart';
 import 'package:vart_tools/res/font_size.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class PopupConfirmRecoverFolders extends StatelessWidget {
-  const PopupConfirmRecoverFolders({Key? key, required this.selectedIdObject})
-      : super(key: key);
-  final List<SelectIdTrashModel> selectedIdObject;
+enum unFavouriteType { file, folder }
 
+class PopUpComfirmUnFavourite extends StatefulWidget {
+  const PopUpComfirmUnFavourite(
+      {Key? key, this.file, this.folder, required this.type})
+      : super(key: key);
+  final FileModel? file;
+  final FolderModel? folder;
+  final unFavouriteType type;
+
+  @override
+  State<PopUpComfirmUnFavourite> createState() =>
+      _PopUpComfirmUnFavouriteState();
+}
+
+class _PopUpComfirmUnFavouriteState extends State<PopUpComfirmUnFavourite> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -26,7 +41,7 @@ class PopupConfirmRecoverFolders extends StatelessWidget {
               padding:
                   EdgeInsets.only(top: 30, left: 10, right: 10, bottom: 50),
               child: Text(
-                "Bạn có muốn khôi phục mục đã xoá không?",
+                "Bạn có muốn bỏ thích không?",
                 style: ResStyle.h2,
               ),
             ),
@@ -48,14 +63,24 @@ class PopupConfirmRecoverFolders extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.grayColor),
                     onPressed: () {
-                      context.read<FolderTrashViewModel>().add(
-                            RecoverFolderEvent(
-                                selectedIdsObject: selectedIdObject),
-                          );
+                      if (widget.type == unFavouriteType.file) {
+                        context.read<FilesViewModel>().add(FavouriteFileEvent(
+                            file: widget.file!, isFavourite: 0));
+                        context
+                            .read<FileFavouriteViewModel>()
+                            .add(LoadDataFilesFavouriteEvent());
+                      } else {
+                        context.read<FoldersViewModel>().add(
+                            FavouriteFolderEvent(
+                                folder: widget.folder!, isFavourite: 0));
+                        context
+                            .read<FolderFavouriteViewModel>()
+                            .add(LoadDataFavouriteEvent());
+                      }
                       Navigator.of(context).pop();
                     },
                     child: const Text(
-                      "Khôi phục",
+                      "Đồng Ý",
                       style: ResStyle.h2,
                     ))
               ],

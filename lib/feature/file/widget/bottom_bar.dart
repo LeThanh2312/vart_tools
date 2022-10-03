@@ -1,13 +1,21 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/feature/file/view_model/file_bloc.dart';
+import 'package:vart_tools/feature/file/widget/bottom_sheet_share.dart';
 import 'package:vart_tools/feature/file/widget/popup_confirm_delete_file.dart';
 import 'package:vart_tools/res/app_color.dart';
 import 'package:vart_tools/res/assets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:isolate';
+import 'dart:ui';
 
 class BottomBarFileDetail extends StatefulWidget {
   const BottomBarFileDetail({Key? key, required this.file}) : super(key: key);
@@ -20,9 +28,48 @@ class BottomBarFileDetail extends StatefulWidget {
 class _BottomBarFileDetailState extends State<BottomBarFileDetail> {
   late bool isFavourite = widget.file.isFavourite == 0 ? false : true;
 
+  @override
+  void initState() {
+    super.initState();
+    FlutterDownloader.registerCallback(downloadCallback);
+  }
+
   void _favouriteFile() {
     context.read<FilesViewModel>().add(FavouriteFileEvent(
         file: widget.file, isFavourite: isFavourite ? 1 : 0));
+  }
+
+  static void downloadCallback(
+      String id, DownloadTaskStatus status, int progress) {
+    final SendPort send =
+        IsolateNameServer.lookupPortByName('downloader_send_port')!;
+    send.send([id, status, progress]);
+  }
+
+  void _download(String url) async {
+    final status = await Permission.storage.request();
+
+    if (status.isGranted) {
+      // final externalDir = await getExternalStorageDirectory();
+      Directory? externalDir;
+
+      if (Platform.isIOS) {
+        externalDir = await getApplicationDocumentsDirectory();
+      } else {
+        externalDir = Directory('/storage/emulated/0/Download');
+        if (!await externalDir.exists())
+          externalDir = await getExternalStorageDirectory();
+      }
+
+      final id = await FlutterDownloader.enqueue(
+        url: url,
+        savedDir: externalDir!.path,
+        showNotification: true,
+        openFileFromNotification: true,
+      );
+    } else {
+      print('Permission Denied');
+    }
   }
 
   @override
@@ -37,24 +84,44 @@ class _BottomBarFileDetailState extends State<BottomBarFileDetail> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Image.asset(
-            ResAssets.icons.iconDowload,
-            height: 30,
-            width: 30,
-            fit: BoxFit.fill,
+          InkWell(
+            onTap: () {
+              _download(
+                  "https://cdn.pixabay.com/photo/2015/09/16/08/55/online-942406_960_720.jpg");
+            },
+            child: Image.asset(
+              ResAssets.icons.iconDowload,
+              height: 30,
+              width: 30,
+              fit: BoxFit.fill,
+            ),
           ),
-          Image.asset(
-            ResAssets.icons.iconShare,
-            height: 30,
-            width: 30,
-            fit: BoxFit.fill,
+          InkWell(
+            onTap: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (context) {
+                  return SizedBox(
+                    height: MediaQuery.of(context).size.height / 4,
+                    width: MediaQuery.of(context).size.width,
+                    child: BottomSheetShare(file: widget.file),
+                  );
+                },
+              );
+            },
+            child: Image.asset(
+              ResAssets.icons.iconShare,
+              height: 30,
+              width: 30,
+              fit: BoxFit.fill,
+            ),
           ),
           InkWell(
             onTap: () {
               setState(() {
-                if(isFavourite) {
+                if (isFavourite) {
                   isFavourite = false;
-                }else{
+                } else {
                   isFavourite = true;
                 }
               });
