@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/database/folder_database.dart';
@@ -10,6 +9,8 @@ import 'package:vart_tools/feature/home/widgets/search_widget.dart';
 import 'package:vart_tools/res/assets.dart';
 import 'package:vart_tools/res/font_size.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/services.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 class FileScreen extends StatefulWidget {
   const FileScreen({Key? key, required this.folder}) : super(key: key);
@@ -33,7 +34,7 @@ class _FileScreenState extends State<FileScreen> {
     super.initState();
     filesData = [
       FileModel(
-        name: "file 1",
+        name: "avatar",
         idFolder: widget.folder.id!,
         image: ResAssets.images.img1,
         format: "JPG",
@@ -42,7 +43,7 @@ class _FileScreenState extends State<FileScreen> {
         dateUpdate: '2022-09-29 08:28:58',
       ),
       FileModel(
-        name: "file 2",
+        name: "avatar2",
         idFolder: widget.folder.id!,
         image: ResAssets.images.img2,
         format: "JPG",
@@ -51,7 +52,7 @@ class _FileScreenState extends State<FileScreen> {
         dateUpdate: '2022-09-29 08:29:58',
       ),
       FileModel(
-        name: "file 3",
+        name: "avatar2",
         idFolder: widget.folder.id!,
         image: ResAssets.images.img3,
         format: "PNG",
@@ -60,7 +61,7 @@ class _FileScreenState extends State<FileScreen> {
         dateUpdate: '2022-09-28 08:28:58',
       ),
       FileModel(
-        name: "file 4",
+        name: "avatar3",
         idFolder: widget.folder.id!,
         image: ResAssets.images.img3,
         format: "PNG",
@@ -69,7 +70,7 @@ class _FileScreenState extends State<FileScreen> {
         dateUpdate: '2022-09-25 08:31:58',
       ),
       FileModel(
-        name: "file 5",
+        name: "avatar3",
         idFolder: widget.folder.id!,
         image: ResAssets.images.img3,
         format: "PNG",
@@ -78,7 +79,7 @@ class _FileScreenState extends State<FileScreen> {
         dateUpdate: '2022-09-25 08:30:58',
       ),
       FileModel(
-        name: "file 6",
+        name: "avatar",
         idFolder: widget.folder.id!,
         image: ResAssets.images.img3,
         format: "PNG",
@@ -170,7 +171,7 @@ class _FileScreenState extends State<FileScreen> {
                           child: Align(
                             alignment: Alignment.center,
                             child: Text(
-                              'Selection (${_idSelected.length})',
+                              'Đã Chọn (${_idSelected.length})',
                               style: const TextStyle(
                                 fontSize: 15,
                                 color: Colors.white,
@@ -208,12 +209,12 @@ class _FileScreenState extends State<FileScreen> {
                           child: TextButton(
                             child: !_selectAll
                                 ? const Text(
-                                    'Select All',
+                                    'Chọn Tất Cả',
                                     style: TextStyle(
                                         fontSize: 15, color: Colors.white),
                                   )
                                 : const Text(
-                                    'Unselect All',
+                                    'Bỏ Chọn',
                                     style: TextStyle(
                                         fontSize: 15, color: Colors.white),
                                   ),

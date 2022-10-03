@@ -4,6 +4,7 @@ import 'package:vart_tools/database/folder_database.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_trash_bloc.dart';
 import 'package:vart_tools/res/assets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 class FolderTrashItem extends StatefulWidget {
   const FolderTrashItem(
@@ -66,7 +67,18 @@ class _FolderTrashItemBodyState extends State<FolderTrashItemBody> {
                 const SizedBox(
                   width: 30,
                 ),
-                Expanded(child: Text(widget.folder.name!)),
+                Expanded(
+                    child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(widget.folder.name!),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Text(DateFormat('dd/MM/yyyy hh:mm')
+                        .format(DateTime.parse(widget.folder.dateUpdate!)))
+                  ],
+                )),
                 const SizedBox(
                   height: 30,
                   width: 30,

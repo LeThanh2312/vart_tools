@@ -67,12 +67,27 @@ class _FolderTrashScreenState extends State<FolderTrashScreen> {
                 Padding(
                   padding: const EdgeInsets.only(top: 20, bottom: 20),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Text(
-                        "Mục đã xóa",
-                        style: ResStyle.h2,
-                      ),
+                    children: [
+                      Expanded(
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            const Text(
+                              "Mục đã xóa",
+                              style: ResStyle.h2,
+                            ),
+                            Positioned(
+                              right: 0,
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 10),
+                                child: TextButton(
+                                    onPressed: () {},
+                                    child: const Text("Chọn Tất Cả")),
+                              ),
+                            )
+                          ],
+                        ),
+                      )
                     ],
                   ),
                 ),
