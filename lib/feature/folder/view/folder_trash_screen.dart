@@ -23,7 +23,11 @@ class FolderTrashScreen extends StatefulWidget {
 }
 
 class _FolderTrashScreenState extends State<FolderTrashScreen> {
-  List idSelected = [];
+  // List idSelected = [];
+  List<FolderModel> folders = [];
+  List<FileModel> files = [];
+  List<SelectIdTrashModel> idSelecteds = [];
+
 
   @override
   void initState() {
@@ -81,7 +85,23 @@ class _FolderTrashScreenState extends State<FolderTrashScreen> {
                               child: Padding(
                                 padding: const EdgeInsets.only(right: 10),
                                 child: TextButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      var folderTrashModel = context.read<FolderTrashViewModel>();
+                                      if(folders.isNotEmpty || files.isNotEmpty) {
+                                        for(FileModel file in files){
+                                          folderTrashModel.state.isChecked(SelectIdTrashModel(id: file.id!, type: IdType.file));
+                                          folderTrashModel.add(ToggleSelectFolderTrashEvent(
+                                            selectedIdsObject: SelectIdTrashModel(id: file.id!, type: IdType.file),),);
+                                        }
+                                        for(FolderModel folder in folders) {
+                                          folderTrashModel.state.isChecked(SelectIdTrashModel(id: folder.id!, type: IdType.folder));
+                                          folderTrashModel.add(ToggleSelectFolderTrashEvent(
+                                            selectedIdsObject: SelectIdTrashModel(id: folder.id!, type: IdType.folder),),);
+                                        }
+                                      }else{
+                                        folderTrashModel.state.selectedIdObject.clear();
+                                      }
+                                    },
                                     child: const Text("Chọn Tất Cả")),
                               ),
                             )
@@ -97,6 +117,8 @@ class _FolderTrashScreenState extends State<FolderTrashScreen> {
                       if (state.isSuccess) {
                         if (state.folders.isNotEmpty ||
                             state.files.isNotEmpty) {
+                              folders = state.folders;
+                              files = state.files;
                           return ListView(
                             padding: EdgeInsets.zero,
                             children: [

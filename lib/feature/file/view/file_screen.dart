@@ -10,7 +10,6 @@ import 'package:vart_tools/res/assets.dart';
 import 'package:vart_tools/res/font_size.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/services.dart';
-import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 class FileScreen extends StatefulWidget {
   const FileScreen({Key? key, required this.folder}) : super(key: key);

@@ -19,7 +19,6 @@ import 'dart:ui';
 import 'package:http/http.dart';
 import 'package:share/share.dart';
 import 'package:flutter/services.dart';
-import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 class BottomBarFileDetail extends StatefulWidget {
   const BottomBarFileDetail({Key? key, required this.file}) : super(key: key);
