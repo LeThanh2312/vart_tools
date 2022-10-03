@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:vart_tools/database/folder_database.dart';
-import 'package:vart_tools/feature/folder/view/folder_screen.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_bloc.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_trash_bloc.dart';
 import 'package:vart_tools/feature/folder/widget/folder_trash_item.dart';
@@ -146,7 +145,6 @@ class _FolderTrashScreenState extends State<FolderTrashScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         TextButton(
-                          child: Text("Xóa"),
                           onPressed: state.isEmptySelectedId
                               ? null
                               : () {
@@ -158,13 +156,13 @@ class _FolderTrashScreenState extends State<FolderTrashScreen> {
                                                 state.selectedFolderIds),
                                   );
                                 },
+                          child: const Text("Xóa"),
                         ),
                         Text(
                           "đã chọn ${state.selectedFolderIds.length} mục",
                           style: ResStyle.trash_text2,
                         ),
                         TextButton(
-                          child: Text("Khôi phục"),
                           onPressed: state.isEmptySelectedId
                               ? null
                               : () {
@@ -176,6 +174,7 @@ class _FolderTrashScreenState extends State<FolderTrashScreen> {
                                                 state.selectedFolderIds),
                                   );
                                 },
+                          child: const Text("Khôi phục"),
                         ),
                       ],
                     );

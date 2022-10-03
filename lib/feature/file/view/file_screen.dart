@@ -1,18 +1,13 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/database/folder_database.dart';
 import 'package:vart_tools/feature/file/view/file_detail_screen.dart';
 import 'package:vart_tools/feature/file/view_model/file_bloc.dart';
-import 'package:vart_tools/feature/file/widget/popup_confirm_delete_file.dart';
 import 'package:vart_tools/feature/file/widget/popup_confirm_delete_mulplite_file.dart';
 import 'package:vart_tools/feature/home/widgets/search_widget.dart';
-import 'package:vart_tools/res/app_color.dart';
 import 'package:vart_tools/res/assets.dart';
 import 'package:vart_tools/res/font_size.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:top_modal_sheet/top_modal_sheet.dart';
 
 class FileScreen extends StatefulWidget {
   const FileScreen({Key? key, required this.folder}) : super(key: key);
@@ -226,123 +221,123 @@ class _FileScreenState extends State<FileScreen> {
             child: BlocBuilder<FilesViewModel, FilesViewState>(
               builder: (context, state) {
                 if (state.isSuccess) {
-                  if(state.files.isNotEmpty){
+                  if (state.files.isNotEmpty) {
                     files = state.files;
-                  return ListView(
-                      children: state.groupByDateUpdate.keys.map((key) {
-                    final value = state.groupByDateUpdate[key];
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 20, left: 20),
-                          child: Text(key.toString()),
-                        ),
-                        GridView.count(
-                          primary: false,
-                          padding: EdgeInsets.all(20),
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 20,
-                          crossAxisSpacing: 20,
-                          shrinkWrap: true,
-                          children: <Widget>[
-                            for (var file in value!)
-                              InkWell(
-                                onTap: isSelectionMode
-                                    ? () {
-                                        int id =
-                                            int.parse(file["id"].toString());
-                                        if (checkIdExistIdSelected(id)) {
-                                          setState(() {
-                                            _idSelected.remove(id);
-                                          });
-                                        } else {
-                                          setState(() {
-                                            _idSelected.add(int.parse(
-                                                file["id"].toString()));
-                                          });
+                    return ListView(
+                        children: state.groupByDateUpdate.keys.map((key) {
+                      final value = state.groupByDateUpdate[key];
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 20, left: 20),
+                            child: Text(key.toString()),
+                          ),
+                          GridView.count(
+                            primary: false,
+                            padding: const EdgeInsets.all(20),
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 20,
+                            crossAxisSpacing: 20,
+                            shrinkWrap: true,
+                            children: <Widget>[
+                              for (var file in value!)
+                                InkWell(
+                                  onTap: isSelectionMode
+                                      ? () {
+                                          int id =
+                                              int.parse(file["id"].toString());
+                                          if (checkIdExistIdSelected(id)) {
+                                            setState(() {
+                                              _idSelected.remove(id);
+                                            });
+                                          } else {
+                                            setState(() {
+                                              _idSelected.add(int.parse(
+                                                  file["id"].toString()));
+                                            });
+                                          }
                                         }
-                                      }
-                                    : () => Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                FileDetailScrenn(
-                                              file: FileModel.fromMap(file),
+                                      : () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  FileDetailScrenn(
+                                                file: FileModel.fromMap(file),
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                onLongPress: () {
-                                  setState(() {
-                                    isSelectionMode = true;
-                                    _idSelected
-                                        .add(int.parse(file["id"].toString()));
-                                  });
-                                },
-                                child: Stack(
-                                  children: [
-                                    Image.asset(
-                                      '${file["image"]}',
-                                      fit: BoxFit.cover,
-                                      width: double.infinity,
-                                      height: double.infinity,
-                                    ),
-                                    Positioned(
-                                      right: 0,
-                                      top: 0,
-                                      child: SizedBox(
-                                        child: isSelectionMode
-                                            ? checkIdExistIdSelected(int.parse(
-                                                    file["id"].toString()))
-                                                ? const Icon(
-                                                    Icons.check_box,
-                                                    color: Color.fromARGB(
-                                                        255, 0, 170, 255),
-                                                  )
-                                                : const Icon(
-                                                    Icons
-                                                        .check_box_outline_blank,
-                                                    color: Colors.black,
-                                                  )
-                                            : null,
+                                  onLongPress: () {
+                                    setState(() {
+                                      isSelectionMode = true;
+                                      _idSelected.add(
+                                          int.parse(file["id"].toString()));
+                                    });
+                                  },
+                                  child: Stack(
+                                    children: [
+                                      Image.asset(
+                                        '${file["image"]}',
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                        height: double.infinity,
                                       ),
-                                    )
-                                  ],
+                                      Positioned(
+                                        right: 0,
+                                        top: 0,
+                                        child: SizedBox(
+                                          child: isSelectionMode
+                                              ? checkIdExistIdSelected(
+                                                      int.parse(file["id"]
+                                                          .toString()))
+                                                  ? const Icon(
+                                                      Icons.check_box,
+                                                      color: Color.fromARGB(
+                                                          255, 0, 170, 255),
+                                                    )
+                                                  : const Icon(
+                                                      Icons
+                                                          .check_box_outline_blank,
+                                                      color: Colors.black,
+                                                    )
+                                              : null,
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
-                              ),
-                          ],
-                        )
-                      ],
-                    );
-                  }).toList());
-                  }else {
-                    return SizedBox(
-                        width: MediaQuery.of(context).size.width,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const SizedBox(
-                              height: 100,
-                            ),
-                            Image.asset(
-                              ResAssets.icons.listFileEmpty, 
-                              height: 200,
-                              width: 200,
-                              fit: BoxFit.fill,
-                            ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            const Text(
-                              "Chưa có file trong mục này",
-                              style: ResStyle.blur_Text,
-                            ),
-                          ],
-                        ),
+                            ],
+                          )
+                        ],
                       );
+                    }).toList());
+                  } else {
+                    return SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const SizedBox(
+                            height: 100,
+                          ),
+                          Image.asset(
+                            ResAssets.icons.listFileEmpty,
+                            height: 200,
+                            width: 200,
+                            fit: BoxFit.fill,
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          const Text(
+                            "Chưa có file trong mục này",
+                            style: ResStyle.blur_Text,
+                          ),
+                        ],
+                      ),
+                    );
                   }
-                  
                 } else if (state.isFailure) {
                   return Text(state.message);
                 } else {

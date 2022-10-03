@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:vart_tools/database/folder_database.dart';
-import 'package:vart_tools/feature/file/view/file_screen.dart';
-import 'package:vart_tools/feature/file/view/test.dart';
 import 'package:vart_tools/feature/file/view_model/file_bloc.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_bloc.dart';
 import 'package:vart_tools/feature/folder/widget/folder_item.dart';
 import 'package:vart_tools/feature/folder/widget/panel_control_folder.dart';
 import 'package:vart_tools/feature/home/widgets/search_widget.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:vart_tools/res/app_color.dart';
 import 'package:vart_tools/res/assets.dart';
 import 'package:vart_tools/res/font_size.dart';
 

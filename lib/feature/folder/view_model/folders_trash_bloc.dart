@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vart_tools/database/folder_database.dart';
-import 'package:vart_tools/feature/folder/view_model/folders_bloc.dart';
 
 abstract class FolderTrashEvent {}
 
