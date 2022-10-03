@@ -51,7 +51,7 @@ class _PreviewPictureScreenState extends State<PreviewPictureScreen> {
         final tmp = imgWidthReal;
         imgWidthReal = imgHeightReal;
         imgHeightReal = tmp;
-        image = await ImgProc.rotate(image, 90);
+        image = await ImgProc.rotate(image, 1);
       } else {
         image = image;
       }

@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:opencv/opencv.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -61,9 +60,12 @@ class _BottomNavigatorCropImageState extends State<BottomNavigatorCropImage> {
               ),
               IconButton(
                 onPressed: () {
-                  widget.onChangeRotating(true);
-                  context.read<CameraPictureViewModel>().add(RotateImageEvent(angle: -90));
-                  setState(() {});
+                  if (_platformVersion) {
+                    context
+                        .read<CameraPictureViewModel>()
+                        .add(RotateImageEvent(angle: ImgProc.ROTATE_90_COUNTERCLOCKWISE));
+                    setState(() {});
+                  }
                 },
                 iconSize: 27.0,
                 icon: const Icon(
@@ -72,9 +74,14 @@ class _BottomNavigatorCropImageState extends State<BottomNavigatorCropImage> {
               ),
               IconButton(
                 onPressed: () {
-                  widget.onChangeRotating(true);
-                  context.read<CameraPictureViewModel>().add(RotateImageEvent(angle: 90));
-                  setState(() {});
+                  if (_platformVersion) {
+                    context
+                        .read<CameraPictureViewModel>()
+                        .add(RotateImageEvent(angle: ImgProc.ROTATE_90_CLOCKWISE));
+                    setState(() {});
+                  }else {
+                    initPlatformState();
+                  }
                 },
                 iconSize: 27.0,
                 icon: const Icon(
@@ -90,6 +97,7 @@ class _BottomNavigatorCropImageState extends State<BottomNavigatorCropImage> {
               ),
               IconButton(
                 onPressed: () {
+                  context.read<CameraPictureViewModel>().add(CropImageEvent());
                   Navigator.of(context).pop();
                 },
                 iconSize: 27.0,
@@ -102,24 +110,5 @@ class _BottomNavigatorCropImageState extends State<BottomNavigatorCropImage> {
         ),
       );
     });
-  }
-
-  Future<void> _rotateImage(Uint8List file, int angle) async {
-    if (_platformVersion) {
-      try {
-        var res = await ImgProc.rotate(file, angle);
-        //widget.listPictureHandle[widget.index - 1] = res as Uint8List;
-        widget.onChangeRotating(false);
-        setState(() {});
-      } catch (e) {
-        print(e);
-      } finally {
-        setState(() {
-          widget.onChangeRotating(false);
-        });
-      }
-    } else {
-      initPlatformState();
-    }
   }
 }

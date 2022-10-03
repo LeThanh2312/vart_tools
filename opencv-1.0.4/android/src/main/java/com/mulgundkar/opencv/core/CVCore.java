@@ -110,47 +110,47 @@ public class CVCore {
             // Decode image from input byte array
             Mat src = Imgcodecs.imdecode(new MatOfByte(byteData), Imgcodecs.IMREAD_UNCHANGED);
 
-            // if (direction == 0) {
-            //     Core.rotate(src, dst, Core.ROTATE_90_COUNTERCLOCKWISE);
-            // } else if (direction == 1) {
-            //     Core.rotate(src, dst, Core.ROTATE_90_CLOCKWISE);
-            // }
+             if (angle == 0) {
+                 Core.rotate(src, dst, Core.ROTATE_90_COUNTERCLOCKWISE);
+             } else if (angle == 1) {
+                 Core.rotate(src, dst, Core.ROTATE_90_CLOCKWISE);
+             }
             // double angle=45
 //            Mat sizeDst = Mat.eye(src.cols(), src.rows(), CvType.CV_32F);
 //            Point rotPoint= new Point(src.cols()/2.0, src.rows()/2.0);
 //            Mat rotMat = Imgproc.getRotationMatrix2D( rotPoint, angle, 1);
 //            Imgproc.warpAffine(src, dst, rotMat, sizeDst.size());
 
-            if (angle == 90 || angle == -270)
-
-                Core.rotate(src, dst, Core.ROTATE_90_CLOCKWISE);
-            else if (angle == 180 || angle == -180)
-
-                Core.rotate(src, dst, Core.ROTATE_180);
-            else if (angle == 270 || angle == -90)
-
-                Core.rotate(src, dst,
-                        Core.ROTATE_90_COUNTERCLOCKWISE);
-            else {
-
-                // Center of the rotation is given by
-                // midpoint of source image :
-                // (width/2.0,height/2.0)
-                Point rotPoint = new Point(src.cols() / 2.0,
-                        src.rows() / 2.0);
-
-                // Create Rotation Matrix
-                Mat rotMat = Imgproc.getRotationMatrix2D(
-                        rotPoint, angle, 1);
-
-                // Apply Affine Transformation
-                Imgproc.warpAffine(src, dst, rotMat, src.size(),
-                        Imgproc.WARP_INVERSE_MAP);
-
-                // If counterclockwise rotation is required use
-                // following: Imgproc.warpAffine(src, dst,
-                // rotMat, src.size());
-            }
+//            if (angle == 90 || angle == -270)
+//
+//                Core.rotate(src, dst, Core.ROTATE_90_CLOCKWISE);
+//            else if (angle == 180 || angle == -180)
+//
+//                Core.rotate(src, dst, Core.ROTATE_180);
+//            else if (angle == 270 || angle == -90)
+//
+//                Core.rotate(src, dst,
+//                        Core.ROTATE_90_COUNTERCLOCKWISE);
+//            else {
+//
+//                // Center of the rotation is given by
+//                // midpoint of source image :
+//                // (width/2.0,height/2.0)
+//                Point rotPoint = new Point(src.cols() / 2.0,
+//                        src.rows() / 2.0);
+//
+//                // Create Rotation Matrix
+//                Mat rotMat = Imgproc.getRotationMatrix2D(
+//                        rotPoint, angle, 1);
+//
+//                // Apply Affine Transformation
+//                Imgproc.warpAffine(src, dst, rotMat, src.size(),
+//                        Imgproc.WARP_INVERSE_MAP);
+//
+//                // If counterclockwise rotation is required use
+//                // following: Imgproc.warpAffine(src, dst,
+//                // rotMat, src.size());
+//            }
             // instantiating an empty MatOfByte class
             MatOfByte matOfByte = new MatOfByte();
             // Converting the Mat object to MatOfByte

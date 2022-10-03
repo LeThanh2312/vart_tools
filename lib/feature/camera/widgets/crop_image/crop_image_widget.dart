@@ -12,6 +12,7 @@ class CropImageWidget extends StatefulWidget {
   final double height;
   final double width;
   final int index;
+  final bool isRotate;
 
   const CropImageWidget({
     Key? key,
@@ -19,6 +20,7 @@ class CropImageWidget extends StatefulWidget {
     required this.width,
     required this.image,
     required this.index,
+    this.isRotate = true,
   }) : super(key: key);
 
   @override
@@ -37,24 +39,47 @@ class _CropImageWidgetState extends State<CropImageWidget> {
   }
 
   void rotateImage() async {
-    image = await ImgProc.rotate(widget.image, 90);
-    setState(() {});
+    image = await ImgProc.rotate(widget.image, 0);
   }
 
-  void getImageSize() {
-    BlocListener<CameraPictureViewModel, CropAndFilterPictureState>(
-        listener: (context, state) {
-            image = state.pictureCrop[state.index - 1];
-        }
-    );
-
-    print('======== image 2 $image');
-    final memoryImageSize =
-        imgsize.ImageSizeGetter.getSize(imgsize.MemoryInput(widget.image));
+  void getResize() {
+    final memoryImageSize = imgsize.ImageSizeGetter.getSize(imgsize.MemoryInput(widget.image));
     double imgHeightReal = memoryImageSize.height.toDouble();
     double imgWidthReal = memoryImageSize.width.toDouble();
 
-    if (imgHeightReal < imgWidthReal) {
+    image = widget.image;
+
+    double aspectRatioScreen = widget.height / widget.width;
+    double aspectRatioImage = imgHeightReal / imgWidthReal;
+
+    if (aspectRatioImage < aspectRatioScreen) {
+      imgWidth = widget.width;
+      imgHeight = aspectRatioImage * imgWidth;
+    } else {
+      imgHeight = widget.height;
+      imgWidth = imgHeight / aspectRatioImage;
+    }
+
+    scale = imgHeightReal / imgHeight;
+
+    setState(() {
+
+    });
+
+    points.add(Offset.zero);
+    points.add(Offset(imgWidth, 0));
+    points.add(Offset(imgWidth, imgHeight));
+    points.add(Offset(0, imgHeight));
+
+    context.read<CameraPictureViewModel>().add(GetPointsCropEvent(points: [points[0],points[1],points[2],points[3]], scale: scale));
+  }
+
+  void getImageSize() {
+    final memoryImageSize = imgsize.ImageSizeGetter.getSize(imgsize.MemoryInput(widget.image));
+    double imgHeightReal = memoryImageSize.height.toDouble();
+    double imgWidthReal = memoryImageSize.width.toDouble();
+
+    if (imgHeightReal < imgWidthReal && widget.isRotate) {
       final tmp = imgWidthReal;
       imgWidthReal = imgHeightReal;
       imgHeightReal = tmp;
@@ -88,6 +113,11 @@ class _CropImageWidgetState extends State<CropImageWidget> {
   void initState() {
     super.initState();
     getImageSize();
+    context.read<CameraPictureViewModel>().stream.listen((state) {
+      if (state.isSuccess && state.isDoneRotate) {
+        getImageSize();
+      }
+    });
   }
 
   void onPanUpdate(DragUpdateDetails details, int index) {
