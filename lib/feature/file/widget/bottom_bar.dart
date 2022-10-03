@@ -6,6 +6,7 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/feature/file/view_model/file_bloc.dart';
+import 'package:vart_tools/feature/file/widget/bottom_sheet_share.dart';
 import 'package:vart_tools/feature/file/widget/popup_confirm_delete_file.dart';
 import 'package:vart_tools/res/app_color.dart';
 import 'package:vart_tools/res/assets.dart';
@@ -27,10 +28,8 @@ class BottomBarFileDetail extends StatefulWidget {
 class _BottomBarFileDetailState extends State<BottomBarFileDetail> {
   late bool isFavourite = widget.file.isFavourite == 0 ? false : true;
 
-
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     FlutterDownloader.registerCallback(downloadCallback);
   }
@@ -40,15 +39,17 @@ class _BottomBarFileDetailState extends State<BottomBarFileDetail> {
         file: widget.file, isFavourite: isFavourite ? 1 : 0));
   }
 
-  static void downloadCallback(String id, DownloadTaskStatus status, int progress) {
-    final SendPort send = IsolateNameServer.lookupPortByName('downloader_send_port')!;
+  static void downloadCallback(
+      String id, DownloadTaskStatus status, int progress) {
+    final SendPort send =
+        IsolateNameServer.lookupPortByName('downloader_send_port')!;
     send.send([id, status, progress]);
   }
 
   void _download(String url) async {
     final status = await Permission.storage.request();
 
-    if(status.isGranted) {
+    if (status.isGranted) {
       // final externalDir = await getExternalStorageDirectory();
       Directory? externalDir;
 
@@ -56,7 +57,8 @@ class _BottomBarFileDetailState extends State<BottomBarFileDetail> {
         externalDir = await getApplicationDocumentsDirectory();
       } else {
         externalDir = Directory('/storage/emulated/0/Download');
-        if (!await externalDir.exists()) externalDir = await getExternalStorageDirectory();
+        if (!await externalDir.exists())
+          externalDir = await getExternalStorageDirectory();
       }
 
       final id = await FlutterDownloader.enqueue(
@@ -84,7 +86,8 @@ class _BottomBarFileDetailState extends State<BottomBarFileDetail> {
         children: [
           InkWell(
             onTap: () {
-              _download("https://cdn.pixabay.com/photo/2015/09/16/08/55/online-942406_960_720.jpg");
+              _download(
+                  "https://cdn.pixabay.com/photo/2015/09/16/08/55/online-942406_960_720.jpg");
             },
             child: Image.asset(
               ResAssets.icons.iconDowload,
@@ -93,18 +96,32 @@ class _BottomBarFileDetailState extends State<BottomBarFileDetail> {
               fit: BoxFit.fill,
             ),
           ),
-          Image.asset(
-            ResAssets.icons.iconShare,
-            height: 30,
-            width: 30,
-            fit: BoxFit.fill,
+          InkWell(
+            onTap: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (context) {
+                  return SizedBox(
+                    height: MediaQuery.of(context).size.height / 4,
+                    width: MediaQuery.of(context).size.width,
+                    child: BottomSheetShare(file: widget.file),
+                  );
+                },
+              );
+            },
+            child: Image.asset(
+              ResAssets.icons.iconShare,
+              height: 30,
+              width: 30,
+              fit: BoxFit.fill,
+            ),
           ),
           InkWell(
             onTap: () {
               setState(() {
-                if(isFavourite) {
+                if (isFavourite) {
                   isFavourite = false;
-                }else{
+                } else {
                   isFavourite = true;
                 }
               });

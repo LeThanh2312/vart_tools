@@ -22,6 +22,7 @@ class AssetIcons {
   final String iconSky = "$iconpath/sky.png";
   final String iconTweet = "$iconpath/tweet.png";
   final String iconZalo = "$iconpath/zalo.png";
+  final String iconExportPdf = "$iconpath/export_pdf.png";
 }
 
 class AssetImages {
