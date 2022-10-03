@@ -18,12 +18,14 @@ class CameraBottomWidget extends StatefulWidget {
     required this.styleCamera,
     required this.controller,
     required this.isPageFirst,
+    required this.isFlash,
   }) : super(key: key);
   final CameraType styleCamera;
   final CameraController controller;
   final bool isPageFirst;
   final void Function(CameraType value) onChangeType;
   final void Function(bool value) onChangePageFirst;
+  final bool isFlash;
 
   @override
   State<CameraBottomWidget> createState() => _CameraBottomWidgetState();
@@ -223,6 +225,11 @@ class _CameraBottomWidgetState extends State<CameraBottomWidget> {
     }
     if (widget.styleCamera == CameraType.cardID) {
       if (widget.isPageFirst) {
+        if(widget.isFlash){
+          await widget.controller.setFlashMode(FlashMode.always);
+        } else{
+          await widget.controller.setFlashMode(FlashMode.off);
+        }
         pictureBefore = await widget.controller.takePicture();
         listPicture.add(File(pictureBefore.path));
         widget.onChangePageFirst(false);
@@ -251,7 +258,11 @@ class _CameraBottomWidgetState extends State<CameraBottomWidget> {
     } else if (widget.styleCamera == CameraType.passport ||
         widget.styleCamera == CameraType.document) {
       try {
-        await widget.controller.setFlashMode(FlashMode.off);
+        if(widget.isFlash){
+          await widget.controller.setFlashMode(FlashMode.always);
+        } else{
+          await widget.controller.setFlashMode(FlashMode.off);
+        }
         pictureBefore = await widget.controller.takePicture();
         if (listPicture.length < 20) {
           listPicture.add(File(pictureBefore.path));

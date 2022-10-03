@@ -116,6 +116,9 @@ class _CropImageWidgetState extends State<CropImageWidget> {
     context.read<CameraPictureViewModel>().stream.listen((state) {
       if (state.isSuccess && state.isDoneRotate) {
         getImageSize();
+      } else if(state.isPoints){
+        points.clear();
+        getResize();
       }
     });
   }

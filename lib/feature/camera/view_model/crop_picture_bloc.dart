@@ -12,7 +12,7 @@ enum CropAndFilterPictureStatus { loading, success, failure, initialize }
 
 abstract class CameraPictureEvent {}
 
-enum CropAndFilterPictureType { normal, crop, rotate, filter }
+enum CropAndFilterPictureType { normal, crop, rotate, filter, points }
 
 class CropAndFilterPictureState {
   List<Uint8List> pictureCrop;
@@ -91,6 +91,8 @@ class CropAndFilterPictureState {
   bool get isFailure => status == CropAndFilterPictureStatus.failure;
 
   bool get isDoneRotate => type == CropAndFilterPictureType.rotate;
+
+  bool get isPoints => type == CropAndFilterPictureType.points;
 }
 
 class GetPointsCropEvent extends CameraPictureEvent {
@@ -118,6 +120,10 @@ class CropImageEvent extends CameraPictureEvent {
 
 class ResetListImageEvent extends CameraPictureEvent {
   ResetListImageEvent();
+}
+
+class ResetPointsEvent extends CameraPictureEvent {
+  ResetPointsEvent();
 }
 
 class Increment extends CameraPictureEvent {
@@ -157,6 +163,7 @@ class CameraPictureViewModel
     on<Decrement>(decrement);
     on<Increment>(increment);
     on<ResetListImageEvent>(_resetListImageEvent);
+    on<ResetPointsEvent>(_resetPointsEvent);
   }
 
   void increment(Increment event, Emitter emit) async {
@@ -329,6 +336,28 @@ class CameraPictureViewModel
     } catch (e) {
       emit(state.copyWith(message: 'error'));
     }
+  }
+
+  void _resetPointsEvent(ResetPointsEvent event, Emitter emit) async {
+    try{
+      emit(state.copyWith(status:  CropAndFilterPictureStatus.loading));
+      print('===== doan xem');
+      emit(state.copyWith(
+        status: CropAndFilterPictureStatus.success,
+        type: CropAndFilterPictureType.points,
+      ));
+    } catch (e) {
+      emit(state.copyWith(message: 'error'));
+    }
+    // try {
+    //   emit(state.copyWith(status: CropAndFilterPictureStatus.loading));
+    //   state.index = state.index;
+    //   print('===== doan xem');
+    //   emit(state.copyWith(
+    //       index: state.index, status: CropAndFilterPictureStatus.success));
+    // } catch (e) {
+    //   emit(state.copyWith(message: 'error'));
+    // }
   }
 }
 

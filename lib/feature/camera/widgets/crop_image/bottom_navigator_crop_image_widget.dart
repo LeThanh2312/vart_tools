@@ -89,7 +89,12 @@ class _BottomNavigatorCropImageState extends State<BottomNavigatorCropImage> {
                 ),
               ),
               IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  context
+                      .read<CameraPictureViewModel>()
+                      .add(ResetPointsEvent());
+                  setState(() {});
+                },
                 iconSize: 27.0,
                 icon: const Icon(
                   Icons.select_all,

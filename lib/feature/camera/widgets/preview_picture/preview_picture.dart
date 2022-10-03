@@ -3,6 +3,7 @@ import 'package:sizer/sizer.dart';
 import 'package:flutter/material.dart';
 import 'package:vart_tools/common/enum/camera_type.dart';
 import 'package:vart_tools/feature/camera/view_model/crop_picture_bloc.dart';
+import 'package:pinch_zoom/pinch_zoom.dart';
 
 class PreviewPicture extends StatefulWidget {
   const PreviewPicture({
