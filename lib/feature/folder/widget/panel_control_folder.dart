@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:vart_tools/common/animation/scale_animation.dart';
+import 'package:vart_tools/common/animation/slide_animation.dart';
 import 'package:vart_tools/database/folder_database.dart';
 import 'package:vart_tools/feature/folder/view/folder_trash_screen.dart';
 import 'package:vart_tools/feature/folder/widget/bottom_sheet_sort.dart';
@@ -72,10 +74,15 @@ class PanelControlFolder extends StatelessWidget {
           minWidth: 42,
           onPressed: () {
             Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const FolderTrashScreen()),
-            );
+                context,
+                // EnterExitRoute(
+                //     exitPage: this, enterPage: const FolderTrashScreen())
+                ScaleRoute(
+                  page: const FolderTrashScreen(),
+                )
+                // MaterialPageRoute(
+                //     builder: (context) => const FolderTrashScreen()),
+                );
           },
           color: AppColors.grayColor,
           shape: const CircleBorder(),
