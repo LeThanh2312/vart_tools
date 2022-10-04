@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/database/folder_database.dart';
@@ -10,7 +9,6 @@ import 'package:vart_tools/feature/home/widgets/search_widget.dart';
 import 'package:vart_tools/res/assets.dart';
 import 'package:vart_tools/res/font_size.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter/services.dart';
 
 class FileScreen extends StatefulWidget {
   const FileScreen({Key? key, required this.folder}) : super(key: key);

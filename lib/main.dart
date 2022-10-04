@@ -9,7 +9,7 @@ import 'package:sizer/sizer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'feature/bottom_navigation_bar_main/view/bottom_navigation_bar_main_screen.dart';
-import 'feature/camera/view_model/camera_bloc.dart';
+import 'feature/camera/view_model/crop_picture_bloc.dart';
 
 class SimpleBlocObserver extends BlocObserver {
   @override
@@ -26,7 +26,7 @@ void main() async{
   runApp(
     MultiBlocProvider(providers: [
       BlocProvider(
-        create: (context) => CameraPictureBloc(),
+        create: (context) => CameraPictureViewModel(),
       ),
       BlocProvider(
         create: (context) => FoldersViewModel(),

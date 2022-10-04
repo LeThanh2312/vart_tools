@@ -2,18 +2,25 @@ import 'package:flutter/material.dart';
 import 'dart:typed_data';
 import 'package:image_size_getter/image_size_getter.dart' as imgsize;
 import 'package:opencv/opencv.dart';
-import 'package:vart_tools/feature/camera/widgets/crop_image/show_image_transform.dart';
+import 'package:vart_tools/feature/camera/view_model/crop_picture_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+double cropPointSize = 12;
 
 class CropImageWidget extends StatefulWidget {
   final Uint8List image;
   final double height;
   final double width;
+  final int index;
+  final bool isRotate;
 
   const CropImageWidget({
     Key? key,
     required this.height,
     required this.width,
     required this.image,
+    required this.index,
+    this.isRotate = true,
   }) : super(key: key);
 
   @override
@@ -25,61 +32,92 @@ class _CropImageWidgetState extends State<CropImageWidget> {
   double imgHeight = 0;
   double imgWidth = 0;
   double scale = 1;
+  Uint8List? image;
 
   Color color(int i) {
     return [Colors.red, Colors.red, Colors.red, Colors.red][i];
   }
 
-  void getImageSize() {
-    final memoryImageSize =
-        imgsize.ImageSizeGetter.getSize(imgsize.MemoryInput(widget.image));
-    final imgHeightReal = memoryImageSize.width.toDouble();
-    final imgWidthReal = memoryImageSize.height.toDouble();
-    print('=== imgHeightReal ${imgHeightReal},${imgWidthReal}');
+  void rotateImage() async {
+    image = await ImgProc.rotate(widget.image, 0);
+  }
+
+  void getResize() {
+    final memoryImageSize = imgsize.ImageSizeGetter.getSize(imgsize.MemoryInput(widget.image));
+    double imgHeightReal = memoryImageSize.height.toDouble();
+    double imgWidthReal = memoryImageSize.width.toDouble();
+
+    image = widget.image;
 
     double aspectRatioScreen = widget.height / widget.width;
     double aspectRatioImage = imgHeightReal / imgWidthReal;
 
-    imgHeight = imgHeightReal;
-    imgWidth = imgWidthReal;
-
-    // if (aspectRatioImage == aspectRatioScreen) {
-    //   imgHeight = widget.height;
-    //   imgWidth = widget.width;
-    // } else if (aspectRatioImage < aspectRatioScreen) {
-    //   imgWidth = widget.width;
-    //   imgHeight = imgWidth * aspectRatioImage;
-    // } else {
-    //   imgHeight = widget.height;
-    //   imgWidth = imgHeight / aspectRatioImage;
-    // }
-
-    // 1
-
-    imgWidth = widget.width;
-    imgHeight = imgWidth * aspectRatioImage;
-    scale = imgHeightReal / imgHeight;
-
-    if (imgHeight > widget.height) {
+    if (aspectRatioImage < aspectRatioScreen) {
+      imgWidth = widget.width;
+      imgHeight = aspectRatioImage * imgWidth;
+    } else {
       imgHeight = widget.height;
       imgWidth = imgHeight / aspectRatioImage;
-      print('=== imgHeight ${imgHeight},${imgWidth}');
-
-      scale = imgHeightReal / imgHeight;
-      print('======= 1 ${imgHeightReal / imgHeight}');
-      print('======= 2 ${imgWidthReal / imgWidth}');
     }
+
+    scale = imgHeightReal / imgHeight;
+
+    setState(() {
+
+    });
 
     points.add(Offset.zero);
     points.add(Offset(imgWidth, 0));
     points.add(Offset(imgWidth, imgHeight));
     points.add(Offset(0, imgHeight));
+
+    context.read<CameraPictureViewModel>().add(GetPointsCropEvent(points: [points[0],points[1],points[2],points[3]], scale: scale));
+  }
+
+  void getImageSize() {
+    final memoryImageSize = imgsize.ImageSizeGetter.getSize(imgsize.MemoryInput(widget.image));
+    double imgHeightReal = memoryImageSize.height.toDouble();
+    double imgWidthReal = memoryImageSize.width.toDouble();
+
+    if (imgHeightReal < imgWidthReal && widget.isRotate) {
+      final tmp = imgWidthReal;
+      imgWidthReal = imgHeightReal;
+      imgHeightReal = tmp;
+      rotateImage();
+    } else {
+      image = widget.image;
+    }
+
+    double aspectRatioScreen = widget.height / widget.width;
+    double aspectRatioImage = imgHeightReal / imgWidthReal;
+
+    if (aspectRatioImage < aspectRatioScreen) {
+      imgWidth = widget.width;
+      imgHeight = aspectRatioImage * imgWidth;
+    } else {
+      imgHeight = widget.height;
+      imgWidth = imgHeight / aspectRatioImage;
+    }
+
+    scale = imgHeightReal / imgHeight;
+
+    points.add(Offset.zero);
+    points.add(Offset(imgWidth, 0));
+    points.add(Offset(imgWidth, imgHeight));
+    points.add(Offset(0, imgHeight));
+
+    context.read<CameraPictureViewModel>().add(GetPointsCropEvent(points: [points[0],points[1],points[2],points[3]], scale: scale));
   }
 
   @override
   void initState() {
-    getImageSize();
     super.initState();
+    getImageSize();
+    context.read<CameraPictureViewModel>().stream.listen((state) {
+      if (state.isSuccess && state.isDoneRotate) {
+        getImageSize();
+      }
+    });
   }
 
   void onPanUpdate(DragUpdateDetails details, int index) {
@@ -90,146 +128,103 @@ class _CropImageWidgetState extends State<CropImageWidget> {
     setState(() {
       points[index] = newPoint;
     });
+    context.read<CameraPictureViewModel>().add(GetPointsCropEvent(points: [points[0],points[1],points[2],points[3]], scale: scale));
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.black,
+      color: Colors.grey,
       height: widget.height,
       width: widget.width,
       alignment: Alignment.center,
-      child: Stack(
-        children: [
-          SizedBox(
-            width: imgWidth,
-            height: imgHeight,
-            child: Image.memory(
-              widget.image,
-              fit: BoxFit.contain,
-            ),
-          ),
-          SizedBox(
-            width: imgWidth,
-            height: imgHeight,
-          ),
-          SizedBox(
-            width: imgWidth,
-            height: imgHeight,
-            child: CustomPaint(
-              painter: CustomCropImagePainter(points: points),
-              size: Size(imgWidth, imgHeight),
-              child: SizedBox(
+      child: Center(
+        child: SizedBox(
+          width: imgWidth,
+          height: imgHeight,
+          child: Stack(
+            children: [
+              image != null
+                  ? SizedBox(
+                      width: imgWidth,
+                      height: imgHeight,
+                      child: Image.memory(
+                        image!,
+                        fit: BoxFit.contain,
+                      ),
+                    )
+                  : const Center(child: CircularProgressIndicator()),
+              SizedBox(
                 width: imgWidth,
                 height: imgHeight,
               ),
-            ),
-          ),
-          Positioned(
-            left: points[0].dx,
-            top: points[0].dy,
-            child: GestureDetector(
-              onPanUpdate: (details) {
-                onPanUpdate(details, 0);
-              },
-              child: CircleAvatar(
-                radius: 6,
-                backgroundColor: color(0),
+              SizedBox(
+                width: imgWidth,
+                height: imgHeight,
+                child: CustomPaint(
+                  painter: CustomCropImagePainter(points: points),
+                  size: Size(imgWidth, imgHeight),
+                  child: SizedBox(
+                    width: imgWidth,
+                    height: imgHeight,
+                  ),
+                ),
               ),
-            ),
-          ),
-          Positioned(
-            left: points[1].dx - 12,
-            top: points[1].dy,
-            child: GestureDetector(
-              onPanUpdate: (details) {
-                onPanUpdate(details, 1);
-              },
-              child: CircleAvatar(
-                radius: 6,
-                backgroundColor: color(2),
+              Positioned(
+                left: points[0].dx,
+                top: points[0].dy,
+                child: GestureDetector(
+                  onPanUpdate: (details) {
+                    onPanUpdate(details, 0);
+                  },
+                  child: CircleAvatar(
+                    radius: cropPointSize,
+                    backgroundColor: color(0),
+                  ),
+                ),
               ),
-            ),
-          ),
-          Positioned(
-            left: points[2].dx - 12,
-            top: points[2].dy - 12,
-            child: GestureDetector(
-              onPanUpdate: (details) {
-                onPanUpdate(details, 2);
-              },
-              child: CircleAvatar(
-                radius: 6,
-                backgroundColor: color(2),
+              Positioned(
+                left: points[1].dx - cropPointSize * 2,
+                top: points[1].dy,
+                child: GestureDetector(
+                  onPanUpdate: (details) {
+                    onPanUpdate(details, 1);
+                  },
+                  child: CircleAvatar(
+                    radius: cropPointSize,
+                    backgroundColor: color(2),
+                  ),
+                ),
               ),
-            ),
-          ),
-          Positioned(
-            left: points[3].dx,
-            top: points[3].dy - 12,
-            child: GestureDetector(
-              onPanUpdate: (details) {
-                onPanUpdate(details, 3);
-              },
-              child: CircleAvatar(
-                radius: 6,
-                backgroundColor: color(3),
+              Positioned(
+                left: points[2].dx - cropPointSize * 2,
+                top: points[2].dy - cropPointSize * 2,
+                child: GestureDetector(
+                  onPanUpdate: (details) {
+                    onPanUpdate(details, 2);
+                  },
+                  child: CircleAvatar(
+                    radius: cropPointSize,
+                    backgroundColor: color(2),
+                  ),
+                ),
               ),
-            ),
+              Positioned(
+                left: points[3].dx,
+                top: points[3].dy - cropPointSize * 2,
+                child: GestureDetector(
+                  onPanUpdate: (details) {
+                    onPanUpdate(details, 3);
+                  },
+                  child: CircleAvatar(
+                    radius: cropPointSize,
+                    backgroundColor: color(3),
+                  ),
+                ),
+              ),
+              ],
           ),
-          Positioned(
-            left: widget.height / 2,
-            top: widget.width / 2,
-            child: IconButton(
-              onPressed: () async {
-                print('=== 0x ${((points[0].dx) * scale).toInt()}');
-                print('=== 0y ${((points[0].dy) * scale).toInt()}');
-                //
-                print('=== 1x ${((points[1].dx) * scale).toInt()}');
-                print('=== 1y ${((points[1].dy) * scale).toInt()}');
-                //
-                print('=== 3x ${((points[3].dx) * scale).toInt()}');
-                print('=== 3y ${((points[3].dy) * scale).toInt()}');
-                //
-                print('=== 2x ${((points[2].dx) * scale).toInt()}');
-                print('=== 2y ${((points[2].dy) * scale).toInt()}');
-
-
-                Uint8List res = await ImgProc.warpPerspectiveTransform(
-                    widget.image,
-                    sourcePoints: [
-                      (points[0].dx * scale).toInt(),
-                      (points[0].dy * scale).toInt(),
-                      //
-                      (points[1].dx * scale).toInt(),
-                      (points[1].dy * scale).toInt(),
-                      //
-                      (points[3].dx * scale).toInt(),
-                      (points[3].dy * scale).toInt(),
-                      //
-                      (points[2].dx * scale).toInt(),
-                      (points[2].dy * scale).toInt(),
-
-                    ],
-                  destinationPoints: [0, 0, 720, 0, 0, 1280, 720, 1280],
-                  outputSize: [1280, 720],
-                    // sourcePoints: [113, 137, 260, 137, 138, 379, 271, 340],
-                    // sourcePoints: [7, 7, 712, 7, -7, 1272, 727, 1272],
-                    // destinationPoints: [0, 0, 612, 0, 0, 459, 612, 459],
-                    // outputSize: [612, 459],
-                ) as Uint8List;
-                res = await ImgProc.rotate(res, 90);
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => ShowImageTransform(
-                              image: res,
-                            )));
-              },
-              icon: const Icon(Icons.add_circle),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -242,16 +237,17 @@ class CustomCropImagePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    final deltaSize = cropPointSize / 2;
     var paint = Paint()
       ..style = PaintingStyle.stroke
       ..color = Colors.blue
       ..strokeWidth = 2;
 
     var path = Path();
-    path.moveTo(points[0].dx + 3, points[0].dy + 3);
-    path.lineTo(points[1].dx - 3, points[1].dy + 3);
-    path.lineTo(points[2].dx - 3, points[2].dy - 3);
-    path.lineTo(points[3].dx + 3, points[3].dy - 3);
+    path.moveTo(points[0].dx + deltaSize, points[0].dy + deltaSize);
+    path.lineTo(points[1].dx - deltaSize, points[1].dy + deltaSize);
+    path.lineTo(points[2].dx - deltaSize, points[2].dy - deltaSize);
+    path.lineTo(points[3].dx + deltaSize, points[3].dy - deltaSize);
     path.close();
     canvas.drawPath(path, paint);
   }

@@ -1,91 +1,97 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:sizer/sizer.dart';
-import 'package:vart_tools/feature/camera/widgets/crop_image/crop_image_widget.dart';
+import '../../view_model/crop_picture_bloc.dart';
+import 'crop_image_widget.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ShowImageHandle extends StatefulWidget {
   const ShowImageHandle({
     Key? key,
-    required this.listPictureHandle,
     required this.isRotating,
-    required this.index,
-    required this.onChangeIndex,
   }) : super(key: key);
-  final List<Uint8List> listPictureHandle;
   final bool isRotating;
-  final int index;
-  final void Function(int value) onChangeIndex;
 
   @override
   State<ShowImageHandle> createState() => _ShowImageHandleState();
 }
 
 class _ShowImageHandleState extends State<ShowImageHandle> {
-  late Rect _rect;
-
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Stack(
-        children: [
-          Center(
-            child: widget.isRotating
-                ? const CircularProgressIndicator()
-                :
-                // Image.memory(
-                //     widget.listPictureHandle[widget.index - 1],
-                //     fit: BoxFit.cover,
-                //     width: 65.0.w,
-                //     alignment: Alignment.topCenter,
-                //   ),
-                CropImageWidget(
-                    image: widget.listPictureHandle[widget.index - 1],
-                    height: MediaQuery.of(context).size.height - 230,
-                    width: MediaQuery.of(context).size.width,
-                  ),
-          ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              alignment: Alignment.center,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+    return BlocBuilder<CameraPictureViewModel, CropAndFilterPictureState>(
+      builder: (context, state) {
+        switch (state.status) {
+          case CropAndFilterPictureStatus.loading:
+            return const Center(child: CircularProgressIndicator());
+          case CropAndFilterPictureStatus.success:
+            return Expanded(
+              child: Stack(
                 children: [
-                  IconButton(
-                    onPressed: () {
-                      if (widget.index > 1)
-                        widget.onChangeIndex(widget.index - 1);
-                      setState(() {});
-                    },
-                    iconSize: 27.0,
-                    icon: const Icon(
-                      Icons.arrow_circle_left_outlined,
+                  Center(
+                    child:
+                    CropImageWidget(
+                      image: state.pictureCrop[state.index - 1],
+                      height: MediaQuery.of(context).size.height - 230,
+                      width: MediaQuery.of(context).size.width,
+                      index: state.index,
+                      isRotate: !state.isDoneRotate,
+                      key: Key(state.index.toString()),
                     ),
                   ),
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Text(
-                        '${widget.index}/${widget.listPictureHandle.length}'),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      if (widget.index < widget.listPictureHandle.length)
-                        widget.onChangeIndex(widget.index + 1);
-                      setState(() {});
-                    },
-                    iconSize: 27.0,
-                    icon: const Icon(
-                      Icons.arrow_circle_right_outlined,
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            onPressed: () async {
+                              if (state.index > 1) {
+                                context
+                                    .read<CameraPictureViewModel>()
+                                    .add(Increment(index: (state.index - 1)));
+                              }
+                              setState(() {});
+                            },
+                            iconSize: 27.0,
+                            icon: const Icon(
+                              Icons.arrow_circle_left_outlined,
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Text(
+                                '${state.index}/${state.pictureCrop.length}'),
+                          ),
+                          IconButton(
+                            onPressed: () async {
+                              if (state.index < state.pictureCrop.length) {
+                                context
+                                    .read<CameraPictureViewModel>()
+                                    .add(Decrement(index: (state.index + 1)));
+                              }
+                              setState(() {});
+                            },
+                            iconSize: 27.0,
+                            icon: const Icon(
+                              Icons.arrow_circle_right_outlined,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
+                  )
                 ],
               ),
-            ),
-          )
-        ],
-      ),
+            );
+          case CropAndFilterPictureStatus.failure:
+            return const Center(child: Text("Something went wrong"));
+          default:
+            return const SizedBox();
+        }
+      },
     );
   }
 }

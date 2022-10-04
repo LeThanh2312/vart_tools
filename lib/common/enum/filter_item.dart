@@ -1,4 +1,4 @@
-enum FilterItem { blur, shadows, fullAngle, brighten, ecological,bVW}
+enum FilterItem { blur, shadows, fullAngle, brighten, ecological,bVW,}
 
 extension FilterItemExtention on FilterItem? {
   String get name {

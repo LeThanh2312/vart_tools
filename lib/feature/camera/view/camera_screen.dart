@@ -1,6 +1,7 @@
 // ignore_for_file: depend_on_referenced_packages
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter/services.dart';
 import '../../../common/enum/camera_type.dart';
 import '../widgets/camera/camera_bottom_widget.dart';
 import '../widgets/camera/camera_header_widget.dart';
@@ -21,19 +22,36 @@ class _CameraScreenState extends State<CameraScreen> {
   List<XFile> listPicture = [];
 
   @override
+  void initState() {
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    initCamera(widget.cameras![0]);
+  }
+
+  @override
   void dispose() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     _controller.dispose();
     super.dispose();
   }
 
-  @override
-  void initState() {
-    super.initState();
-    initCamera(widget.cameras![0]);
-  }
-
   Future initCamera(CameraDescription cameraDescription) async {
-    _controller = CameraController(cameraDescription, ResolutionPreset.high);
+    final newCameraDescription = CameraDescription(
+      lensDirection: cameraDescription.lensDirection,
+      name: cameraDescription.name,
+      sensorOrientation: 90,
+    );
+    print('===== ${cameraDescription.sensorOrientation}');
+    _controller = CameraController(newCameraDescription, ResolutionPreset.high);
+
     try {
       await _controller.initialize().then((_) {
         if (!mounted) return;

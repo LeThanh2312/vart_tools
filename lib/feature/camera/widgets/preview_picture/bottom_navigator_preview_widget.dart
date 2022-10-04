@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../view/crop_image_screen.dart';
@@ -7,18 +6,16 @@ class BottomNavigatorPreviewWidget extends StatefulWidget {
   const BottomNavigatorPreviewWidget({
     Key? key,
     required this.onShowPopupFilter,
-    required this.listImage,
   }) : super(key: key);
   final void Function(bool value) onShowPopupFilter;
-  final List<File> listImage;
 
   @override
   State<BottomNavigatorPreviewWidget> createState() =>
       _BottomNavigatorPreviewWidgetState();
 }
 
-class _BottomNavigatorPreviewWidgetState
-    extends State<BottomNavigatorPreviewWidget> {
+class _BottomNavigatorPreviewWidgetState extends State<BottomNavigatorPreviewWidget> {
+
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
@@ -35,9 +32,7 @@ class _BottomNavigatorPreviewWidgetState
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => CropImageScreen(
-                      listPictureOrigin: widget.listImage,
-                    ),
+                    builder: (context) => CropImageScreen(),
                   ),
                 );
               },
@@ -98,14 +93,6 @@ class _BottomNavigatorPreviewWidgetState
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () {
-                // Navigator.pushAndRemoveUntil(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (contextMain) =>
-                //     const BottomBarMainScreen(indexTabItem: TabItem.file),
-                //   ),
-                //   ModalRoute.withName('/'),
-                // );
                 Navigator.of(context).pop();
               },
             ),

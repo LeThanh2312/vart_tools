@@ -52,7 +52,7 @@ class _CameraBottomWidgetState extends State<CameraBottomWidget> {
                   (CameraType e) {
                     return InkWell(
                       onTap: () {
-                        if (listPicture.isEmpty) {
+                        if (listPicture.isEmpty || widget.styleCamera == e) {
                           widget.onChangeType(e);
                         } else {
                           _showDialogMoveStyleCamera(e);
@@ -120,7 +120,7 @@ class _CameraBottomWidgetState extends State<CameraBottomWidget> {
                               alignment: Alignment.center,
                               children: [
                                 Image.file(
-                                  File(listPicture[0].path),
+                                  File(listPicture.last.path),
                                   fit: BoxFit.cover,
                                   width: 40,
                                 ),
@@ -265,50 +265,51 @@ class _CameraBottomWidgetState extends State<CameraBottomWidget> {
   }
 
   Future<void> getImageGallery(BuildContext context) async {
-    List<AssetEntity> resultList = <AssetEntity>[];
+    List<AssetEntity>? resultList = [];
 
-    resultList = (await AssetPicker.pickAssets(
+    resultList = await AssetPicker.pickAssets(
       context,
       pickerConfig: AssetPickerConfig(
         maxAssets: widget.styleCamera == CameraType.cardID ? 2 : 20,
         themeColor: Colors.orangeAccent,
         textDelegate: const VietnameseAssetPickerTextDelegate(),
       ),
-    ))!;
-    print('====== ${resultList.length}');
+    );
 
-    for(var item in resultList) {
-      try {
-        final file = await item.file;
-        listPicture.add(file!);
-      } catch(err) {
-        // Do something here
+    if (resultList != null) {
+      for (var item in resultList) {
+        try {
+          final file = await item.file;
+          listPicture.add(file!);
+        } catch (err) {
+          // Do something here
+        }
       }
-    }
-    if(widget.styleCamera == CameraType.cardID && listPicture.length != 2){
-      const snackBar = SnackBar(
-        content: Text('Vui lòng chọn ít nhất hai ảnh'),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }else{
-      if (!mounted) return;
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => PreviewPictureScreen(
-            listPicture: listPicture,
-            style: widget.styleCamera,
+      if (widget.styleCamera == CameraType.cardID && listPicture.length != 2) {
+        const snackBar = SnackBar(
+          content: Text('Vui lòng chọn ít nhất hai ảnh'),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        listPicture.clear();
+      } else {
+        if (!mounted) return;
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PreviewPictureScreen(
+              listPicture: listPicture,
+              style: widget.styleCamera,
+            ),
           ),
-        ),
-      ).then(
-            (_) => setState(
-              () {
-            listPicture.clear();
-            widget.onChangePageFirst(true);
-          },
-        ),
-      );
-    }
+        ).then(
+          (_) => setState(
+            () {
+              listPicture.clear();
+              widget.onChangePageFirst(true);
+            },
+          ),
+        );
+      }
+    } else {}
   }
-
-  }
+}

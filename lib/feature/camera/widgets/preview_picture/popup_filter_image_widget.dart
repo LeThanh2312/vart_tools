@@ -2,15 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import '../../../../common/enum/filter_item.dart';
 import '../../../../res/app_color.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../view_model/crop_picture_bloc.dart';
 
 class PopupFilterImageWidget extends StatefulWidget {
-  const PopupFilterImageWidget({Key? key}) : super(key: key);
+  const PopupFilterImageWidget({
+    Key? key,
+    required this.onChangeImage,
+    required this.isShowPopupFilter,
+  }) : super(key: key);
+  final void Function(FilterItem value) onChangeImage;
+  final bool isShowPopupFilter;
+
 
   @override
   State<PopupFilterImageWidget> createState() => _PopupFilterImageWidgetState();
 }
 
 class _PopupFilterImageWidgetState extends State<PopupFilterImageWidget> {
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,13 +34,13 @@ class _PopupFilterImageWidgetState extends State<PopupFilterImageWidget> {
       decoration: BoxDecoration(
         border: Border.all(width: 2, color: AppColors.greyLine),
         borderRadius: BorderRadius.circular(15),
-        color: Colors.black,
+        color: Colors.white,
       ),
       child: GridView.builder(
         physics: const NeverScrollableScrollPhysics(),
         itemCount: FilterItem.values.length,
         itemBuilder: (BuildContext ctx, int index) {
-          return filterItem(FilterItem.values[index]);
+          return filterItem(context, FilterItem.values[index]);
         },
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3,
@@ -38,24 +51,11 @@ class _PopupFilterImageWidgetState extends State<PopupFilterImageWidget> {
     );
   }
 
-  Widget filterItem(FilterItem filter) {
+  Widget filterItem(BuildContext context, FilterItem filter) {
     return InkWell(
-      onTap: (){
-        if(filter ==  FilterItem.blur){
-
-        }else if(filter ==  FilterItem.shadows){
-
-        }else if(filter ==  FilterItem.fullAngle){
-
-        }else if(filter ==  FilterItem.brighten){
-
-        }else if(filter ==  FilterItem.ecological){
-
-        }else if(filter ==  FilterItem.bVW){
-
-        }else{
-
-        }
+      onTap: () async {
+        context.read<CameraPictureViewModel>().add(FilterPictureEvent(filter: filter));
+        widget.onChangeImage(filter);
       },
       child: Column(
         children: [
@@ -85,4 +85,6 @@ class _PopupFilterImageWidgetState extends State<PopupFilterImageWidget> {
       ),
     );
   }
+
 }
+
