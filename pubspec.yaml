@@ -88,8 +88,6 @@ dev_dependencies:
   image_size_getter: ^2.1.2
   flutter_downloader: ^1.8.4
 
-  pinch_zoom: ^1.0.0
-
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

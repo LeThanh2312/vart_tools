@@ -133,14 +133,17 @@ public class OpenCV4Plugin implements FlutterPlugin, MethodCallHandler {
             case "sobel":
                 result.success(core.sobel((byte[]) call.argument("byteData"), (int) call.argument("depth"),
                         (int) call.argument("dx"), (int) call.argument("dy")));
-
             // Rotate Image
             case "rotate":
                 result.success(core.rotate((byte[]) call.argument("byteData"), (int) call.argument("angle")));
                 break;
-            // Rotate Image
+            // gray Scale
             case "grayScale":
                 result.success(core.grayScale((byte[]) call.argument("byteData")));
+                break;
+            // brightness
+            case "brightness":
+                result.success(core.bringhtness((byte[]) call.argument("byteData")));
                 break;
             case "scharr":
                 result.success(core.scharr((byte[]) call.argument("byteData"), (int) call.argument("depth"),

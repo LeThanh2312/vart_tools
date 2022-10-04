@@ -298,19 +298,24 @@ class CameraPictureViewModel
         }
       } else if (state.filter == FilterItem.fullAngle) {
         state.pictureCrop = [...state.pictureOrigin];
-      } else if (state.filter == FilterItem.brighten) {
+      } else if (state.filter == FilterItem.brightness) {
+        for (var item in state.pictureCrop) {
+          index = state.pictureCrop.indexOf(item);
+          Uint8List res =
+          await ImgProc.brightness(item)
+          as Uint8List;
+          state.pictureCrop[index] = res;
+        }
       } else if (state.filter == FilterItem.ecological) {
+        for (var item in state.pictureCrop) {
+          index = state.pictureCrop.indexOf(item);
+          Uint8List res = await ImgProc.adaptiveThreshold(item, 255, ImgProc.adaptiveThreshGaussianC, ImgProc.threshBinary, 11, 2) as Uint8List;
+          state.pictureCrop[index] = res;
+        }
       } else if (state.filter == FilterItem.bVW) {
         for (var item in state.pictureCrop) {
           index = state.pictureCrop.indexOf(item);
-          Uint8List res = await ImgProc.adaptiveThreshold(
-            item,
-            125,
-            ImgProc.adaptiveThreshMeanC,
-            ImgProc.threshBinary,
-            11,
-            12,
-          ) as Uint8List;
+          Uint8List res = await ImgProc.adaptiveThreshold(item, 125, ImgProc.adaptiveThreshMeanC, ImgProc.threshBinaryInv, 11, 2) as Uint8List;
           state.pictureCrop[index] = res;
         }
       } else {}

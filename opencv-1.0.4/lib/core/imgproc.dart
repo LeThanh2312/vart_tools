@@ -827,6 +827,17 @@ class ImgProc {
     return result;
   }
 
+  /// Function takes input file's byte array data, Unit8List
+  static Future<dynamic> brightness(Uint8List byteData) async {
+    /// Variable to store operation result
+    final dynamic result = await _channel.invokeMethod('brightness', {
+      'byteData': byteData,
+    });
+
+    /// Function returns the response from method channel
+    return result;
+  }
+
   /// Function takes input file's byte array data & type of color map.
   static Future<dynamic> applyColorMap(Uint8List byteData, int colorMap) async {
     /// Variable to store operation result

@@ -163,6 +163,29 @@ public class CVCore {
     }
 
     @SuppressLint("MissingPermission")
+    public  byte[] bringhtness(byte[] byteData){
+        byte[] byteArray = new byte[0];
+        int brightness = 50;
+        int contrast = 30;
+        try{
+            // Decode image from input byte array
+            Mat src = Imgcodecs.imdecode(new MatOfByte(byteData), Imgcodecs.IMREAD_UNCHANGED);
+
+            Mat dest = new Mat(src.rows(), src.cols(), src.type());
+            src.convertTo(dest, -1, 1, 100);
+
+            MatOfByte matOfByte = new MatOfByte();
+            // Converting the Mat object to MatOfByte
+            Imgcodecs.imencode(".jpg", dest, matOfByte);
+            byteArray = matOfByte.toArray();
+
+        } catch (Exception e){
+            System.out.println("OpenCV Error: " + e.toString());
+        }
+        return  byteArray;
+    }
+
+    @SuppressLint("MissingPermission")
     public byte[] gaussianBlur(byte[] byteData, ArrayList kernelSize, double sigmaX) {
         byte[] byteArray = new byte[0];
         try {
@@ -857,7 +880,7 @@ public class CVCore {
 
             Mat source = new Mat(1, 1, CvType.CV_8U, new Scalar(3.0));
             Core.compare(dst, source, dst, Core.CMP_EQ);
-        
+
             Mat foreground2 = new Mat(src.size(), CvType.CV_8UC3, new Scalar(255,
                     255, 255,255));
             src.copyTo(foreground2, dst);
