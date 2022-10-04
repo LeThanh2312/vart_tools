@@ -10,7 +10,7 @@ import '../widgets/preview_picture/popup_filter_image_widget.dart';
 import '../widgets/preview_picture/preview_picture.dart';
 import '../widgets/preview_picture/preview_picture_header.dart';
 import 'package:image_size_getter/image_size_getter.dart' as imgsize;
-import 'package:opencv/opencv.dart';
+import 'package:opencv4/core/imgproc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PreviewPictureScreen extends StatefulWidget {
@@ -28,6 +28,8 @@ class PreviewPictureScreen extends StatefulWidget {
 
 class _PreviewPictureScreenState extends State<PreviewPictureScreen> {
   bool isShowPopupFilter = false;
+  bool _platformVersion = false;
+
 
   List<Uint8List> listPictureOrigin = [];
 
@@ -35,8 +37,22 @@ class _PreviewPictureScreenState extends State<PreviewPictureScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      initPlatformState();
       _copyFile();
     });
+
+  }
+
+  Future<void> initPlatformState() async {
+    if (!mounted) return;
+    String? platformVersion;
+    try {
+      platformVersion = await ImgProc.initOpenCV();
+      _platformVersion = true;
+      print(platformVersion);
+    } catch (e) {
+      platformVersion = '==== error ${e.toString()}';
+    }
   }
 
   void _copyFile() async {

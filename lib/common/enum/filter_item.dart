@@ -1,4 +1,4 @@
-enum FilterItem { blur, shadows, fullAngle, brighten, ecological,bVW,}
+enum FilterItem { blur, shadows, fullAngle, brightness, ecological,bVW,}
 
 extension FilterItemExtention on FilterItem? {
   String get name {
@@ -6,10 +6,10 @@ extension FilterItemExtention on FilterItem? {
       case FilterItem.blur:
         return 'Làm mờ';
       case FilterItem.shadows:
-        return 'Có bóng';
+        return 'Thang độ xám';
       case FilterItem.fullAngle:
         return 'Nguyên góc';
-      case FilterItem.brighten:
+      case FilterItem.brightness:
         return 'Làm sáng';
       case FilterItem.ecological:
         return 'Sinh thái';

@@ -39,6 +39,7 @@ class _BottomNavigatorListPictureWidgetState
             ),
             IconButton(
               onPressed: () {
+                Navigator.of(context).pop();
                 setState(() {});
               },
               iconSize: 27.0,

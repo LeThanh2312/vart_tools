@@ -8,20 +8,24 @@ class CameraHeaderWidget extends StatefulWidget {
     required this.styleCamera,
     required this.isPageFirst,
     required this.controller,
+    required this.isFlash,
+    required this.onChangeFlash,
   }) : super(key: key);
   final CameraType styleCamera;
   final CameraController controller;
   final bool isPageFirst;
+  final bool isFlash;
+  final void Function(bool value) onChangeFlash;
 
   @override
   State<CameraHeaderWidget> createState() => _CameraHeaderWidgetState();
 }
 
 class _CameraHeaderWidgetState extends State<CameraHeaderWidget> {
-  bool isFlash = false;
 
   @override
   Widget build(BuildContext context) {
+    print('====== ${widget.isFlash}');
     return Align(
       alignment: Alignment.topCenter,
       child: Container(
@@ -47,18 +51,13 @@ class _CameraHeaderWidgetState extends State<CameraHeaderWidget> {
             ),
             IconButton(
               onPressed: () {
-                if (!isFlash) {
-                  widget.controller.setFlashMode(FlashMode.off);
-                } else {
-                  widget.controller.setFlashMode(FlashMode.always);
-                }
-                isFlash = !isFlash;
+                widget.onChangeFlash(!widget.isFlash);
                 setState(() {});
               },
               iconSize: 30,
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),
-              icon: Icon(isFlash ? Icons.flash_on : Icons.flash_off,
+              icon: Icon(widget.isFlash ? Icons.flash_on : Icons.flash_off ,
                   color: Colors.black),
             )
           ],
