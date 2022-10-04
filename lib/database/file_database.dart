@@ -159,6 +159,20 @@ class FileProvider {
     );
   }
 
+  Future<void> addTags(List<FileModel> files, String tag) async {
+    final db = await initializeDB();
+    files.forEach((file) async {
+      file.tag = tag;
+      file.dateUpdate = DateTime.now().toString();
+      await db.update(
+        'files',
+        file.toMap(),
+        where: 'id = ?',
+        whereArgs: [file.id],
+      );
+    });
+  }
+
   Future<void> permanentlyDeletefiles(List<int> ids) async {
     final db = await initializeDB();
     await db.delete(

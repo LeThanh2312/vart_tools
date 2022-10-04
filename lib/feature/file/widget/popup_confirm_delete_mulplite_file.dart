@@ -22,17 +22,11 @@ class PopUpConfirmDeleteMulpliteFile extends StatefulWidget {
 
 class _PopUpConfirmDeleteMulpliteFileState
     extends State<PopUpConfirmDeleteMulpliteFile> {
-  // Future<bool> deleteDate(int id) async {
-  //   await context.read<FilesViewModel>().add(DeleteMulpliteEvent(fileId: widget.idFiles, folderId: widget.folderId));
-  //   if(data.isEmpty){
-  //     return true;
-  //   }else {
-  //     return false;
-  //   }
-  // }
   Future<bool> _deleteData() async {
     context.read<FilesViewModel>().add(
-        DeleteMulpliteEvent(fileId: widget.idFiles, folderId: widget.folderId));
+          DeleteMulpliteEvent(
+              fileId: widget.idFiles, folderId: widget.folderId),
+        );
     return Future.value(true);
   }
 
@@ -52,7 +46,7 @@ class _PopUpConfirmDeleteMulpliteFileState
               padding:
                   EdgeInsets.only(top: 30, left: 10, right: 10, bottom: 50),
               child: Text(
-                "Bạn có muốn các file đã chọn không?",
+                "Bạn có muốn xóa các file đã chọn không?",
                 style: ResStyle.h2,
               ),
             ),

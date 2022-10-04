@@ -6,9 +6,11 @@ import 'package:vart_tools/res/font_size.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PopupConfirmRecoverFolders extends StatelessWidget {
-  const PopupConfirmRecoverFolders({Key? key, required this.selectedIdObject})
+  const PopupConfirmRecoverFolders(
+      {Key? key, required this.selectedIdObject, required this.onClear})
       : super(key: key);
   final List<SelectIdTrashModel> selectedIdObject;
+  final VoidCallback onClear;
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +54,7 @@ class PopupConfirmRecoverFolders extends StatelessWidget {
                             RecoverFolderEvent(
                                 selectedIdsObject: selectedIdObject),
                           );
+                      onClear();
                       Navigator.of(context).pop();
                     },
                     child: const Text(

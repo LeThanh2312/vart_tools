@@ -4,6 +4,7 @@ import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/database/folder_database.dart';
 import 'package:vart_tools/feature/file/view/file_detail_screen.dart';
 import 'package:vart_tools/feature/file/view_model/file_bloc.dart';
+import 'package:vart_tools/feature/file/widget/popup_add_tag.dart';
 import 'package:vart_tools/feature/file/widget/popup_confirm_delete_mulplite_file.dart';
 import 'package:vart_tools/feature/home/widgets/search_widget.dart';
 import 'package:vart_tools/res/assets.dart';
@@ -26,7 +27,6 @@ class _FileScreenState extends State<FileScreen> {
   List<int?> _idSelected = [];
   bool _selectAll = false;
   bool progress = true;
-  bool onClear = false;
 
   @override
   void initState() {
@@ -131,10 +131,6 @@ class _FileScreenState extends State<FileScreen> {
       child: BlocListener<FilesViewModel, FilesViewState>(
         listener: (context, state) {
           if (state.isDeleteSucees) {
-            // setState(() {
-            //   isSelectionMode = false;
-            //   _selectAll = false;
-            // });
             setState(() {
               _idSelected.clear();
             });
@@ -160,10 +156,12 @@ class _FileScreenState extends State<FileScreen> {
                             color: Colors.white,
                           ),
                           onPressed: () {
-                            setState(() {
-                              isSelectionMode = false;
-                              _idSelected.clear();
-                            });
+                            setState(
+                              () {
+                                isSelectionMode = false;
+                                _idSelected.clear();
+                              },
+                            );
                           },
                         ),
                         Expanded(
@@ -178,30 +176,43 @@ class _FileScreenState extends State<FileScreen> {
                             ),
                           ),
                         ),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.delete,
-                            color: Colors.white,
-                          ),
-                          onPressed: _idSelected.isEmpty
-                              ? null
-                              : () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) =>
-                                        PopUpConfirmDeleteMulpliteFile(
-                                      idFiles: _idSelected,
-                                      // onClear: () {
-                                      //   setState(() {
-                                      //     isSelectionMode = false;
-                                      //     _selectAll = false;
-                                      //   });
-                                      //   _idSelected.clear();
-                                      // },
+                        InkWell(
+                          onTap: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) => PopUpAddTag(
+                                      files: files,
                                       folderId: widget.folder.id!,
-                                    ),
-                                  );
-                                },
+                                    ));
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.only(right: 10),
+                            child: Icon(
+                              Icons.sell,
+                              color: Colors.white,
+                              size: 25,
+                            ),
+                          ),
+                        ),
+                        InkWell(
+                          child: const Padding(
+                            padding: EdgeInsets.only(right: 5),
+                            child: Icon(
+                              Icons.delete,
+                              color: Colors.white,
+                              size: 30,
+                            ),
+                          ),
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) =>
+                                  PopUpConfirmDeleteMulpliteFile(
+                                idFiles: _idSelected,
+                                folderId: widget.folder.id!,
+                              ),
+                            );
+                          },
                         ),
                         SizedBox(
                           width: 100,

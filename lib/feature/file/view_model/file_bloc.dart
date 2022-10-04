@@ -1,10 +1,6 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/database/folder_database.dart';
-import 'package:vart_tools/res/strings.dart';
 import "package:collection/collection.dart";
 
 class FirstInitScreenState {
@@ -102,6 +98,14 @@ class AddFilesEvent extends FileViewEvent {
   AddFilesEvent({required this.files, required this.folderId});
 }
 
+class AddTagsEvent extends FileViewEvent {
+  List<FileModel> files;
+  String tagName;
+  int folderId;
+  AddTagsEvent(
+      {required this.files, required this.tagName, required this.folderId});
+}
+
 class DeleteFileEvent extends FileViewEvent {
   FileModel file;
   DeleteFileEvent({required this.file});
@@ -127,6 +131,7 @@ class FilesViewModel extends Bloc<FileViewEvent, FilesViewState> {
     on<FavouriteFileEvent>(_favouriteFile);
     on<DeleteMulpliteEvent>(_deleteMulpliteFile);
     on<AddFilesEvent>(_addFiles);
+    on<AddTagsEvent>(_addTags);
   }
 
   void _loadDataFiles(LoadFilesEvent event, Emitter emit) async {
@@ -166,13 +171,10 @@ class FilesViewModel extends Bloc<FileViewEvent, FilesViewState> {
   Future<void> _deleteMulpliteFile(
       DeleteMulpliteEvent event, Emitter emit) async {
     try {
-      print("delete");
       await FileProvider().deleteFile(event.fileId);
       state.files = await FileProvider().getFiles(event.folderId);
-      print("delete1");
       emit(state.copyWith(
           files: state.files, status: FilesStatus.deleteSuccess));
-      print("delete ok");
     } catch (e) {
       emit(state.copyWith(message: "delete folder fail"));
     }
@@ -187,6 +189,17 @@ class FilesViewModel extends Bloc<FileViewEvent, FilesViewState> {
       emit(state.copyWith(files: state.files));
     } catch (e) {
       emit(state.copyWith(message: "add folder error"));
+    }
+  }
+
+  void _addTags(AddTagsEvent event, Emitter emit) async {
+    try {
+      await FileProvider().addTags(event.files, event.tagName);
+      state.files = await FileProvider().getFiles(event.folderId);
+      emit(state.copyWith(files: state.files, status: FilesStatus.success));
+    } catch (e) {
+      emit(state.copyWith(
+          message: "thêm tag error", status: FilesStatus.failure));
     }
   }
 }
