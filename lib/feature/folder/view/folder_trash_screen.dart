@@ -23,12 +23,22 @@ class FolderTrashScreen extends StatefulWidget {
 }
 
 class _FolderTrashScreenState extends State<FolderTrashScreen> {
-  List idSelected = [];
+  List<FolderModel> folders = [];
+  List<FileModel> files = [];
+  late bool isSelectedAll;
+  late bool isDisableTextButton;
 
   @override
   void initState() {
     super.initState();
     context.read<FolderTrashViewModel>().add(LoadFolderTrashEvent());
+    isSelectedAll = false;
+    if (context.read<FolderTrashViewModel>().state.folders.isEmpty &&
+        context.read<FolderTrashViewModel>().state.files.isEmpty) {
+      isDisableTextButton = true;
+    } else {
+      isDisableTextButton = false;
+    }
   }
 
   @override
@@ -37,6 +47,16 @@ class _FolderTrashScreenState extends State<FolderTrashScreen> {
       listener: (context, state) {
         if (state.recoverStatus == FolderRecoverStatus.success) {
           context.read<FoldersViewModel>().add(LoadFoldersEvent());
+          context.read<FolderTrashViewModel>().state.selectedIdObject.clear();
+        }
+        if (state.folders.isEmpty && state.files.isEmpty) {
+          setState(() {
+            isDisableTextButton = true;
+          });
+        } else {
+          setState(() {
+            isDisableTextButton = false;
+          });
         }
       },
       child: Scaffold(
@@ -45,7 +65,7 @@ class _FolderTrashScreenState extends State<FolderTrashScreen> {
             Column(
               children: [
                 const Padding(
-                  padding: EdgeInsets.only(left: 15, right: 15, top: 70),
+                  padding: EdgeInsets.only(left: 15, right: 15, top: 50),
                   child: SearchWidget(),
                 ),
                 Padding(
@@ -53,10 +73,11 @@ class _FolderTrashScreenState extends State<FolderTrashScreen> {
                   child: Row(
                     children: [
                       InkWell(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Icon(Icons.arrow_back_ios)),
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Icon(Icons.arrow_back_ios),
+                      ),
                       const Text(
                         "Thùng rác",
                         style: ResStyle.h6,
@@ -67,12 +88,106 @@ class _FolderTrashScreenState extends State<FolderTrashScreen> {
                 Padding(
                   padding: const EdgeInsets.only(top: 20, bottom: 20),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Text(
-                        "Mục đã xóa",
-                        style: ResStyle.h2,
-                      ),
+                    children: [
+                      Expanded(
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            const Text(
+                              "Mục đã xóa",
+                              style: ResStyle.h2,
+                            ),
+                            Positioned(
+                              right: 0,
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 10),
+                                child: TextButton(
+                                  onPressed: !isDisableTextButton
+                                      ? () {
+                                          var folderTrashModel = context
+                                              .read<FolderTrashViewModel>();
+                                          if (folders.isNotEmpty ||
+                                              files.isNotEmpty) {
+                                            if (!isSelectedAll) {
+                                              folderTrashModel
+                                                  .state.selectedIdObject
+                                                  .clear();
+                                              for (FileModel file in files) {
+                                                // folderTrashModel.state.isChecked(
+                                                //   SelectIdTrashModel(
+                                                //       id: file.id!,
+                                                //       type: IdType.file),
+                                                // );
+                                                folderTrashModel.add(
+                                                  ToggleSelectFolderTrashEvent(
+                                                    selectedIdsObject:
+                                                        SelectIdTrashModel(
+                                                            id: file.id!,
+                                                            type: IdType.file),
+                                                  ),
+                                                );
+                                              }
+                                              for (FolderModel folder
+                                                  in folders) {
+                                                // folderTrashModel.state.isChecked(
+                                                //   SelectIdTrashModel(
+                                                //       id: folder.id!,
+                                                //       type: IdType.folder),
+                                                // );
+                                                folderTrashModel.add(
+                                                  ToggleSelectFolderTrashEvent(
+                                                    selectedIdsObject:
+                                                        SelectIdTrashModel(
+                                                            id: folder.id!,
+                                                            type:
+                                                                IdType.folder),
+                                                  ),
+                                                );
+                                                setState(() {
+                                                  isSelectedAll = true;
+                                                });
+                                              }
+                                            } else {
+                                              folderTrashModel
+                                                  .state.selectedIdObject
+                                                  .clear();
+                                              setState(() {
+                                                print("set lai");
+                                                isSelectedAll = false;
+                                              });
+                                            }
+                                          } else {
+                                            folderTrashModel
+                                                .state.selectedIdObject
+                                                .clear();
+                                          }
+                                          // if (folderTrashModel
+                                          //     .state.selectedIdObject.isEmpty) {
+                                          //   setState(() {
+                                          //     isSelectedAll = true;
+                                          //   });
+                                          // } else {
+                                          //   setState(() {
+                                          //     isSelectedAll = false;
+                                          //   });
+                                          // }
+                                        }
+                                      : null,
+                                  child: isSelectedAll
+                                      ? const Padding(
+                                          padding: EdgeInsets.all(10),
+                                          child: Text("Bỏ Chọn"),
+                                        )
+                                      : const Padding(
+                                          padding: EdgeInsets.all(10),
+                                          child: Text("Chọn Tất Cả"),
+                                        ),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      )
                     ],
                   ),
                 ),
@@ -82,6 +197,8 @@ class _FolderTrashScreenState extends State<FolderTrashScreen> {
                       if (state.isSuccess) {
                         if (state.folders.isNotEmpty ||
                             state.files.isNotEmpty) {
+                          folders = state.folders;
+                          files = state.files;
                           return ListView(
                             padding: EdgeInsets.zero,
                             children: [
@@ -162,8 +279,17 @@ class _FolderTrashScreenState extends State<FolderTrashScreen> {
                                   context: context,
                                   builder: (context) =>
                                       PopupConfirmPermantlyFolder(
-                                          selectedIdObject:
-                                              state.selectedIdObject),
+                                    selectedIdObject: state.selectedIdObject,
+                                    onClear: () {
+                                      setState(() {
+                                        isSelectedAll = false;
+                                        if (state.selectedIdObject.length ==
+                                            (folders.length + files.length)) {
+                                          isDisableTextButton = true;
+                                        }
+                                      });
+                                    },
+                                  ),
                                 );
                               },
                       ),
@@ -180,8 +306,17 @@ class _FolderTrashScreenState extends State<FolderTrashScreen> {
                                   context: context,
                                   builder: (context) =>
                                       PopupConfirmRecoverFolders(
-                                          selectedIdObject:
-                                              state.selectedIdObject),
+                                    selectedIdObject: state.selectedIdObject,
+                                    onClear: () => setState(
+                                      () {
+                                        isSelectedAll = false;
+                                        if (state.selectedIdObject.length ==
+                                            (folders.length + files.length)) {
+                                          isDisableTextButton = true;
+                                        }
+                                      },
+                                    ),
+                                  ),
                                 );
                               },
                       ),

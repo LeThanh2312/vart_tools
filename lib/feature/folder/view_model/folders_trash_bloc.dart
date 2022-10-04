@@ -92,19 +92,15 @@ class FolderTrashState {
   }
   bool _checkContains(
       List<SelectIdTrashModel> listIdSelected, SelectIdTrashModel idSelected) {
-    print("-----------");
     bool flag = false;
-    listIdSelected.forEach((element) {
-      print(element.id);
-      print(idSelected.id);
-      print(element.type);
-      print(idSelected.type);
-      if (element.id == idSelected.id && element.type == idSelected.type) {
-        flag = true;
-        return;
-      }
-    });
-    print(flag);
+    listIdSelected.forEach(
+      (element) {
+        if (element.id == idSelected.id && element.type == idSelected.type) {
+          flag = true;
+          return;
+        }
+      },
+    );
     return flag;
   }
 
@@ -211,6 +207,7 @@ class FolderTrashViewModel extends Bloc<FolderTrashEvent, FolderTrashState> {
       state.deleteFolders(event.selectedIdsObject);
       emit(state.copyWith(
         folders: state.folders,
+        files: state.files,
         recoverStatus: FolderRecoverStatus.success,
       ));
     } catch (e) {

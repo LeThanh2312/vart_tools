@@ -16,6 +16,9 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:isolate';
 import 'dart:ui';
+import 'package:http/http.dart';
+import 'package:share/share.dart';
+import 'package:flutter/services.dart';
 
 class BottomBarFileDetail extends StatefulWidget {
   const BottomBarFileDetail({Key? key, required this.file}) : super(key: key);
@@ -72,6 +75,30 @@ class _BottomBarFileDetailState extends State<BottomBarFileDetail> {
     }
   }
 
+  Future<Null> urlFileShare() async {
+    final RenderBox box = context.findRenderObject() as RenderBox;
+    if (Platform.isAndroid) {
+      var url = 'https://i.ytimg.com/vi/fq4N0hgOWzU/maxresdefault.jpg';
+      // var response = await get(Uri.parse(url));
+      // final documentDirectory = await getExternalStorageDirectory();
+      // File imgFile = new File('$documentDirectory/flutter.png');
+      // imgFile.writeAsBytesSync(response.bodyBytes);
+      // Share.shareFiles(["${documentDirectory}/flutter.png"]);
+      // ['PNG', 'JPG'];
+      // subject:
+      // 'URL File Share';
+      // text:
+      // 'Hello, check your share files!';
+      // sharePositionOrigin:
+      // box.localToGlobal(Offset.zero) & box.size;
+      Share.share(url);
+    } else {
+      Share.share('Hello, check your share files!',
+          subject: 'URL File Share',
+          sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -98,16 +125,23 @@ class _BottomBarFileDetailState extends State<BottomBarFileDetail> {
           ),
           InkWell(
             onTap: () {
-              showModalBottomSheet(
-                context: context,
-                builder: (context) {
-                  return SizedBox(
-                    height: MediaQuery.of(context).size.height / 4,
-                    width: MediaQuery.of(context).size.width,
-                    child: BottomSheetShare(file: widget.file),
-                  );
-                },
-              );
+              if (widget.file.image != null) {
+                // Share.shareFiles([], text: "view file""");
+                urlFileShare();
+              } else {
+                print("not file selected");
+              }
+
+              // showModalBottomSheet(
+              //   context: context,
+              //   builder: (context) {
+              //     return SizedBox(
+              //       height: MediaQuery.of(context).size.height / 4,
+              //       width: MediaQuery.of(context).size.width,
+              //       child: BottomSheetShare(file: widget.file),
+              //     );
+              //   },
+              // );
             },
             child: Image.asset(
               ResAssets.icons.iconShare,

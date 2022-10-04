@@ -3,6 +3,7 @@ import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/database/folder_database.dart';
 import 'package:vart_tools/feature/file/view/file_detail_screen.dart';
 import 'package:vart_tools/feature/file/view_model/file_bloc.dart';
+import 'package:vart_tools/feature/file/widget/popup_add_tag.dart';
 import 'package:vart_tools/feature/file/widget/popup_confirm_delete_mulplite_file.dart';
 import 'package:vart_tools/feature/home/widgets/search_widget.dart';
 import 'package:vart_tools/res/assets.dart';
@@ -24,14 +25,13 @@ class _FileScreenState extends State<FileScreen> {
   List<int?> _idSelected = [];
   bool _selectAll = false;
   bool progress = true;
-  bool onClear = false;
 
   @override
   void initState() {
     super.initState();
     filesData = [
       FileModel(
-        name: "file 1",
+        name: "avatar",
         idFolder: widget.folder.id!,
         image: ResAssets.images.img1,
         format: "JPG",
@@ -40,7 +40,7 @@ class _FileScreenState extends State<FileScreen> {
         dateUpdate: '2022-09-29 08:28:58',
       ),
       FileModel(
-        name: "file 2",
+        name: "avatar2",
         idFolder: widget.folder.id!,
         image: ResAssets.images.img2,
         format: "JPG",
@@ -49,7 +49,7 @@ class _FileScreenState extends State<FileScreen> {
         dateUpdate: '2022-09-29 08:29:58',
       ),
       FileModel(
-        name: "file 3",
+        name: "avatar2",
         idFolder: widget.folder.id!,
         image: ResAssets.images.img3,
         format: "PNG",
@@ -58,7 +58,7 @@ class _FileScreenState extends State<FileScreen> {
         dateUpdate: '2022-09-28 08:28:58',
       ),
       FileModel(
-        name: "file 4",
+        name: "avatar3",
         idFolder: widget.folder.id!,
         image: ResAssets.images.img3,
         format: "PNG",
@@ -67,7 +67,7 @@ class _FileScreenState extends State<FileScreen> {
         dateUpdate: '2022-09-25 08:31:58',
       ),
       FileModel(
-        name: "file 5",
+        name: "avatar3",
         idFolder: widget.folder.id!,
         image: ResAssets.images.img3,
         format: "PNG",
@@ -76,7 +76,7 @@ class _FileScreenState extends State<FileScreen> {
         dateUpdate: '2022-09-25 08:30:58',
       ),
       FileModel(
-        name: "file 6",
+        name: "avatar",
         idFolder: widget.folder.id!,
         image: ResAssets.images.img3,
         format: "PNG",
@@ -129,10 +129,6 @@ class _FileScreenState extends State<FileScreen> {
       child: BlocListener<FilesViewModel, FilesViewState>(
         listener: (context, state) {
           if (state.isDeleteSucees) {
-            // setState(() {
-            //   isSelectionMode = false;
-            //   _selectAll = false;
-            // });
             setState(() {
               _idSelected.clear();
             });
@@ -158,17 +154,19 @@ class _FileScreenState extends State<FileScreen> {
                             color: Colors.white,
                           ),
                           onPressed: () {
-                            setState(() {
-                              isSelectionMode = false;
-                              _idSelected.clear();
-                            });
+                            setState(
+                              () {
+                                isSelectionMode = false;
+                                _idSelected.clear();
+                              },
+                            );
                           },
                         ),
                         Expanded(
                           child: Align(
                             alignment: Alignment.center,
                             child: Text(
-                              'Selection (${_idSelected.length})',
+                              'Đã Chọn (${_idSelected.length})',
                               style: const TextStyle(
                                 fontSize: 15,
                                 color: Colors.white,
@@ -176,42 +174,55 @@ class _FileScreenState extends State<FileScreen> {
                             ),
                           ),
                         ),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.delete,
-                            color: Colors.white,
-                          ),
-                          onPressed: _idSelected.isEmpty
-                              ? null
-                              : () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) =>
-                                        PopUpConfirmDeleteMulpliteFile(
-                                      idFiles: _idSelected,
-                                      // onClear: () {
-                                      //   setState(() {
-                                      //     isSelectionMode = false;
-                                      //     _selectAll = false;
-                                      //   });
-                                      //   _idSelected.clear();
-                                      // },
+                        InkWell(
+                          onTap: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) => PopUpAddTag(
+                                      files: files,
                                       folderId: widget.folder.id!,
-                                    ),
-                                  );
-                                },
+                                    ));
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.only(right: 10),
+                            child: Icon(
+                              Icons.sell,
+                              color: Colors.white,
+                              size: 25,
+                            ),
+                          ),
+                        ),
+                        InkWell(
+                          child: const Padding(
+                            padding: EdgeInsets.only(right: 5),
+                            child: Icon(
+                              Icons.delete,
+                              color: Colors.white,
+                              size: 30,
+                            ),
+                          ),
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) =>
+                                  PopUpConfirmDeleteMulpliteFile(
+                                idFiles: _idSelected,
+                                folderId: widget.folder.id!,
+                              ),
+                            );
+                          },
                         ),
                         SizedBox(
                           width: 100,
                           child: TextButton(
                             child: !_selectAll
                                 ? const Text(
-                                    'Select All',
+                                    'Chọn Tất Cả',
                                     style: TextStyle(
                                         fontSize: 15, color: Colors.white),
                                   )
                                 : const Text(
-                                    'Unselect All',
+                                    'Bỏ Chọn',
                                     style: TextStyle(
                                         fontSize: 15, color: Colors.white),
                                   ),

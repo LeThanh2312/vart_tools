@@ -6,9 +6,11 @@ import 'package:vart_tools/res/font_size.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PopupConfirmPermantlyFolder extends StatelessWidget {
-  const PopupConfirmPermantlyFolder({Key? key, required this.selectedIdObject})
+  const PopupConfirmPermantlyFolder(
+      {Key? key, required this.selectedIdObject, required this.onClear})
       : super(key: key);
   final List<SelectIdTrashModel> selectedIdObject;
+  final VoidCallback onClear;
 
   @override
   Widget build(BuildContext context) {
@@ -49,8 +51,10 @@ class PopupConfirmPermantlyFolder extends StatelessWidget {
                         backgroundColor: AppColors.grayColor),
                     onPressed: () {
                       context.read<FolderTrashViewModel>().add(
-                          PermanentlyDeleteEvent(
-                              selectedIdsObject: selectedIdObject));
+                            PermanentlyDeleteEvent(
+                                selectedIdsObject: selectedIdObject),
+                          );
+                      onClear();
                       Navigator.of(context).pop();
                     },
                     child: const Text(
