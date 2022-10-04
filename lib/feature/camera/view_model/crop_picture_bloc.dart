@@ -2,10 +2,10 @@ import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:opencv/opencv.dart';
 import 'package:image_size_getter/image_size_getter.dart' as imgsize;
 import 'package:vart_tools/common/enum/filter_item.dart';
-import 'package:opencv/core/core.dart';
+import 'package:opencv4/core/imgproc.dart';
+import 'package:opencv4/core/core.dart';
 import '../../../common/enum/camera_type.dart';
 
 enum CropAndFilterPictureStatus { loading, success, failure, initialize }
@@ -302,7 +302,7 @@ class CameraPictureViewModel
         for (var item in state.pictureCrop) {
           index = state.pictureCrop.indexOf(item);
           Uint8List res =
-          await ImgProc.brightness(item)
+          await ImgProc.brightness(item,-1,alpha: 1.0,beta: 100.0)
           as Uint8List;
           state.pictureCrop[index] = res;
         }

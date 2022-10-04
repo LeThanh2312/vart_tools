@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:opencv/opencv.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../view_model/crop_picture_bloc.dart';
+import 'package:opencv4/core/imgproc.dart';
 
 class BottomNavigatorCropImage extends StatefulWidget {
   const BottomNavigatorCropImage({
@@ -30,7 +30,7 @@ class _BottomNavigatorCropImageState extends State<BottomNavigatorCropImage> {
     if (!mounted) return;
     String? platformVersion;
     try {
-      await OpenCV.platformVersion;
+      await ImgProc.initOpenCV();
     } catch (e) {
       platformVersion = '==== error ${e.toString()}';
     } finally {

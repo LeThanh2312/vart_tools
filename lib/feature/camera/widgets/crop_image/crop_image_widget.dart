@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
 import 'package:image_size_getter/image_size_getter.dart' as imgsize;
-import 'package:opencv/opencv.dart';
+import 'package:opencv4/core/imgproc.dart';
 import 'package:vart_tools/feature/camera/view_model/crop_picture_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -161,15 +161,26 @@ class _CropImageWidgetState extends State<CropImageWidget> {
                 width: imgWidth,
                 height: imgHeight,
               ),
-              SizedBox(
-                width: imgWidth,
-                height: imgHeight,
-                child: CustomPaint(
-                  painter: CustomCropImagePainter(points: points),
-                  size: Size(imgWidth, imgHeight),
-                  child: SizedBox(
-                    width: imgWidth,
-                    height: imgHeight,
+              // SizedBox(
+              //   width: imgWidth,
+              //   height: imgHeight,
+              //   child: CustomPaint(
+              //     painter: CustomCropImagePainter(points: points),
+              //     size: Size(imgWidth, imgHeight),
+              //     child: Container(
+              //       width: imgWidth,
+              //       height: imgHeight,
+              //       color: Colors.black.withAlpha(100),
+              //     ),
+              //   ),
+              // ),
+              IgnorePointer(
+                child: ClipPath(
+                  clipper: CustomCropImagePainter(points: points),
+                  child: Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    color: Colors.black.withAlpha(100),
                   ),
                 ),
               ),
@@ -233,30 +244,57 @@ class _CropImageWidgetState extends State<CropImageWidget> {
   }
 }
 
-class CustomCropImagePainter extends CustomPainter {
+class CustomCropImagePainter extends CustomClipper<Path> {
   List<Offset> points;
 
   CustomCropImagePainter({required this.points});
 
+  // @override
+  // void paint(Canvas canvas, Size size) {
+  //   final deltaSize = cropPointSize / 2;
+  //   var paint = Paint()
+  //     ..style = PaintingStyle.stroke
+  //     ..color = Colors.white
+  //     ..strokeWidth = 2;
+  //
+  //   var path = Path();
+  //   path.moveTo(points[0].dx + deltaSize, points[0].dy + deltaSize);
+  //   path.lineTo(points[1].dx - deltaSize, points[1].dy + deltaSize);
+  //   path.lineTo(points[2].dx - deltaSize, points[2].dy - deltaSize);
+  //   path.lineTo(points[3].dx + deltaSize, points[3].dy - deltaSize);
+  //   path.close();
+  //   canvas.drawPath(path, paint);
+  // }
+  //
+  // @override
+  // bool shouldRepaint(covariant CustomPainter oldDelegate) {
+  //   return true;
+  // }
+
   @override
-  void paint(Canvas canvas, Size size) {
+  Path getClip(Size size) {
     final deltaSize = cropPointSize / 2;
     var paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..color = Colors.blue
-      ..strokeWidth = 2;
+        ..style = PaintingStyle.stroke
+        ..color = Colors.white
+        ..strokeWidth = 2;
 
-    var path = Path();
-    path.moveTo(points[0].dx + deltaSize, points[0].dy + deltaSize);
-    path.lineTo(points[1].dx - deltaSize, points[1].dy + deltaSize);
-    path.lineTo(points[2].dx - deltaSize, points[2].dy - deltaSize);
-    path.lineTo(points[3].dx + deltaSize, points[3].dy - deltaSize);
-    path.close();
-    canvas.drawPath(path, paint);
+    var path = Path()
+        ..addPath(
+          Path()
+            ..moveTo(points[0].dx + deltaSize, points[0].dy + deltaSize)
+            ..lineTo(points[1].dx - deltaSize, points[1].dy + deltaSize)
+            ..lineTo(points[2].dx - deltaSize, points[2].dy - deltaSize)
+            ..lineTo(points[3].dx + deltaSize, points[3].dy - deltaSize)
+            ..close(),
+          Offset.zero,
+        )
+      ..addRect(Rect.fromLTWH(0.0, 0.0, size.width, size.height))
+      ..fillType = PathFillType.evenOdd;
+
+    return path;
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
-  }
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => true;
 }
