@@ -1,21 +1,29 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:vart_tools/common/enum/camera_type.dart';
+import 'package:vart_tools/common/enum/save_picture_type.dart';
+import 'package:vart_tools/common/enum/tab_item.dart';
+import 'package:vart_tools/feature/camera/view_model/save_picture_bloc.dart';
+import '../../../bottom_navigation_bar_main/view/bottom_navigation_bar_main_screen.dart';
 import '../../view/crop_image_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../view_model/crop_picture_bloc.dart';
 
 class BottomNavigatorPreviewWidget extends StatefulWidget {
   const BottomNavigatorPreviewWidget({
     Key? key,
-    required this.onShowPopupFilter,
+    required this.onShowPopupFilter, required this.style,
   }) : super(key: key);
   final void Function(bool value) onShowPopupFilter;
+  final CameraType style;
 
   @override
   State<BottomNavigatorPreviewWidget> createState() =>
       _BottomNavigatorPreviewWidgetState();
 }
 
-class _BottomNavigatorPreviewWidgetState extends State<BottomNavigatorPreviewWidget> {
-
+class _BottomNavigatorPreviewWidgetState
+    extends State<BottomNavigatorPreviewWidget> {
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
@@ -28,7 +36,7 @@ class _BottomNavigatorPreviewWidgetState extends State<BottomNavigatorPreviewWid
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             IconButton(
-              onPressed: () async{
+              onPressed: () async {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -70,7 +78,7 @@ class _BottomNavigatorPreviewWidgetState extends State<BottomNavigatorPreviewWid
   Future<void> _showDialogSelectFolder() async {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false, // user must tap button!
+      barrierDismissible: true,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text(
@@ -79,21 +87,59 @@ class _BottomNavigatorPreviewWidgetState extends State<BottomNavigatorPreviewWid
           ),
           actions: <Widget>[
             ElevatedButton(
-              child: const Text(
-                'Thư mục mới',
-                style: TextStyle(color: Colors.white),
+              child: Text(
+                SavePictureType.create.name,
+                style: const TextStyle(color: Colors.white),
               ),
-              onPressed: () {
-                Navigator.of(context).pop();
+              onPressed: () async {
+                final state = context.read<CameraPictureViewModel>().state;
+                if (state.isSuccess){
+                  context
+                      .read<SavePictureViewModel>()
+                      .add(SaveEvent(
+                    style: widget.style,
+                    listPictureSave: state.pictureCrop,
+                    savePictureType: SavePictureType.selector,
+                  ),
+                  );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const BottomNavigationBarMainScreen(
+                            currentTab: TabItem.file)),
+                  );
+                  imageCache.clear();
+                  imageCache.clearLiveImages();
+                }
               },
             ),
             ElevatedButton(
-              child: const Text(
-                'Chọn thư mục',
-                style: TextStyle(color: Colors.white),
+              child: Text(
+                SavePictureType.selector.name,
+                style: const TextStyle(color: Colors.white),
               ),
-              onPressed: () {
-                Navigator.of(context).pop();
+              onPressed: () async{
+                final state = context.read<CameraPictureViewModel>().state;
+                if (state.isSuccess){
+                  print('===== ${state.style}');
+                  print('===== ${state.pictureCrop.length}');
+                  context
+                      .read<SavePictureViewModel>()
+                      .add(SaveEvent(
+                      style: widget.style,
+                      listPictureSave: state.pictureCrop,
+                      savePictureType: SavePictureType.selector,
+                    ),
+                  );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const BottomNavigationBarMainScreen(
+                            currentTab: TabItem.file)),
+                  );
+                  imageCache.clear();
+                  imageCache.clearLiveImages();
+                }
               },
             ),
           ],

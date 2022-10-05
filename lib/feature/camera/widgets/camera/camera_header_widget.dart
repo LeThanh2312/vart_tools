@@ -35,6 +35,8 @@ class _CameraHeaderWidgetState extends State<CameraHeaderWidget> {
           children: [
             IconButton(
               onPressed: () {
+                imageCache.clear();
+                imageCache.clearLiveImages();
                 Navigator.pop(context);
               },
               iconSize: 30,

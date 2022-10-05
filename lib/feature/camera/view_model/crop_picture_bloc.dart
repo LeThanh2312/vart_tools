@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_size_getter/image_size_getter.dart' as imgsize;
@@ -18,7 +17,6 @@ class CropAndFilterPictureState {
   List<Uint8List> pictureCrop;
   List<Uint8List> pictureOrigin;
   CropAndFilterPictureStatus status;
-
   List<Offset> points;
   int index;
   double scale;
@@ -160,13 +158,13 @@ class CameraPictureViewModel
     on<CropImageEvent>(_cropImageEvent);
     on<FilterPictureEvent>(_filterPictureEvent);
     on<RotateImageEvent>(_rotateImageEvent);
-    on<Decrement>(decrement);
-    on<Increment>(increment);
+    on<Decrement>(_decrement);
+    on<Increment>(_increment);
     on<ResetListImageEvent>(_resetListImageEvent);
     on<ResetPointsEvent>(_resetPointsEvent);
   }
 
-  void increment(Increment event, Emitter emit) async {
+  void _increment(Increment event, Emitter emit) async {
     try {
       emit(state.copyWith(status: CropAndFilterPictureStatus.loading));
       state.index = event.index;
@@ -189,7 +187,7 @@ class CameraPictureViewModel
     }
   }
 
-  void decrement(Decrement event, Emitter emit) async {
+  void _decrement(Decrement event, Emitter emit) async {
     try {
       emit(state.copyWith(status: CropAndFilterPictureStatus.loading));
       state.index = event.index;
@@ -223,6 +221,7 @@ class CameraPictureViewModel
       emit(state.copyWith(
           pictureCrop: state.pictureCrop,
           pictureOrigin: state.pictureOrigin,
+          style: state.style,
           index: state.index,
           status: CropAndFilterPictureStatus.success));
     } catch (e) {
@@ -231,7 +230,6 @@ class CameraPictureViewModel
   }
 
   void _cropImageEvent(CropImageEvent event, Emitter emit) async {
-    print('======== event ${state.index}');
     emit(state.copyWith(status: CropAndFilterPictureStatus.loading));
     final memoryImageSize = imgsize.ImageSizeGetter.getSize(
         imgsize.MemoryInput(state.pictureCrop[state.index - 1]));
@@ -346,7 +344,6 @@ class CameraPictureViewModel
   void _resetPointsEvent(ResetPointsEvent event, Emitter emit) async {
     try{
       emit(state.copyWith(status:  CropAndFilterPictureStatus.loading));
-      print('===== doan xem');
       emit(state.copyWith(
         status: CropAndFilterPictureStatus.success,
         type: CropAndFilterPictureType.points,
@@ -354,16 +351,9 @@ class CameraPictureViewModel
     } catch (e) {
       emit(state.copyWith(message: 'error'));
     }
-    // try {
-    //   emit(state.copyWith(status: CropAndFilterPictureStatus.loading));
-    //   state.index = state.index;
-    //   print('===== doan xem');
-    //   emit(state.copyWith(
-    //       index: state.index, status: CropAndFilterPictureStatus.success));
-    // } catch (e) {
-    //   emit(state.copyWith(message: 'error'));
-    // }
   }
+
+
 }
 
 Future<Uint8List> rotateImage(Uint8List image) async {

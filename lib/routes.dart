@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vart_tools/common/enum/tab_item.dart';
 
 import 'feature/bottom_navigation_bar_main/view/bottom_navigation_bar_main_screen.dart';
 import 'feature/camera/view/camera_screen.dart';
@@ -13,7 +14,7 @@ class Routes {
   static const String detailScreen = '/detail_screen';
 
   static final Map<String, WidgetBuilder> routes = <String, WidgetBuilder>{
-    bottomNavigationBar: (BuildContext context) => const BottomNavigationBarMainScreen(),
+    bottomNavigationBar: (BuildContext context) => const BottomNavigationBarMainScreen(currentTab: TabItem.home,),
     camera: (BuildContext context) => const CameraScreen(),
     recycleBin: (BuildContext context) => const RecycleBinScreen(),
   };
