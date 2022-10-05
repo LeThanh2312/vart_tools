@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:vart_tools/common/animation/scale_animation.dart';
+import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/feature/camera/view_model/save_picture_bloc.dart';
 import 'package:vart_tools/feature/file/view/file_screen.dart';
+import 'package:vart_tools/feature/file/view_model/file_bloc.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_bloc.dart';
 import 'package:vart_tools/feature/folder/widget/folder_item.dart';
 import 'package:vart_tools/feature/folder/widget/panel_control_folder.dart';
@@ -19,23 +21,45 @@ class FolderScreen extends StatefulWidget {
 }
 
 class _FolderScreenState extends State<FolderScreen> {
+  List<FileModel> files = [];
+  late int newFolderId;
   @override
   void initState() {
     super.initState();
     context.read<FoldersViewModel>().add(LoadFoldersEvent());
   }
 
+  // _showMyDialogNewFolder() async {
+  //   var result = await showDialog(
+  //   context: context,
+  //   builder: (_) => const PopUpNewFolder(),);
+  //         if (result != null) {
+  //           setState(() {
+  //             //Do stuff
+  //           });
+  //         }
+  // }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<SavePictureViewModel, SavePictureState>(
-      listener: (context, state) {
+      listener: (context, state) async {
         if (state.status == SavePictureStatus.success) {
-          showDialog(
+          print('===== file: ${state.listFileSave.length}');
+          files = state.listFileSave;
+          var result = await showDialog(
             context: context,
-            builder: (context) => PopUpNewFolder(
-              files: state.listFileSave,
-            ),
+            builder: (context) => const PopUpNewFolder(),
           );
+          print("result dialog return ${result}");
+          if(result) {
+            newFolderId = context.read<FoldersViewModel>().state.newFolderId;
+            print("folder id new: ${newFolderId}");
+            print(files.length);
+            context.read<FilesViewModel>().add(
+                AddFilesEvent(files: files, folderId: newFolderId),
+              );
+          }
         }
       },
       child: GestureDetector(
@@ -58,6 +82,8 @@ class _FolderScreenState extends State<FolderScreen> {
                 Expanded(
                   child: BlocBuilder<FoldersViewModel, FoldersState>(
                     builder: (context, state) {
+                      newFolderId = state.newFolderId;
+                      print("new 1 ${newFolderId}");
                       if (state.isSuccess) {
                         if (state.filterFolder.isNotEmpty) {
                           return ReorderableListView(
@@ -125,6 +151,28 @@ class _FolderScreenState extends State<FolderScreen> {
       ),
     );
   }
+
+  // Future<void> _navigateAndDisplaySelection(BuildContext context) async {
+  //   print("vo day roi may");
+  //   // Navigator.push returns a Future that completes after calling
+  //   // Navigator.pop on the Selection Screen.
+  //   final result = await Navigator.push(
+  //     context,
+  //     MaterialPageRoute(builder: (context) => const PopUpNewFolder()),
+  //   );
+
+  //   // When a BuildContext is used from a StatefulWidget, the mounted property
+  //   // must be checked after an asynchronous gap.
+  //   if (!mounted) return;
+  //   print(result);
+  //   print(newFolderId);
+  //   if(result == true && newFolderId != 0) {
+  //     print("===luu file");
+  //     context.read<FilesViewModel>().add(
+  //               AddFilesEvent(files: files, folderId: newFolderId),
+  //             );
+  //   }
+  // }
 
   void reorderData(int oldIndex, int newIndex) {
     final event = DragSortFolderEvent(oldIndex: oldIndex, newIndex: newIndex);

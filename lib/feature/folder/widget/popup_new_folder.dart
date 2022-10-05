@@ -9,9 +9,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class PopUpNewFolder extends StatefulWidget {
-  const PopUpNewFolder({Key? key, required this.files}) : super(key: key);
-  // final FolderModel? folder;
-  final List<FileModel> files;
+  const PopUpNewFolder({Key? key}) : super(key: key);
+  // final List<FileModel> files;
 
   @override
   State<PopUpNewFolder> createState() => _PopUpNewFolderState();
@@ -23,6 +22,7 @@ class _PopUpNewFolderState extends State<PopUpNewFolder> {
   bool _isContain = false;
   bool _disable = true;
   late FToast fToast;
+  int newFolderId = 0;
 
   bool _checkFolderExist(String folderName) {
     var folders = context.read<FoldersViewModel>().state.folders;
@@ -55,11 +55,11 @@ class _PopUpNewFolderState extends State<PopUpNewFolder> {
     }
   }
 
-  void _saveFiles(int folderId, List<FileModel> files) {
-    context.read<FilesViewModel>().add(
-          AddFilesEvent(files: files, folderId: folderId),
-        );
-  }
+  // void _saveFiles(int folderId, List<FileModel> files) {
+  //   context.read<FilesViewModel>().add(
+  //         AddFilesEvent(files: files, folderId: folderId),
+  //       );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -129,7 +129,7 @@ class _PopUpNewFolderState extends State<PopUpNewFolder> {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.pop(context, false);
                   FocusScope.of(context).unfocus();
                 },
                 child: const Text('Hủy'),
@@ -152,12 +152,15 @@ class _PopUpNewFolderState extends State<PopUpNewFolder> {
                                     ),
                                   ),
                                 );
-                            _saveFiles(1, widget.files);
+                                // print("===new folder id ${newFolderId}");
+                                // if(newFolderId != 0){
+                                //   print(newFolderId);
+                                //   _saveFiles(newFolderId, widget.files);
+                                // }
                             _showToastAddSuccess(
                                 context.read<FoldersViewModel>().state.message);
                             FocusScope.of(context).unfocus();
-                            Navigator.of(context)
-                                .popUntil((route) => route.isFirst);
+                            Navigator.pop(context, true);
                           }
                         }
                       }

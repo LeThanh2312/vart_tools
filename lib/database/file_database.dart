@@ -125,7 +125,7 @@ class FileProvider {
   Future<void> insertFile(FileModel file) async {
     final db = await initializeDB();
     try {
-      var rs = await db.insert(
+      await db.insert(
         'files',
         file.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace,

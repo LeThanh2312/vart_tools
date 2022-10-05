@@ -10,14 +10,14 @@ class FoldersState {
   SortType sortType;
   FolderStatus status;
   String message = '';
-  // int? newFolderId;
+  int newFolderId;
 
   FoldersState({
     this.status = FolderStatus.initialize,
     this.folders = const [],
     this.sortType = SortType.byCreatedDateDESC,
     this.message = '',
-    // this.newFolderId,
+    this.newFolderId = 0,
   });
 
   List<FolderModel> get filterFolder {
@@ -57,14 +57,14 @@ class FoldersState {
     SortType? sortType,
     FolderStatus? status,
     String? message,
-    // int? newFolderId,
+    int? newFolderId,
   }) {
     return FoldersState(
       folders: folders ?? this.folders,
       sortType: sortType ?? this.sortType,
       status: status ?? this.status,
       message: message ?? this.message,
-      // newFolderId: newFolderId ?? this.newFolderId,
+      newFolderId: newFolderId ?? this.newFolderId,
     );
   }
 
@@ -135,10 +135,12 @@ class FoldersViewModel extends Bloc<FoldersEvent, FoldersState> {
 
   void _addFolder(AddFolderEvent event, Emitter emit) async {
     try {
-      await FolderProvider().insertFolder(event.folder);
+      int id = await FolderProvider().insertFolder(event.folder);
+      state.newFolderId = id;
+      print(state.newFolderId);
       state.folders = await FolderProvider().getFolders(null);
       emit(state.copyWith(
-        folders: state.filterFolder,
+        folders: state.filterFolder
       ));
     } catch (e) {
       emit(state.copyWith(message: "add folder error"));

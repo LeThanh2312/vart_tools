@@ -73,13 +73,14 @@ class FolderProvider {
     );
   }
 
-  Future<void> insertFolder(FolderModel folder) async {
+  Future<int> insertFolder(FolderModel folder) async {
     final db = await initializeDB();
-    await db.insert(
+    int result = await db.insert(
       DbFolder.tableName,
       folder.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
+    return result;
   }
 
   Future<void> deleteFolder(int id, FolderModel folderDb) async {

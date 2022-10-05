@@ -183,12 +183,13 @@ class FilesViewModel extends Bloc<FileViewEvent, FilesViewState> {
   void _addFiles(AddFilesEvent event, Emitter emit) async {
     try {
       for (FileModel file in event.files) {
+        file.idFolder = event.folderId;
         await FileProvider().insertFile(file);
       }
       state.files = await FileProvider().getFiles(event.folderId);
       emit(state.copyWith(files: state.files));
     } catch (e) {
-      emit(state.copyWith(message: "add folder error"));
+      emit(state.copyWith(message: "add file error"));
     }
   }
 
