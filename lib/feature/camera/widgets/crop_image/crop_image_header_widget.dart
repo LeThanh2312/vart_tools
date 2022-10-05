@@ -1,8 +1,6 @@
-import 'dart:typed_data';
 import 'package:sizer/sizer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../view_model/crop_picture_bloc.dart';
 
 class CropImageHeaderWidget extends StatefulWidget {
@@ -23,8 +21,6 @@ class _CropImageHeaderWidgetState extends State<CropImageHeaderWidget> {
         children: [
           InkWell(
             onTap: () async {
-              imageCache.clear();
-              imageCache.clearLiveImages();
               context.read<CameraPictureViewModel>().add(ResetListImageEvent());
               Navigator.of(context).pop();
             },

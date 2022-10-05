@@ -1,24 +1,22 @@
 import 'dart:typed_data';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:opencv/opencv.dart';
 import 'package:image_size_getter/image_size_getter.dart' as imgsize;
 import 'package:vart_tools/common/enum/filter_item.dart';
-import 'package:opencv/core/core.dart';
+import 'package:opencv4/core/imgproc.dart';
+import 'package:opencv4/core/core.dart';
 import '../../../common/enum/camera_type.dart';
 
 enum CropAndFilterPictureStatus { loading, success, failure, initialize }
 
 abstract class CameraPictureEvent {}
 
-enum CropAndFilterPictureType { normal, crop, rotate, filter }
+enum CropAndFilterPictureType { normal, crop, rotate, filter, points }
 
 class CropAndFilterPictureState {
   List<Uint8List> pictureCrop;
   List<Uint8List> pictureOrigin;
   CropAndFilterPictureStatus status;
-
   List<Offset> points;
   int index;
   double scale;
@@ -91,6 +89,8 @@ class CropAndFilterPictureState {
   bool get isFailure => status == CropAndFilterPictureStatus.failure;
 
   bool get isDoneRotate => type == CropAndFilterPictureType.rotate;
+
+  bool get isPoints => type == CropAndFilterPictureType.points;
 }
 
 class GetPointsCropEvent extends CameraPictureEvent {
@@ -118,6 +118,10 @@ class CropImageEvent extends CameraPictureEvent {
 
 class ResetListImageEvent extends CameraPictureEvent {
   ResetListImageEvent();
+}
+
+class ResetPointsEvent extends CameraPictureEvent {
+  ResetPointsEvent();
 }
 
 class Increment extends CameraPictureEvent {
@@ -154,12 +158,13 @@ class CameraPictureViewModel
     on<CropImageEvent>(_cropImageEvent);
     on<FilterPictureEvent>(_filterPictureEvent);
     on<RotateImageEvent>(_rotateImageEvent);
-    on<Decrement>(decrement);
-    on<Increment>(increment);
+    on<Decrement>(_decrement);
+    on<Increment>(_increment);
     on<ResetListImageEvent>(_resetListImageEvent);
+    on<ResetPointsEvent>(_resetPointsEvent);
   }
 
-  void increment(Increment event, Emitter emit) async {
+  void _increment(Increment event, Emitter emit) async {
     try {
       emit(state.copyWith(status: CropAndFilterPictureStatus.loading));
       state.index = event.index;
@@ -182,7 +187,7 @@ class CameraPictureViewModel
     }
   }
 
-  void decrement(Decrement event, Emitter emit) async {
+  void _decrement(Decrement event, Emitter emit) async {
     try {
       emit(state.copyWith(status: CropAndFilterPictureStatus.loading));
       state.index = event.index;
@@ -216,6 +221,7 @@ class CameraPictureViewModel
       emit(state.copyWith(
           pictureCrop: state.pictureCrop,
           pictureOrigin: state.pictureOrigin,
+          style: state.style,
           index: state.index,
           status: CropAndFilterPictureStatus.success));
     } catch (e) {
@@ -224,7 +230,6 @@ class CameraPictureViewModel
   }
 
   void _cropImageEvent(CropImageEvent event, Emitter emit) async {
-    print('======== event ${state.index}');
     emit(state.copyWith(status: CropAndFilterPictureStatus.loading));
     final memoryImageSize = imgsize.ImageSizeGetter.getSize(
         imgsize.MemoryInput(state.pictureCrop[state.index - 1]));
@@ -291,19 +296,24 @@ class CameraPictureViewModel
         }
       } else if (state.filter == FilterItem.fullAngle) {
         state.pictureCrop = [...state.pictureOrigin];
-      } else if (state.filter == FilterItem.brighten) {
+      } else if (state.filter == FilterItem.brightness) {
+        for (var item in state.pictureCrop) {
+          index = state.pictureCrop.indexOf(item);
+          Uint8List res =
+          await ImgProc.brightness(item,-1,alpha: 1.0,beta: 100.0)
+          as Uint8List;
+          state.pictureCrop[index] = res;
+        }
       } else if (state.filter == FilterItem.ecological) {
+        for (var item in state.pictureCrop) {
+          index = state.pictureCrop.indexOf(item);
+          Uint8List res = await ImgProc.adaptiveThreshold(item, 255, ImgProc.adaptiveThreshGaussianC, ImgProc.threshBinary, 11, 2) as Uint8List;
+          state.pictureCrop[index] = res;
+        }
       } else if (state.filter == FilterItem.bVW) {
         for (var item in state.pictureCrop) {
           index = state.pictureCrop.indexOf(item);
-          Uint8List res = await ImgProc.adaptiveThreshold(
-            item,
-            125,
-            ImgProc.adaptiveThreshMeanC,
-            ImgProc.threshBinary,
-            11,
-            12,
-          ) as Uint8List;
+          Uint8List res = await ImgProc.adaptiveThreshold(item, 125, ImgProc.adaptiveThreshMeanC, ImgProc.threshBinaryInv, 11, 2) as Uint8List;
           state.pictureCrop[index] = res;
         }
       } else {}
@@ -330,6 +340,20 @@ class CameraPictureViewModel
       emit(state.copyWith(message: 'error'));
     }
   }
+
+  void _resetPointsEvent(ResetPointsEvent event, Emitter emit) async {
+    try{
+      emit(state.copyWith(status:  CropAndFilterPictureStatus.loading));
+      emit(state.copyWith(
+        status: CropAndFilterPictureStatus.success,
+        type: CropAndFilterPictureType.points,
+      ));
+    } catch (e) {
+      emit(state.copyWith(message: 'error'));
+    }
+  }
+
+
 }
 
 Future<Uint8List> rotateImage(Uint8List image) async {

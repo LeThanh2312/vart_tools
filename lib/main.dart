@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vart_tools/common/enum/tab_item.dart';
 import 'package:vart_tools/feature/file/view_model/file_bloc.dart';
 import 'package:vart_tools/feature/file/view_model/file_favourite_bloc.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_bloc.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'feature/bottom_navigation_bar_main/view/bottom_navigation_bar_main_screen.dart';
 import 'feature/camera/view_model/crop_picture_bloc.dart';
+import 'feature/camera/view_model/save_picture_bloc.dart';
 
 class SimpleBlocObserver extends BlocObserver {
   @override
@@ -49,6 +51,9 @@ void main() async {
       BlocProvider(
         create: (context) => FileFavouriteViewModel(),
       ),
+      BlocProvider(
+        create: (context) => SavePictureViewModel(),
+      ),
     ], child: const MyApp()),
   );
 }
@@ -66,7 +71,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
-          home: const BottomNavigationBarMainScreen(),
+          home: const BottomNavigationBarMainScreen(currentTab: TabItem.home,),
         );
       },
     );

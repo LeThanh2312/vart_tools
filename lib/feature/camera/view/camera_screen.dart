@@ -20,6 +20,7 @@ class _CameraScreenState extends State<CameraScreen> {
   CameraType styleCamera = CameraType.cardID;
   bool isPageFirst = true;
   List<XFile> listPicture = [];
+  bool isFlash = false;
 
   @override
   void initState() {
@@ -74,6 +75,12 @@ class _CameraScreenState extends State<CameraScreen> {
     });
   }
 
+  void onChangeFlash(bool value) {
+    setState(() {
+      isFlash = value;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,6 +105,8 @@ class _CameraScreenState extends State<CameraScreen> {
                 styleCamera: styleCamera,
                 isPageFirst: isPageFirst,
                 controller: _controller,
+                onChangeFlash: onChangeFlash,
+                isFlash: isFlash,
               ),
               CameraBottomWidget(
                 onChangeTypeCamera,
@@ -105,6 +114,7 @@ class _CameraScreenState extends State<CameraScreen> {
                 styleCamera: styleCamera,
                 isPageFirst: isPageFirst,
                 controller: _controller,
+                isFlash: isFlash,
               ),
             ],
           ),
