@@ -21,7 +21,7 @@ class SavePictureState {
   String message;
 
   SavePictureState({
-    this.listFileSave = const [],
+    required this.listFileSave,
     this.savePictureType = SavePictureType.create,
     this.style = CameraType.cardID,
     this.status = SavePictureStatus.initialize,
@@ -45,11 +45,13 @@ class SavePictureState {
   }
 
   factory SavePictureState.initialize() {
-    return SavePictureState( status: SavePictureStatus.initialize);
+    return SavePictureState(
+        listFileSave: [], status: SavePictureStatus.initialize);
   }
 
   factory SavePictureState.loading() {
-    return SavePictureState( status: SavePictureStatus.loading);
+    return SavePictureState(
+        listFileSave: [], status: SavePictureStatus.loading);
   }
 
   factory SavePictureState.success(List<FileModel> data) {
@@ -58,7 +60,8 @@ class SavePictureState {
   }
 
   factory SavePictureState.failure() {
-    return SavePictureState( status: SavePictureStatus.failure);
+    return SavePictureState(
+        listFileSave: [], status: SavePictureStatus.failure);
   }
 
   bool get isLoading => status == SavePictureStatus.loading;
@@ -73,13 +76,16 @@ class SaveEvent extends SavePictureEvent {
   CameraType style;
   SavePictureType savePictureType;
 
-  SaveEvent({required this.style, required this.listPictureSave, required this.savePictureType});
+  SaveEvent(
+      {required this.style,
+      required this.listPictureSave,
+      required this.savePictureType});
 }
 
 class SavePictureViewModel extends Bloc<SavePictureEvent, SavePictureState> {
   SavePictureViewModel()
-      : super(
-            SavePictureState().copyWith(status: SavePictureStatus.initialize)) {
+      : super(SavePictureState(listFileSave: [])
+            .copyWith(status: SavePictureStatus.initialize)) {
     on<SaveEvent>(_savePicture);
   }
 
@@ -93,9 +99,9 @@ class SavePictureViewModel extends Bloc<SavePictureEvent, SavePictureState> {
     if (event.style == CameraType.cardID) {
       try {
         ui.Image imageBefore =
-        await ImagesMergeHelper.uint8ListToImage(event.listPictureSave[0]);
+            await ImagesMergeHelper.uint8ListToImage(event.listPictureSave[0]);
         ui.Image imageAfter =
-        await ImagesMergeHelper.uint8ListToImage(event.listPictureSave[1]);
+            await ImagesMergeHelper.uint8ListToImage(event.listPictureSave[1]);
         String name = 'camera_${DateTime.now()}.jpg';
         ui.Image image = await ImagesMergeHelper.margeImages(
             [imageBefore, imageAfter],
@@ -121,13 +127,16 @@ class SavePictureViewModel extends Bloc<SavePictureEvent, SavePictureState> {
           status: SavePictureStatus.success,
         ));
       } catch (e) {
+        print(e);
         emit(state.copyWith(message: 'error'));
       }
-    } else if(event.style == CameraType.passport || event.style == CameraType.document){
+    } else if (event.style == CameraType.passport ||
+        event.style == CameraType.document) {
       try {
         for (var item in event.listPictureSave) {
           print('====== ${event.listPictureSave.length}');
-          String name = 'camera_${event.listPictureSave.indexOf(item)}_${DateTime.now()}.jpg';
+          String name =
+              'camera_${event.listPictureSave.indexOf(item)}_${DateTime.now()}.jpg';
           File file = File('$tempPath/$name');
           file.writeAsBytesSync(item);
           print('======= xong file');
@@ -138,12 +147,12 @@ class SavePictureViewModel extends Bloc<SavePictureEvent, SavePictureState> {
             image: '$tempPath/camera_${DateTime.now()}.jpg',
             format: "JPG",
             size: file.lengthSync(),
-            dateCreate: '',
-            dateUpdate: '',
           );
           state.listFileSave.add(fileModel);
           print('===== item ==== ');
+          print(fileModel.toMap());
         }
+        print(" save ok ${state.listFileSave.length}");
         state.savePictureType = event.savePictureType;
         emit(state.copyWith(
           listFileSave: state.listFileSave,
@@ -151,10 +160,10 @@ class SavePictureViewModel extends Bloc<SavePictureEvent, SavePictureState> {
           status: SavePictureStatus.success,
         ));
       } catch (e) {
+        print(e);
         emit(state.copyWith(message: 'error $e'));
       }
-
-    } else{
+    } else {
       emit(state.copyWith(message: 'error'));
     }
   }

@@ -30,80 +30,80 @@ class _FileScreenState extends State<FileScreen> {
   @override
   void initState() {
     super.initState();
-    filesData = [
-      FileModel(
-        name: "avatar",
-        idFolder: widget.folder.id!,
-        image: ResAssets.images.img1,
-        format: "JPG",
-        size: 250,
-        dateCreate: '2022-09-29 08:28:58',
-        dateUpdate: '2022-09-29 08:28:58',
-      ),
-      FileModel(
-        name: "avatar2",
-        idFolder: widget.folder.id!,
-        image: ResAssets.images.img2,
-        format: "JPG",
-        size: 550,
-        dateCreate: '2022-09-29 08:29:58',
-        dateUpdate: '2022-09-29 08:29:58',
-      ),
-      FileModel(
-        name: "avatar2",
-        idFolder: widget.folder.id!,
-        image: ResAssets.images.img2,
-        format: "JPG",
-        size: 550,
-        dateCreate: '2022-09-29 08:30:58',
-        dateUpdate: '2022-09-29 08:30:58',
-      ),
-      FileModel(
-        name: "avatar2",
-        idFolder: widget.folder.id!,
-        image: ResAssets.images.img3,
-        format: "PNG",
-        size: 200,
-        dateCreate: '2022-09-28 08:28:58',
-        dateUpdate: '2022-09-28 08:28:58',
-      ),
-      FileModel(
-        name: "avatar3",
-        idFolder: widget.folder.id!,
-        image: ResAssets.images.img3,
-        format: "PNG",
-        size: 200,
-        dateCreate: '2022-09-25 08:31:58',
-        dateUpdate: '2022-09-25 08:31:58',
-      ),
-      FileModel(
-        name: "avatar3",
-        idFolder: widget.folder.id!,
-        image: ResAssets.images.img3,
-        format: "PNG",
-        size: 200,
-        dateCreate: '2022-09-25 08:30:58',
-        dateUpdate: '2022-09-25 08:30:58',
-      ),
-      FileModel(
-        name: "avatar",
-        idFolder: widget.folder.id!,
-        image: ResAssets.images.img3,
-        format: "PNG",
-        size: 200,
-        dateCreate: '2022-09-24 08:28:58',
-        dateUpdate: '2022-09-24 08:28:58',
-      ),
-    ];
-    checkDataExist(widget.folder.id!).then(
-      (value) {
-        if (value) {
-          context.read<FilesViewModel>().add(
-                AddFilesEvent(files: filesData, folderId: widget.folder.id!),
-              );
-        }
-      },
-    );
+    // filesData = [
+    //   FileModel(
+    //     name: "avatar",
+    //     idFolder: widget.folder.id!,
+    //     image: ResAssets.images.img1,
+    //     format: "JPG",
+    //     size: 250,
+    //     dateCreate: '2022-09-29 08:28:58',
+    //     dateUpdate: '2022-09-29 08:28:58',
+    //   ),
+    //   FileModel(
+    //     name: "avatar2",
+    //     idFolder: widget.folder.id!,
+    //     image: ResAssets.images.img2,
+    //     format: "JPG",
+    //     size: 550,
+    //     dateCreate: '2022-09-29 08:29:58',
+    //     dateUpdate: '2022-09-29 08:29:58',
+    //   ),
+    //   FileModel(
+    //     name: "avatar2",
+    //     idFolder: widget.folder.id!,
+    //     image: ResAssets.images.img2,
+    //     format: "JPG",
+    //     size: 550,
+    //     dateCreate: '2022-09-29 08:30:58',
+    //     dateUpdate: '2022-09-29 08:30:58',
+    //   ),
+    //   FileModel(
+    //     name: "avatar2",
+    //     idFolder: widget.folder.id!,
+    //     image: ResAssets.images.img3,
+    //     format: "PNG",
+    //     size: 200,
+    //     dateCreate: '2022-09-28 08:28:58',
+    //     dateUpdate: '2022-09-28 08:28:58',
+    //   ),
+    //   FileModel(
+    //     name: "avatar3",
+    //     idFolder: widget.folder.id!,
+    //     image: ResAssets.images.img3,
+    //     format: "PNG",
+    //     size: 200,
+    //     dateCreate: '2022-09-25 08:31:58',
+    //     dateUpdate: '2022-09-25 08:31:58',
+    //   ),
+    //   FileModel(
+    //     name: "avatar3",
+    //     idFolder: widget.folder.id!,
+    //     image: ResAssets.images.img3,
+    //     format: "PNG",
+    //     size: 200,
+    //     dateCreate: '2022-09-25 08:30:58',
+    //     dateUpdate: '2022-09-25 08:30:58',
+    //   ),
+    //   FileModel(
+    //     name: "avatar",
+    //     idFolder: widget.folder.id!,
+    //     image: ResAssets.images.img3,
+    //     format: "PNG",
+    //     size: 200,
+    //     dateCreate: '2022-09-24 08:28:58',
+    //     dateUpdate: '2022-09-24 08:28:58',
+    //   ),
+    // ];
+    // checkDataExist(widget.folder.id!).then(
+    //   (value) {
+    //     if (value) {
+    //       context.read<FilesViewModel>().add(
+    //             AddFilesEvent(files: filesData, folderId: widget.folder.id!),
+    //           );
+    //     }
+    //   },
+    // );
     context
         .read<FilesViewModel>()
         .add(LoadFilesEvent(folderId: widget.folder.id!));

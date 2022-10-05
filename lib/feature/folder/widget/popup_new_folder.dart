@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:vart_tools/common/toast/custom_toast.dart';
+import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/database/folder_database.dart';
+import 'package:vart_tools/feature/file/view_model/file_bloc.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_bloc.dart';
 import 'package:vart_tools/res/app_color.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class PopUpNewFolder extends StatefulWidget {
-  const PopUpNewFolder({Key? key}) : super(key: key);
+  const PopUpNewFolder({Key? key, required this.files}) : super(key: key);
   // final FolderModel? folder;
+  final List<FileModel> files;
 
   @override
   State<PopUpNewFolder> createState() => _PopUpNewFolderState();
@@ -50,6 +53,12 @@ class _PopUpNewFolderState extends State<PopUpNewFolder> {
       fToast.showToast(
           child: const ToastSuccess(message: "Tạo folder thất bại."));
     }
+  }
+
+  void _saveFiles(int folderId, List<FileModel> files) {
+    context.read<FilesViewModel>().add(
+          AddFilesEvent(files: files, folderId: folderId),
+        );
   }
 
   @override
@@ -134,29 +143,18 @@ class _PopUpNewFolderState extends State<PopUpNewFolder> {
                           });
                         } else {
                           if (!_isContain) {
-                            // if (widget.folder == null) {
                             context.read<FoldersViewModel>().add(
                                   AddFolderEvent(
                                     folder: FolderModel(
-                                        name: folderNameController.text,
-                                        dateCreate: DateTime.now().toString(),
-                                        dateUpdate: DateTime.now().toString()),
+                                      name: folderNameController.text,
+                                      dateCreate: DateTime.now().toString(),
+                                      dateUpdate: DateTime.now().toString(),
+                                    ),
                                   ),
                                 );
+                            _saveFiles(1, widget.files);
                             _showToastAddSuccess(
                                 context.read<FoldersViewModel>().state.message);
-                            // } else {
-                            //   List<FolderModel> folders = await FolderProvider()
-                            //       .getFolders(widget.folder!.id);
-                            //   FolderModel data = folders.first;
-                            //   data.name = folderNameController.text;
-                            //   data.dateUpdate = DateTime.now().toString();
-                            //   context.read<FoldersViewModel>().add(
-                            //         RenameFolderEvent(
-                            //           folder: data,
-                            //         ),
-                            //       );
-                            // }
                             FocusScope.of(context).unfocus();
                             Navigator.of(context)
                                 .popUntil((route) => route.isFirst);
