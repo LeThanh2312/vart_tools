@@ -11,7 +11,7 @@ class FileModel {
   String? dateUpdate;
   int? size;
   String? format;
-  int idFolder;
+  int? idFolder;
   String? link;
   String? tag;
   int? isFavourite;
@@ -25,7 +25,7 @@ class FileModel {
     this.dateUpdate,
     this.size,
     this.format,
-    required this.idFolder,
+    this.idFolder,
     this.link,
     this.tag,
     this.isFavourite,

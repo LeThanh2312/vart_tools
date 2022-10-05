@@ -150,7 +150,7 @@ class FilesViewModel extends Bloc<FileViewEvent, FilesViewState> {
     try {
       event.file.isDelete = 1;
       await FileProvider().updateFile(event.file);
-      state.files = await FileProvider().getFiles(event.file.idFolder);
+      state.files = await FileProvider().getFiles(event.file.idFolder!);
       emit(state.copyWith(files: state.files));
     } catch (e) {
       emit(state.copyWith(message: "delete folder fail"));
@@ -161,7 +161,7 @@ class FilesViewModel extends Bloc<FileViewEvent, FilesViewState> {
     try {
       event.file.isFavourite = event.isFavourite;
       await FileProvider().updateFile(event.file);
-      state.files = await FileProvider().getFiles(event.file.idFolder);
+      state.files = await FileProvider().getFiles(event.file.idFolder!);
       emit(state.copyWith(files: state.files, status: FilesStatus.success));
     } catch (e) {
       emit(state.copyWith(message: "delete folder fail"));
