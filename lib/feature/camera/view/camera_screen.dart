@@ -21,6 +21,7 @@ class _CameraScreenState extends State<CameraScreen> {
   bool isPageFirst = true;
   List<XFile> listPicture = [];
   bool isFlash = false;
+  late bool isLoadingTakePicture;
 
   @override
   void initState() {
@@ -30,6 +31,7 @@ class _CameraScreenState extends State<CameraScreen> {
       DeviceOrientation.portraitDown,
     ]);
     initCamera(widget.cameras![0]);
+    isLoadingTakePicture = false;
   }
 
   @override
@@ -81,6 +83,13 @@ class _CameraScreenState extends State<CameraScreen> {
     });
   }
 
+  void onChangeTakePhoto(bool value) {
+    setState(() {
+      print('===== ${value}');
+      isLoadingTakePicture = value;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,14 +98,14 @@ class _CameraScreenState extends State<CameraScreen> {
           margin: const EdgeInsets.symmetric(vertical: 10),
           child: Stack(
             children: [
-              if (_controller.value.isInitialized)
+              if (_controller.value.isInitialized && isLoadingTakePicture == false)
                 ShowCameraWidget(
                   styleCamera: styleCamera,
                   controller: _controller,
                 )
               else
                 Container(
-                  color: Colors.black,
+                  color: Colors.white,
                   child: const Center(
                     child: CircularProgressIndicator(),
                   ),
@@ -115,6 +124,8 @@ class _CameraScreenState extends State<CameraScreen> {
                 isPageFirst: isPageFirst,
                 controller: _controller,
                 isFlash: isFlash,
+                onChangeTakePhoto: onChangeTakePhoto,
+                isLoadingTakePicture: isLoadingTakePicture,
               ),
             ],
           ),

@@ -25,7 +25,6 @@ class _CameraHeaderWidgetState extends State<CameraHeaderWidget> {
 
   @override
   Widget build(BuildContext context) {
-    print('====== ${widget.isFlash}');
     return Align(
       alignment: Alignment.topCenter,
       child: Container(
