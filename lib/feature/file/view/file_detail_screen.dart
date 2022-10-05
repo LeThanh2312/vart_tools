@@ -4,51 +4,50 @@ import 'package:vart_tools/feature/file/widget/bottom_bar.dart';
 import 'package:vart_tools/feature/home/widgets/search_widget.dart';
 import 'package:vart_tools/res/font_size.dart';
 
-class FileDetailScrenn extends StatefulWidget {
-  const FileDetailScrenn({Key? key, required this.file}) : super(key: key);
+class FileDetailScreen extends StatefulWidget {
+  const FileDetailScreen({Key? key, required this.file}) : super(key: key);
   final FileModel file;
 
   @override
-  State<FileDetailScrenn> createState() => _FileDetailScrennState();
+  State<FileDetailScreen> createState() => _FileDetailScreenState();
 }
 
-class _FileDetailScrennState extends State<FileDetailScrenn> {
+class _FileDetailScreenState extends State<FileDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        margin: const EdgeInsets.only(top: 20),
+      appBar: AppBar(
+        title: Text(
+          widget.file.name,
+        ),
+        leading: InkWell(
+          onTap: () => Navigator.pop(context),
+          child: const Icon(
+            Icons.arrow_back_ios,
+            size: 30,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      body: SizedBox(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Padding(
-              padding: EdgeInsets.only(left: 15, right: 15, top: 20),
-              child: SearchWidget(),
-            ),
-            const SizedBox(height: 5),
-            Padding(
-              padding: const EdgeInsets.only(top: 15, left: 15, right: 15),
-              child: Row(
-                children: [
-                  InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Icon(Icons.arrow_back_ios)),
-                  Text(
-                    widget.file.name,
-                    style: ResStyle.h6,
+              padding: EdgeInsets.all(10),
+              child: Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "Thông Tin Chi Tiết",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
                   ),
-                ],
+                ),
               ),
             ),
-            const SizedBox(
-              height: 5,
-            ),
-            const Align(
-                alignment: Alignment.center, child: Text("Thông Tin Chi Tiết")),
             Expanded(
               child: ListView(
                 children: [

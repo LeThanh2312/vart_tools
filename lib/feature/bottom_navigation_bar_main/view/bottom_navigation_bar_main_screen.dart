@@ -32,6 +32,12 @@ class _BottomNavigationBarMainScreenState
         context.read<RedirectFileScreenViewModel>().state.redirect;
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    FocusScope.of(context).unfocus();
+  }
+
   void updateTabSelection(TabItem tabItem) {
     setState(() {
       _currentTab = tabItem;
@@ -55,21 +61,21 @@ class _BottomNavigationBarMainScreenState
             child: const HomeScreen(),
           ),
           Offstage(
-            offstage: _currentTab != TabItem.file,
-            child: BlocBuilder<RedirectFileScreenViewModel,
-                OnRedirectFileScreenState>(
-              builder: (context, state) {
-                if (state.redirect) {
-                  return FileScreen(
-                      folder: context
-                          .read<RedirectFileScreenViewModel>()
-                          .state
-                          .folder);
-                } else {
-                  return const FolderScreen();
-                }
-              },
-            ),
+            offstage: _currentTab != TabItem.file, child: const FolderScreen(),
+            // BlocBuilder<RedirectFileScreenViewModel,
+            //     OnRedirectFileScreenState>(
+            //   builder: (context, state) {
+            //     if (state.redirect) {
+            //       return FileScreen(
+            //           folder: context
+            //               .read<RedirectFileScreenViewModel>()
+            //               .state
+            //               .folder);
+            //     } else {
+            //       return const FolderScreen();
+            //     }
+            //   },
+            // ),
           ),
           Offstage(
             offstage: _currentTab != TabItem.favourite,

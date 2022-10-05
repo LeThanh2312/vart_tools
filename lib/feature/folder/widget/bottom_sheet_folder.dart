@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:vart_tools/database/folder_database.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_bloc.dart';
 import 'package:vart_tools/feature/folder/widget/popup_confirm_delete_folder.dart';
-import 'package:vart_tools/feature/folder/widget/popup_folder.dart';
+import 'package:vart_tools/feature/folder/widget/popup_new_folder.dart';
+import 'package:vart_tools/feature/folder/widget/popup_rename_folder.dart';
 import 'package:vart_tools/res/app_color.dart';
 import 'package:vart_tools/res/font_size.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -45,8 +46,7 @@ class _BottomSheetFolderState extends State<BottomSheetFolder> {
           onTap: () {
             showDialog(
               context: context,
-              builder: (context) =>
-                  PopUpFolder(title: "sửa thư mục", folder: widget.folder),
+              builder: (context) => PopUpRenameFolder(folder: widget.folder),
             );
           },
           child: Padding(

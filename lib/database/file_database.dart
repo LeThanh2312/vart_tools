@@ -96,7 +96,6 @@ class FileProvider {
   }
 
   Future<List<FileModel>> getFiles(int folderId) async {
-    print(folderId);
     final db = await initializeDB();
     final List<Map<String, dynamic>> maps;
     maps = await db.query(
