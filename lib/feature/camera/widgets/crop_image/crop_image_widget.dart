@@ -33,6 +33,7 @@ class _CropImageWidgetState extends State<CropImageWidget> {
   double imgWidth = 0;
   double scale = 1;
   Uint8List? image;
+  Offset minOffset = const Offset(0.0,0.0);
 
   Color color(int i) {
     return [Colors.red, Colors.red, Colors.red, Colors.red][i];
@@ -62,16 +63,15 @@ class _CropImageWidgetState extends State<CropImageWidget> {
 
     scale = imgHeightReal / imgHeight;
 
-    setState(() {
-
-    });
-
     points.add(Offset.zero);
     points.add(Offset(imgWidth, 0));
     points.add(Offset(imgWidth, imgHeight));
     points.add(Offset(0, imgHeight));
-
-    context.read<CameraPictureViewModel>().add(GetPointsCropEvent(points: [points[0],points[1],points[2],points[3]], scale: scale));
+    if(mounted) {
+      context.read<CameraPictureViewModel>().add(GetPointsCropEvent(
+          points: [points[0], points[1], points[2], points[3]], scale: scale));
+      setState(() {});
+    }
   }
 
   void getImageSize() {
@@ -124,13 +124,42 @@ class _CropImageWidgetState extends State<CropImageWidget> {
   }
 
   void onPanUpdate(DragUpdateDetails details, int index) {
-    final newPoint = Offset(
-      points[index].dx + details.delta.dx,
-      points[index].dy + details.delta.dy,
-    );
-    setState(() {
-      points[index] = newPoint;
-    });
+    if(index == 0 && (points[0].dx + details.delta.dx) > 0 && (points[0].dy + details.delta.dy) > 0){
+      final newPoint = Offset(
+        points[0].dx + details.delta.dx,
+        points[0].dy + details.delta.dy,
+      );
+      setState(() {
+        points[0] = newPoint;
+      });
+    }
+    if(index == 1 &&(points[1].dx + details.delta.dx) < imgWidth && (points[1].dy + details.delta.dy) > 0){
+      final newPoint = Offset(
+        points[1].dx + details.delta.dx,
+        points[1].dy + details.delta.dy,
+      );
+      setState(() {
+        points[1] = newPoint;
+      });
+    }
+    if(index == 2 && (points[2].dx + details.delta.dx) < imgWidth && (points[2].dy + details.delta.dy) < imgHeight){
+      final newPoint = Offset(
+        points[2].dx + details.delta.dx,
+        points[2].dy + details.delta.dy,
+      );
+      setState(() {
+        points[2] = newPoint;
+      });
+    }
+    if(index == 3 && (points[3].dx + details.delta.dx) > 0 && (points[3].dy + details.delta.dy) < imgHeight){
+      final newPoint = Offset(
+        points[3].dx + details.delta.dx,
+        points[3].dy + details.delta.dy,
+      );
+      setState(() {
+        points[3] = newPoint;
+      });
+    }
     context.read<CameraPictureViewModel>().add(GetPointsCropEvent(points: [points[0],points[1],points[2],points[3]], scale: scale));
   }
 
@@ -161,19 +190,6 @@ class _CropImageWidgetState extends State<CropImageWidget> {
                 width: imgWidth,
                 height: imgHeight,
               ),
-              // SizedBox(
-              //   width: imgWidth,
-              //   height: imgHeight,
-              //   child: CustomPaint(
-              //     painter: CustomCropImagePainter(points: points),
-              //     size: Size(imgWidth, imgHeight),
-              //     child: Container(
-              //       width: imgWidth,
-              //       height: imgHeight,
-              //       color: Colors.black.withAlpha(100),
-              //     ),
-              //   ),
-              // ),
               IgnorePointer(
                 child: ClipPath(
                   clipper: CustomCropImagePainter(points: points),
@@ -189,7 +205,8 @@ class _CropImageWidgetState extends State<CropImageWidget> {
                 top: points[0].dy,
                 child: GestureDetector(
                   onPanUpdate: (details) {
-                    onPanUpdate(details, 0);
+                      print('====== ${details.delta.dx}, ${details.delta.dy}');
+                      onPanUpdate(details, 0);
                   },
                   child: CircleAvatar(
                     radius: cropPointSize,
