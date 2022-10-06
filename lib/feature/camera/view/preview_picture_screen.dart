@@ -126,7 +126,7 @@ class _PreviewPictureScreenState extends State<PreviewPictureScreen> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         width: isShowPopupFilter ? 100.0.w : 0,
-        height: isShowPopupFilter ? 40.0.h : 0,
+        height: isShowPopupFilter ? MediaQuery.of(context).size.height / 3: 0,
         decoration: BoxDecoration(
             borderRadius:
                 BorderRadius.circular(isShowPopupFilter ? 0.0 : 300.0),
