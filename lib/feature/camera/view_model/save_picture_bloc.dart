@@ -1,16 +1,9 @@
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:path_provider/path_provider.dart';
-import 'package:flutter/material.dart';
 import 'package:vart_tools/database/file_database.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../common/enum/camera_type.dart';
 import '../../../common/enum/save_picture_type.dart';
-import 'package:merge_images/merge_images.dart';
-import 'dart:ui' as ui;
-
-import '../../../common/enum/tab_item.dart';
-import '../../bottom_navigation_bar_main/view/bottom_navigation_bar_main_screen.dart';
 
 enum SavePictureStatus { loading, success, failure, initialize }
 
@@ -47,27 +40,6 @@ class SavePictureState {
     );
   }
 
-  factory SavePictureState.initialize() {
-    return SavePictureState(
-        listFileSave: [], status: SavePictureStatus.initialize);
-  }
-
-  factory SavePictureState.loading() {
-    return SavePictureState(
-        listFileSave: [], status: SavePictureStatus.loading);
-  }
-
-  factory SavePictureState.success(List<FileModel> data) {
-    print('==== success ============');
-    return SavePictureState(
-        listFileSave: data, status: SavePictureStatus.success);
-  }
-
-  factory SavePictureState.failure() {
-    return SavePictureState(
-        listFileSave: [], status: SavePictureStatus.failure);
-  }
-
   bool get isLoading => status == SavePictureStatus.loading;
 
   bool get isSuccess => status == SavePictureStatus.success;
@@ -79,14 +51,18 @@ class SaveEvent extends SavePictureEvent {
   List<Uint8List> listPictureSave;
   CameraType style;
   SavePictureType savePictureType;
-  BuildContext context;
+  String tempPath;
+  int? size;
+  String? name;
 
-
-  SaveEvent(
-      {required this.style,
-      required this.listPictureSave,
-      required this.savePictureType,
-      required this.context});
+  SaveEvent({
+    required this.style,
+    required this.listPictureSave,
+    required this.savePictureType,
+    required this.tempPath,
+    this.size,
+    this.name,
+  });
 }
 
 class SavePictureViewModel extends Bloc<SavePictureEvent, SavePictureState> {
@@ -99,30 +75,19 @@ class SavePictureViewModel extends Bloc<SavePictureEvent, SavePictureState> {
   void _savePicture(SaveEvent event, Emitter emit) async {
     emit(state.copyWith(status: SavePictureStatus.loading));
     state.listFileSave.clear();
-    Directory tempDir = await getTemporaryDirectory();
-    String tempPath = '${tempDir.path}/vars_tools';
-    Directory(tempPath).create();
     if (event.style == CameraType.cardID) {
       try {
-        ui.Image imageBefore =
-            await ImagesMergeHelper.uint8ListToImage(event.listPictureSave[0]);
-        ui.Image imageAfter =
-            await ImagesMergeHelper.uint8ListToImage(event.listPictureSave[1]);
-        String name = 'camera_${DateTime.now()}.jpg';
-        ui.Image image = await ImagesMergeHelper.margeImages(
-            [imageBefore, imageAfter],
-            fit: false,
-            direction: Axis.vertical,
-            backgroundColor: Colors.black26);
-        File? file = await ImagesMergeHelper.imageToFile(image);
-        File imageSave = await file!.copy('$tempPath/$name');
+
+
         var fileModel = FileModel(
-          name: name,
-          image: '$tempPath/$name',
+          name: event.name!,
+          image: '${event.tempPath}/${event.name}',
           format: "JPG",
-          size: imageSave.lengthSync(),
+          size: event.size,
         );
+
         state.listFileSave.add(fileModel);
+        print('==== state ${state.listFileSave.length}');
         state.savePictureType = event.savePictureType;
       } catch (e) {
         print(e);
@@ -134,12 +99,12 @@ class SavePictureViewModel extends Bloc<SavePictureEvent, SavePictureState> {
         for (var item in event.listPictureSave) {
           String name =
               'camera_${event.listPictureSave.indexOf(item)}_${DateTime.now()}.jpg';
-          File file = File('$tempPath/$name');
+          File file = File('${event.tempPath}/$name');
           file.writeAsBytesSync(item);
 
           var fileModel = FileModel(
             name: name,
-            image: '$tempPath/$name',
+            image: '${event.tempPath}/$name',
             format: "JPG",
             size: file.lengthSync(),
           );

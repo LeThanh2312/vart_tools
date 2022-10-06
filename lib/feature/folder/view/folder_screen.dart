@@ -44,7 +44,7 @@ class _FolderScreenState extends State<FolderScreen> {
 
   void showPopup(BuildContext context) async {
     final state = context.read<SavePictureViewModel>().state;
-    print('====== ${state.savePictureType}');
+    print('====== leght  ${state.listFileSave.length}');
     if (state.listFileSave.isNotEmpty) {
       if (state.savePictureType == SavePictureType.create) {
         files = state.listFileSave;
