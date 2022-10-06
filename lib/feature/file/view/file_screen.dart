@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:vart_tools/common/animation/scale_animation.dart';
 import 'package:vart_tools/database/file_database.dart';
@@ -6,7 +8,6 @@ import 'package:vart_tools/feature/file/view/file_detail_screen.dart';
 import 'package:vart_tools/feature/file/view_model/file_bloc.dart';
 import 'package:vart_tools/feature/file/widget/popup_add_tag.dart';
 import 'package:vart_tools/feature/file/widget/popup_confirm_delete_mulplite_file.dart';
-import 'package:vart_tools/feature/home/widgets/search_widget.dart';
 import 'package:vart_tools/res/assets.dart';
 import 'package:vart_tools/res/font_size.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -308,12 +309,14 @@ class _FileScreenState extends State<FileScreen> {
                                         },
                                         child: Stack(
                                           children: [
-                                            Image.asset(
-                                              '${file["image"]}',
-                                              fit: BoxFit.cover,
-                                              width: double.infinity,
-                                              height: double.infinity,
-                                            ),
+                                            // Image.asset(
+                                            //   '${file["image"]}',
+                                            //   fit: BoxFit.cover,
+                                            //   width: double.infinity,
+                                            //   height: double.infinity,
+                                            // ),
+                                            Image.file(
+                                                File('${file["image"]}')),
                                             Positioned(
                                               right: 0,
                                               top: 0,

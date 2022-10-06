@@ -23,6 +23,7 @@ class FolderScreen extends StatefulWidget {
 class _FolderScreenState extends State<FolderScreen> {
   List<FileModel> files = [];
   late int newFolderId;
+  late bool resultPopup;
   @override
   void initState() {
     super.initState();
@@ -52,13 +53,13 @@ class _FolderScreenState extends State<FolderScreen> {
             builder: (context) => const PopUpNewFolder(),
           );
           print("result dialog return ${result}");
-          if(result) {
-            newFolderId = context.read<FoldersViewModel>().state.newFolderId;
-            print("folder id new: ${newFolderId}");
-            print(files.length);
-            context.read<FilesViewModel>().add(
-                AddFilesEvent(files: files, folderId: newFolderId),
-              );
+          if (result) {
+            // newFolderId = context.read<FoldersViewModel>().state.newFolderId;
+            // print("folder id new: ${newFolderId}");
+            // print(files.length);
+            // context.read<FilesViewModel>().add(
+            //       AddFilesEvent(files: files, folderId: newFolderId),
+            //     );
           }
         }
       },
@@ -82,9 +83,14 @@ class _FolderScreenState extends State<FolderScreen> {
                 Expanded(
                   child: BlocBuilder<FoldersViewModel, FoldersState>(
                     builder: (context, state) {
-                      newFolderId = state.newFolderId;
-                      print("new 1 ${newFolderId}");
                       if (state.isSuccess) {
+                        newFolderId = state.newFolderId;
+                        print("folder id new: ${newFolderId}");
+                        print(files.length);
+                        context.read<FilesViewModel>().add(
+                              AddFilesEvent(
+                                  files: files, folderId: newFolderId),
+                            );
                         if (state.filterFolder.isNotEmpty) {
                           return ReorderableListView(
                             onReorder: reorderData,

@@ -98,6 +98,7 @@ class SavePictureViewModel extends Bloc<SavePictureEvent, SavePictureState> {
     Directory(tempPath).create();
     if (event.style == CameraType.cardID) {
       try {
+        print("vo day");
         ui.Image imageBefore =
             await ImagesMergeHelper.uint8ListToImage(event.listPictureSave[0]);
         ui.Image imageAfter =
