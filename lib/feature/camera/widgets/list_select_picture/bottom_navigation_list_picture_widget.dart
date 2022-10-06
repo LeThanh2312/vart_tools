@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:vart_tools/common/animation/scale_animation.dart';
 import '../../../../common/enum/camera_type.dart';
 import '../../view/preview_picture_screen.dart';
 
@@ -74,14 +75,13 @@ class _BottomNavigatorListPictureWidgetState
     }
     if (listPictureSelect.isNotEmpty) {
       Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => PreviewPictureScreen(
-            listPicture: listPictureSelect,
-            style: widget.type,
-          ),
-        ),
-      );
+          context,
+          SlideRightRoute(
+            page: PreviewPictureScreen(
+              listPicture: listPictureSelect,
+              style: widget.type,
+            ),
+          ));
     } else {
       const snackBar = SnackBar(
         content: Text('Vui lòng chọn ít nhất một ảnh'),

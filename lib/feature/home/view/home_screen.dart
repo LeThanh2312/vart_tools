@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vart_tools/common/animation/scale_animation.dart';
 import '../../../res/app_constants.dart';
 import '../../camera/view/camera_screen.dart';
 import '../../folder/view/folder_trash_screen.dart';
@@ -40,8 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => const FolderTrashScreen()),
+                          SlideRightRoute(page: const FolderTrashScreen()),
                         );
                       },
                       child: Column(
@@ -59,8 +59,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     flex: 1,
                     child: InkWell(
                       onTap: () async {
-                        await availableCameras().then((value) => Navigator.push(context,
-                            MaterialPageRoute(builder: (_) => CameraScreen(cameras: value))));
+                        await availableCameras().then((value) => Navigator.push(
+                            context,
+                            SlideRightRoute(
+                                page: CameraScreen(cameras: value))));
                       },
                       child: Column(
                         children: const [

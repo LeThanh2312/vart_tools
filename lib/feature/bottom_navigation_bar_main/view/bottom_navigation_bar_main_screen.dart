@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vart_tools/common/animation/scale_animation.dart';
 import 'package:vart_tools/feature/file/view_model/file_bloc.dart';
 import 'package:vart_tools/feature/file/view_model/file_favourite_bloc.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_favourite_bloc.dart';
@@ -64,8 +65,7 @@ class _BottomNavigationBarMainScreenState
               (value) => {
                 Navigator.push(
                     context,
-                    MaterialPageRoute(
-                        builder: (_) => CameraScreen(cameras: value)))
+                    SlideRightRoute(page: CameraScreen(cameras: value)))
               },
             );
           },
