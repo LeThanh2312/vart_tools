@@ -25,6 +25,7 @@ class FolderScreen extends StatefulWidget {
 class _FolderScreenState extends State<FolderScreen> {
   List<FileModel> files = [];
   late bool isSelectFolder = false;
+  late bool isSelectBloc = false;
   // late bool resultPopup = false;
   @override
   void initState() {
@@ -43,6 +44,7 @@ class _FolderScreenState extends State<FolderScreen> {
 
   void showPopup(BuildContext context) async {
     final state = context.read<SavePictureViewModel>().state;
+    print('====== ${state.savePictureType}');
     if (state.listFileSave.isNotEmpty) {
       if (state.savePictureType == SavePictureType.create) {
         files = state.listFileSave;

@@ -83,15 +83,15 @@ class _BottomNavigatorPreviewWidgetState
     );
   }
 
-  Future<void> _saveFileLocalStorage(List<Uint8List> pictureCrop) async {
-    context.read<SavePictureViewModel>().add(
-          SaveEvent(
-            style: widget.style,
-            listPictureSave: pictureCrop,
-            savePictureType: SavePictureType.selector,
-          ),
-        );
-  }
+  // Future<void> _saveFileLocalStorage(List<Uint8List> pictureCrop) async {
+  //   context.read<SavePictureViewModel>().add(
+  //         SaveEvent(
+  //           style: widget.style,
+  //           listPictureSave: pictureCrop,
+  //           savePictureType: SavePictureType.selector,
+  //         ),
+  //       );
+  // }
 
   Future<void> _showDialogSelectFolder() async {
     return showDialog<void>(
@@ -113,33 +113,29 @@ class _BottomNavigatorPreviewWidgetState
                 final state = context.read<CameraPictureViewModel>().state;
                 if (state.isSuccess) {
                   print('===== popup ========}');
-                  await _saveFileLocalStorage(state.pictureCrop);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            const BottomNavigationBarMainScreen(
-                                currentTab: TabItem.file)),
-                  );
-                  // context.read<SavePictureViewModel>().add(
-                  //       SaveEvent(
-                  //         style: widget.style,
-                  //         listPictureSave: state.pictureCrop,
-                  //         savePictureType: SavePictureType.selector,
-                  //       ),
-                  //     );
-                  // Future.delayed(const Duration(milliseconds: 1000), () {
-                  //   Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //         builder: (context) =>
-                  //             const BottomNavigationBarMainScreen(
-                  //                 currentTab: TabItem.file)),
-                  //   );
-                  // });
+
+                  context.read<SavePictureViewModel>().add(
+                        SaveEvent(
+                          style: widget.style,
+                          listPictureSave: state.pictureCrop,
+                          savePictureType: SavePictureType.create,
+                          context: context,
+                        ),
+                      );
                   imageCache.clear();
                   imageCache.clearLiveImages();
                 }
+                context.read<SavePictureViewModel>().stream.listen((state) {
+                  if(state.isSuccess && state.listFileSave.isNotEmpty){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                          const BottomNavigationBarMainScreen(
+                              currentTab: TabItem.file)),
+                    );
+                  }
+                });
               },
             ),
             ElevatedButton(
@@ -150,34 +146,28 @@ class _BottomNavigatorPreviewWidgetState
               onPressed: () async {
                 final state = context.read<CameraPictureViewModel>().state;
                 if (state.isSuccess) {
-                  print('===== popup ========}');
-                  await _saveFileLocalStorage(state.pictureCrop);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            const BottomNavigationBarMainScreen(
-                                currentTab: TabItem.file)),
-                  );
-                  // context.read<SavePictureViewModel>().add(
-                  //       SaveEvent(
-                  //         style: widget.style,
-                  //         listPictureSave: state.pictureCrop,
-                  //         savePictureType: SavePictureType.selector,
-                  //       ),
-                  //     );
-                  // Future.delayed(const Duration(milliseconds: 1000), () {
-                  //   Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //         builder: (context) =>
-                  //             const BottomNavigationBarMainScreen(
-                  //                 currentTab: TabItem.file)),
-                  //   );
-                  // });
+                  context.read<SavePictureViewModel>().add(
+                        SaveEvent(
+                          style: widget.style,
+                          listPictureSave: state.pictureCrop,
+                          savePictureType: SavePictureType.selector,
+                          context: context,
+                        ),
+                      );
                   imageCache.clear();
                   imageCache.clearLiveImages();
                 }
+                context.read<SavePictureViewModel>().stream.listen((state) {
+                  if(state.listFileSave.isNotEmpty){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                          const BottomNavigationBarMainScreen(
+                              currentTab: TabItem.file)),
+                    );
+                  }
+                });
               },
             ),
           ],

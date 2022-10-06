@@ -9,6 +9,9 @@ import '../../../common/enum/save_picture_type.dart';
 import 'package:merge_images/merge_images.dart';
 import 'dart:ui' as ui;
 
+import '../../../common/enum/tab_item.dart';
+import '../../bottom_navigation_bar_main/view/bottom_navigation_bar_main_screen.dart';
+
 enum SavePictureStatus { loading, success, failure, initialize }
 
 abstract class SavePictureEvent {}
@@ -76,11 +79,14 @@ class SaveEvent extends SavePictureEvent {
   List<Uint8List> listPictureSave;
   CameraType style;
   SavePictureType savePictureType;
+  BuildContext context;
+
 
   SaveEvent(
       {required this.style,
       required this.listPictureSave,
-      required this.savePictureType});
+      required this.savePictureType,
+      required this.context});
 }
 
 class SavePictureViewModel extends Bloc<SavePictureEvent, SavePictureState> {
