@@ -109,12 +109,15 @@ class _BottomNavigatorPreviewWidgetState
                     savePictureType: SavePictureType.selector,
                   ),
                   );
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const BottomNavigationBarMainScreen(
-                            currentTab: TabItem.file)),
-                  );
+                  Future.delayed(const Duration(milliseconds: 1000), () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const BottomNavigationBarMainScreen(
+                              currentTab: TabItem.file)),
+                    );
+
+                  });
                   imageCache.clear();
                   imageCache.clearLiveImages();
                 }
@@ -137,12 +140,15 @@ class _BottomNavigatorPreviewWidgetState
                       savePictureType: SavePictureType.selector,
                     ),
                   );
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const BottomNavigationBarMainScreen(
-                            currentTab: TabItem.file)),
-                  );
+                  Future.delayed(const Duration(milliseconds: 1000), () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const BottomNavigationBarMainScreen(
+                              currentTab: TabItem.file)),
+                    );
+
+                  });
                   imageCache.clear();
                   imageCache.clearLiveImages();
                 }
