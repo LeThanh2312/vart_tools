@@ -30,4 +30,12 @@ class AssetImages {
   final String img1 = "$imagePath/avatar.jpg";
   final String img2 = "$imagePath/avatar2.jpg";
   final String img3 = "$imagePath/avatar3.png";
+
+  final String blur = "$imagePath/blur.png";
+  final String grayScale = "$imagePath/gray_scale.png";
+  final String origin = "$imagePath/origin.png";
+  final String brightness = "$imagePath/brightness.png";
+  final String bio = "$imagePath/bio.png";
+  final String blackWhile = "$imagePath/black_while.png";
+
 }

@@ -284,11 +284,11 @@ class CameraPictureViewModel
         for (var item in state.pictureCrop) {
           index = state.pictureCrop.indexOf(item);
           Uint8List res =
-              await ImgProc.blur(item, [45, 45], [20, 30], Core.borderReflect)
+              await ImgProc.blur(item, [35, 35], [20, 30], Core.borderReplicate)
                   as Uint8List;
           state.pictureCrop[index] = res;
         }
-      } else if (state.filter == FilterItem.shadows) {
+      } else if (state.filter == FilterItem.grayScale) {
         for (var item in state.pictureCrop) {
           index = state.pictureCrop.indexOf(item);
           Uint8List res = await ImgProc.grayScale(item) as Uint8List;

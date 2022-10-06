@@ -19,6 +19,8 @@ class CameraBottomWidget extends StatefulWidget {
     required this.controller,
     required this.isPageFirst,
     required this.isFlash,
+    required this.onChangeTakePhoto,
+    required this.isLoadingTakePicture,
   }) : super(key: key);
   final CameraType styleCamera;
   final CameraController controller;
@@ -26,6 +28,8 @@ class CameraBottomWidget extends StatefulWidget {
   final void Function(CameraType value) onChangeType;
   final void Function(bool value) onChangePageFirst;
   final bool isFlash;
+  final bool isLoadingTakePicture;
+  final void Function(bool value) onChangeTakePhoto;
 
   @override
   State<CameraBottomWidget> createState() => _CameraBottomWidgetState();
@@ -91,7 +95,12 @@ class _CameraBottomWidgetState extends State<CameraBottomWidget> {
                 Expanded(
                   child: IconButton(
                     onPressed: () {
-                      takePicture(context);
+                      if(widget.isLoadingTakePicture == false){
+                        setState(() {
+                          widget.onChangeTakePhoto(true);
+                        });
+                        takePicture(context);
+                      }
                     },
                     iconSize: 50,
                     padding: EdgeInsets.zero,
@@ -225,9 +234,9 @@ class _CameraBottomWidgetState extends State<CameraBottomWidget> {
     }
     if (widget.styleCamera == CameraType.cardID) {
       if (widget.isPageFirst) {
-        if(widget.isFlash){
+        if (widget.isFlash) {
           await widget.controller.setFlashMode(FlashMode.always);
-        } else{
+        } else {
           await widget.controller.setFlashMode(FlashMode.off);
         }
         pictureBefore = await widget.controller.takePicture();
@@ -258,9 +267,9 @@ class _CameraBottomWidgetState extends State<CameraBottomWidget> {
     } else if (widget.styleCamera == CameraType.passport ||
         widget.styleCamera == CameraType.document) {
       try {
-        if(widget.isFlash){
+        if (widget.isFlash) {
           await widget.controller.setFlashMode(FlashMode.always);
-        } else{
+        } else {
           await widget.controller.setFlashMode(FlashMode.off);
         }
         pictureBefore = await widget.controller.takePicture();
@@ -273,6 +282,11 @@ class _CameraBottomWidgetState extends State<CameraBottomWidget> {
         return null;
       }
     } else {}
+    Future.delayed(const Duration(milliseconds: 250), () {
+      setState(() {
+        widget.onChangeTakePhoto(false);
+      });
+    });
   }
 
   Future<void> getImageGallery(BuildContext context) async {
