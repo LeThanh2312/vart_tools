@@ -25,6 +25,12 @@ class BottomNavigatorPreviewWidget extends StatefulWidget {
 class _BottomNavigatorPreviewWidgetState
     extends State<BottomNavigatorPreviewWidget> {
   @override
+  void initState() {
+    context.read<SavePictureViewModel>();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BottomAppBar(
       shape: const CircularNotchedRectangle(),
@@ -94,6 +100,7 @@ class _BottomNavigatorPreviewWidgetState
               onPressed: () async {
                 final state = context.read<CameraPictureViewModel>().state;
                 if (state.isSuccess){
+                  print('===== popup ========}');
                   context
                       .read<SavePictureViewModel>()
                       .add(SaveEvent(
@@ -118,11 +125,10 @@ class _BottomNavigatorPreviewWidgetState
                 SavePictureType.selector.name,
                 style: const TextStyle(color: Colors.white),
               ),
-              onPressed: () async{
+              onPressed: () async {
                 final state = context.read<CameraPictureViewModel>().state;
                 if (state.isSuccess){
-                  print('===== ${state.style}');
-                  print('===== ${state.pictureCrop.length}');
+                  print('===== popup ========}');
                   context
                       .read<SavePictureViewModel>()
                       .add(SaveEvent(

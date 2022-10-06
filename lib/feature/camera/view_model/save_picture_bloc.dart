@@ -55,6 +55,7 @@ class SavePictureState {
   }
 
   factory SavePictureState.success(List<FileModel> data) {
+    print('==== success ============');
     return SavePictureState(
         listFileSave: data, status: SavePictureStatus.success);
   }
@@ -90,15 +91,13 @@ class SavePictureViewModel extends Bloc<SavePictureEvent, SavePictureState> {
   }
 
   void _savePicture(SaveEvent event, Emitter emit) async {
-    print('===== ${event.style}');
     emit(state.copyWith(status: SavePictureStatus.loading));
+    state.listFileSave.clear();
     Directory tempDir = await getTemporaryDirectory();
     String tempPath = '${tempDir.path}/vars_tools';
-    print('======= $tempPath');
     Directory(tempPath).create();
     if (event.style == CameraType.cardID) {
       try {
-        print("vo day");
         ui.Image imageBefore =
             await ImagesMergeHelper.uint8ListToImage(event.listPictureSave[0]);
         ui.Image imageAfter =
@@ -119,26 +118,18 @@ class SavePictureViewModel extends Bloc<SavePictureEvent, SavePictureState> {
         );
         state.listFileSave.add(fileModel);
         state.savePictureType = event.savePictureType;
-        emit(state.copyWith(
-          listFileSave: state.listFileSave,
-          savePictureType: state.savePictureType,
-          status: SavePictureStatus.success,
-        ));
       } catch (e) {
         print(e);
         emit(state.copyWith(message: 'error'));
       }
-    } else if (event.style == CameraType.passport ||
-        event.style == CameraType.document) {
+    }
+    else if (event.style == CameraType.passport || event.style == CameraType.document) {
       try {
         for (var item in event.listPictureSave) {
-          print('====== ${event.listPictureSave.length}');
           String name =
               'camera_${event.listPictureSave.indexOf(item)}_${DateTime.now()}.jpg';
           File file = File('$tempPath/$name');
           file.writeAsBytesSync(item);
-          print('======= xong file');
-          print('====== size ${file.lengthSync()}');
 
           var fileModel = FileModel(
             name: name,
@@ -147,22 +138,17 @@ class SavePictureViewModel extends Bloc<SavePictureEvent, SavePictureState> {
             size: file.lengthSync(),
           );
           state.listFileSave.add(fileModel);
-          print('===== item ==== ');
-          print(fileModel.toMap());
         }
-        print(" save ok ${state.listFileSave.length}");
         state.savePictureType = event.savePictureType;
-        emit(state.copyWith(
-          listFileSave: state.listFileSave,
-          savePictureType: state.savePictureType,
-          status: SavePictureStatus.success,
-        ));
       } catch (e) {
         print(e);
         emit(state.copyWith(message: 'error $e'));
       }
-    } else {
-      emit(state.copyWith(message: 'error'));
     }
+    emit(state.copyWith(
+      listFileSave: state.listFileSave,
+      savePictureType: state.savePictureType,
+      status: SavePictureStatus.success,
+    ));
   }
 }

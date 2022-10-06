@@ -29,49 +29,27 @@ class _FolderScreenState extends State<FolderScreen> {
   void initState() {
     super.initState();
     context.read<FoldersViewModel>().add(LoadFoldersEvent());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showPopup(context);
+    });
+  }
+
+  void showPopup(BuildContext context) async{
+    final state = context.read<SavePictureViewModel>().state;
+    if(state.listFileSave.isNotEmpty){
+      files = state.listFileSave;
+      var result = await showDialog(
+        context: context,
+        builder: (context) => const PopUpNewFolder(),
+      );
+      if (result == 0) return;
+      return;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<SavePictureViewModel, SavePictureState>(
-      listener: (context, state) async {
-        if (state.status == SavePictureStatus.success) {
-          print('===== file: ${state.listFileSave.length}');
-          files = state.listFileSave;
-          var result = await showDialog(
-            context: context,
-            builder: (context) => const PopUpNewFolder(),
-          );
-          print("result dialog return ${result}");
-          if (result == 0) return;
-          print("id : ${result}");
-          return;
-          // if (result != 0) {
-          // context.read<FoldersViewModel>().add(
-          //       AddFolderEvent(
-          //         folder: FolderModel(
-          //           name: result,
-          //           dateCreate: DateTime.now().toString(),
-          //           dateUpdate: DateTime.now().toString(),
-          //         ),
-          //       ),
-          //     );
-          // int newFolderId =
-          //     context.read<FoldersViewModel>().state.newFolderId;
-          // print("id : ${result}");
-          // setState(() {
-          //   resultPopup = true;
-          // });
-          // newFolderId = context.read<FoldersViewModel>().state.newFolderId;
-          // print("folder id new: ${newFolderId}");
-          // print(files.length);
-          // context.read<FilesViewModel>().add(
-          //       AddFilesEvent(files: files, folderId: newFolderId),
-          //     );
-          // }
-        }
-      },
-      child: GestureDetector(
+    return  GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: SafeArea(
           child: Container(
@@ -155,7 +133,6 @@ class _FolderScreenState extends State<FolderScreen> {
             ),
           ),
         ),
-      ),
     );
   }
 
