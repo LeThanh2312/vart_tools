@@ -113,12 +113,9 @@ class SavePictureViewModel extends Bloc<SavePictureEvent, SavePictureState> {
         File imageSave = await file!.copy('$tempPath/$name');
         var fileModel = FileModel(
           name: name,
-          image: '$tempPath/camera_${DateTime.now()}.jpg',
+          image: '$tempPath/$name',
           format: "JPG",
           size: imageSave.lengthSync(),
-          dateCreate: '',
-          dateUpdate: '',
-          idFolder: null,
         );
         state.listFileSave.add(fileModel);
         state.savePictureType = event.savePictureType;
@@ -145,7 +142,7 @@ class SavePictureViewModel extends Bloc<SavePictureEvent, SavePictureState> {
 
           var fileModel = FileModel(
             name: name,
-            image: '$tempPath/camera_${DateTime.now()}.jpg',
+            image: '$tempPath/$name',
             format: "JPG",
             size: file.lengthSync(),
           );

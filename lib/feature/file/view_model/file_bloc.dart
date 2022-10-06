@@ -182,7 +182,9 @@ class FilesViewModel extends Bloc<FileViewEvent, FilesViewState> {
 
   void _addFiles(AddFilesEvent event, Emitter emit) async {
     try {
+      int i = 0;
       for (FileModel file in event.files) {
+        print(i++);
         file.idFolder = event.folderId;
         await FileProvider().insertFile(file);
       }

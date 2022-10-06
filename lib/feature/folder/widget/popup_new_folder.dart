@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:vart_tools/common/toast/custom_toast.dart';
-import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/database/folder_database.dart';
 import 'package:vart_tools/feature/file/view_model/file_bloc.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_bloc.dart';
@@ -10,7 +9,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 class PopUpNewFolder extends StatefulWidget {
   const PopUpNewFolder({Key? key}) : super(key: key);
-  // final List<FileModel> files;
 
   @override
   State<PopUpNewFolder> createState() => _PopUpNewFolderState();
@@ -45,6 +43,12 @@ class _PopUpNewFolderState extends State<PopUpNewFolder> {
     fToast.init(context);
   }
 
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
   void _showToastAddSuccess(String message) {
     if (message == '') {
       fToast.showToast(
@@ -54,12 +58,6 @@ class _PopUpNewFolderState extends State<PopUpNewFolder> {
           child: const ToastSuccess(message: "Tạo folder thất bại."));
     }
   }
-
-  // void _saveFiles(int folderId, List<FileModel> files) {
-  //   context.read<FilesViewModel>().add(
-  //         AddFilesEvent(files: files, folderId: folderId),
-  //       );
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -124,52 +122,56 @@ class _PopUpNewFolderState extends State<PopUpNewFolder> {
       actions: [
         Padding(
           padding: const EdgeInsets.only(bottom: 15),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context, false);
-                  FocusScope.of(context).unfocus();
-                },
-                child: const Text('Hủy'),
-              ),
-              ElevatedButton(
-                onPressed: (!_disable)
-                    ? () async {
-                        if (folderNameController.text.isEmpty) {
-                          setState(() {
-                            _validate = true;
-                          });
-                        } else {
-                          if (!_isContain) {
-                            context.read<FoldersViewModel>().add(
-                                  AddFolderEvent(
-                                    folder: FolderModel(
-                                      name: folderNameController.text,
-                                      dateCreate: DateTime.now().toString(),
-                                      dateUpdate: DateTime.now().toString(),
+          child: BlocListener<FoldersViewModel, FoldersState>(
+            listener: (context, state) {
+              if (state.status == FolderStatus.newfoldersuccess) {
+                int newFolderId = state.newFolderId;
+                // _showToastAddSuccess(
+                //     context.read<FoldersViewModel>().state.message);
+                FocusScope.of(context).unfocus();
+                state.status = FolderStatus.success;
+                Navigator.of(context).pop(newFolderId);
+                print("dong popup");
+              }
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    FocusScope.of(context).unfocus();
+                    Navigator.pop(context, '');
+                  },
+                  child: const Text('Hủy'),
+                ),
+                ElevatedButton(
+                  onPressed: (!_disable)
+                      ? () async {
+                          if (folderNameController.text.isEmpty) {
+                            setState(() {
+                              _validate = true;
+                            });
+                          } else {
+                            if (!_isContain) {
+                              context.read<FoldersViewModel>().add(
+                                    AddFolderEvent(
+                                      folder: FolderModel(
+                                        name: folderNameController.text,
+                                        dateCreate: DateTime.now().toString(),
+                                        dateUpdate: DateTime.now().toString(),
+                                      ),
                                     ),
-                                  ),
-                                );
-                                // print("===new folder id ${newFolderId}");
-                                // if(newFolderId != 0){
-                                //   print(newFolderId);
-                                //   _saveFiles(newFolderId, widget.files);
-                                // }
-                            _showToastAddSuccess(
-                                context.read<FoldersViewModel>().state.message);
-                            FocusScope.of(context).unfocus();
-                            Navigator.pop(context, true);
+                                  );
+                            }
                           }
                         }
-                      }
-                    : null,
-                child: const Text('Đồng ý'),
-              ),
-            ],
+                      : null,
+                  child: const Text('Đồng ý'),
+                ),
+              ],
+            ),
           ),
-        )
+        ),
       ],
     );
   }

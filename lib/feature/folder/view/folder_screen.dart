@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vart_tools/common/animation/scale_animation.dart';
 import 'package:vart_tools/database/file_database.dart';
+import 'package:vart_tools/database/folder_database.dart';
 import 'package:vart_tools/feature/camera/view_model/save_picture_bloc.dart';
 import 'package:vart_tools/feature/file/view/file_screen.dart';
 import 'package:vart_tools/feature/file/view_model/file_bloc.dart';
@@ -23,23 +24,12 @@ class FolderScreen extends StatefulWidget {
 class _FolderScreenState extends State<FolderScreen> {
   List<FileModel> files = [];
   late int newFolderId;
-  late bool resultPopup;
+  // late bool resultPopup = false;
   @override
   void initState() {
     super.initState();
     context.read<FoldersViewModel>().add(LoadFoldersEvent());
   }
-
-  // _showMyDialogNewFolder() async {
-  //   var result = await showDialog(
-  //   context: context,
-  //   builder: (_) => const PopUpNewFolder(),);
-  //         if (result != null) {
-  //           setState(() {
-  //             //Do stuff
-  //           });
-  //         }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -53,14 +43,32 @@ class _FolderScreenState extends State<FolderScreen> {
             builder: (context) => const PopUpNewFolder(),
           );
           print("result dialog return ${result}");
-          if (result) {
-            // newFolderId = context.read<FoldersViewModel>().state.newFolderId;
-            // print("folder id new: ${newFolderId}");
-            // print(files.length);
-            // context.read<FilesViewModel>().add(
-            //       AddFilesEvent(files: files, folderId: newFolderId),
-            //     );
-          }
+          if (result == 0) return;
+          print("id : ${result}");
+          return;
+          // if (result != 0) {
+          // context.read<FoldersViewModel>().add(
+          //       AddFolderEvent(
+          //         folder: FolderModel(
+          //           name: result,
+          //           dateCreate: DateTime.now().toString(),
+          //           dateUpdate: DateTime.now().toString(),
+          //         ),
+          //       ),
+          //     );
+          // int newFolderId =
+          //     context.read<FoldersViewModel>().state.newFolderId;
+          // print("id : ${result}");
+          // setState(() {
+          //   resultPopup = true;
+          // });
+          // newFolderId = context.read<FoldersViewModel>().state.newFolderId;
+          // print("folder id new: ${newFolderId}");
+          // print(files.length);
+          // context.read<FilesViewModel>().add(
+          //       AddFilesEvent(files: files, folderId: newFolderId),
+          //     );
+          // }
         }
       },
       child: GestureDetector(
@@ -84,13 +92,6 @@ class _FolderScreenState extends State<FolderScreen> {
                   child: BlocBuilder<FoldersViewModel, FoldersState>(
                     builder: (context, state) {
                       if (state.isSuccess) {
-                        newFolderId = state.newFolderId;
-                        print("folder id new: ${newFolderId}");
-                        print(files.length);
-                        context.read<FilesViewModel>().add(
-                              AddFilesEvent(
-                                  files: files, folderId: newFolderId),
-                            );
                         if (state.filterFolder.isNotEmpty) {
                           return ReorderableListView(
                             onReorder: reorderData,

@@ -3,7 +3,14 @@ import 'package:vart_tools/database/folder_database.dart';
 
 abstract class FoldersEvent {}
 
-enum FolderStatus { loading, success, failure, initialize }
+enum FolderStatus {
+  loading,
+  success,
+  failure,
+  initialize,
+  newfoldersuccess,
+  newfolderfail
+}
 
 class FoldersState {
   List<FolderModel> folders = [];
@@ -136,14 +143,18 @@ class FoldersViewModel extends Bloc<FoldersEvent, FoldersState> {
   void _addFolder(AddFolderEvent event, Emitter emit) async {
     try {
       int id = await FolderProvider().insertFolder(event.folder);
-      state.newFolderId = id;
       print(state.newFolderId);
+      state.newFolderId = id;
+      print("id day ${state.newFolderId}");
       state.folders = await FolderProvider().getFolders(null);
       emit(state.copyWith(
-        folders: state.filterFolder
+        folders: state.filterFolder,
+        newFolderId: id,
+        status: FolderStatus.newfoldersuccess,
       ));
     } catch (e) {
-      emit(state.copyWith(message: "add folder error"));
+      emit(state.copyWith(
+          message: "add folder error", status: FolderStatus.newfolderfail));
     }
   }
 
