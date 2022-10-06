@@ -10,7 +10,8 @@ import '../widgets/bottom_navigator_bar_main_widget.dart';
 import '../widgets/tab_main_screen_widget.dart';
 
 class BottomNavigationBarMainScreen extends StatefulWidget {
-  const BottomNavigationBarMainScreen({Key? key, required this.currentTab}) : super(key: key);
+  const BottomNavigationBarMainScreen({Key? key, required this.currentTab})
+      : super(key: key);
   final TabItem currentTab;
 
   @override
@@ -31,6 +32,12 @@ class _BottomNavigationBarMainScreenState
         context.read<RedirectFileScreenViewModel>().state.redirect;
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    FocusScope.of(context).unfocus();
+  }
+
   void updateTabSelection(TabItem tabItem) {
     setState(() {
       _currentTab = tabItem;
@@ -46,29 +53,31 @@ class _BottomNavigationBarMainScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: TabMainScreenWidget(currentTab: _currentTab,),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await availableCameras().then(
-            (value) => {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => CameraScreen(cameras: value)))
-            },
-          );
-        },
-        elevation: 4.0,
-        child: Container(
-          margin: const EdgeInsets.all(15.0),
-          child: const Icon(Icons.photo_camera),
+        resizeToAvoidBottomInset: false,
+        body: TabMainScreenWidget(
+          currentTab: _currentTab,
         ),
-      ),
-      bottomNavigationBar: BottomNavigatorBarMainWidget(currentTab: _currentTab, updateTabSelection: updateTabSelection,
-
-      )
-    );
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            await availableCameras().then(
+              (value) => {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => CameraScreen(cameras: value)))
+              },
+            );
+          },
+          elevation: 4.0,
+          child: Container(
+            margin: const EdgeInsets.all(15.0),
+            child: const Icon(Icons.photo_camera),
+          ),
+        ),
+        bottomNavigationBar: BottomNavigatorBarMainWidget(
+          currentTab: _currentTab,
+          updateTabSelection: updateTabSelection,
+        ));
   }
 }

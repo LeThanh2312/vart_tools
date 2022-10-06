@@ -1,30 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:vart_tools/common/toast/custom_toast.dart';
 import 'package:vart_tools/database/folder_database.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_bloc.dart';
 import 'package:vart_tools/res/app_color.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
-class PopUpFolder extends StatefulWidget {
-  const PopUpFolder({Key? key, required this.title, required this.folder})
-      : super(key: key);
-  final String title;
-  final FolderModel? folder;
+class PopUpRenameFolder extends StatefulWidget {
+  const PopUpRenameFolder({Key? key, required this.folder}) : super(key: key);
+  final FolderModel folder;
 
   @override
-  State<PopUpFolder> createState() => _PopUpFolderState();
+  State<PopUpRenameFolder> createState() => _PopUpRenameFolderState();
 }
 
-class _PopUpFolderState extends State<PopUpFolder> {
+class _PopUpRenameFolderState extends State<PopUpRenameFolder> {
   TextEditingController folderNameController = TextEditingController();
   bool _validate = false;
   bool _isContain = false;
   bool _disable = true;
+  late FToast fToast;
 
   bool _checkFolderExist(String folderName) {
     var folders = context.read<FoldersViewModel>().state.folders;
     bool status = false;
     for (var folder in folders) {
-      if (folder.name == folderNameController.text) {
+      if (folder.name == folderName) {
         status = true;
         return status;
       } else {
@@ -35,12 +36,30 @@ class _PopUpFolderState extends State<PopUpFolder> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    fToast = FToast();
+    fToast.init(context);
+    folderNameController.text = widget.folder.name!;
+  }
+
+  void _showToastRenameSuccess(String message) {
+    if (message == '') {
+      fToast.showToast(
+          child: const ToastSuccess(message: "Rename folder thành công."));
+    } else {
+      fToast.showToast(
+          child: const ToastSuccess(message: "Rename folder thất bại."));
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Center(
         child: Column(
           children: [
-            Text(widget.title),
+            const Text('Sửa mục mới'),
             Divider(
               height: 15,
               thickness: 1,
@@ -54,11 +73,9 @@ class _PopUpFolderState extends State<PopUpFolder> {
         children: [
           TextField(
             controller: folderNameController,
+            autofocus: true,
             decoration: InputDecoration(
                 border: const OutlineInputBorder(),
-                hintText: widget.title == 'sửa thư mục'
-                    ? '${widget.folder!.name}'
-                    : 'Thư mục mới',
                 isDense: true,
                 contentPadding: const EdgeInsets.all(15),
                 errorText: _validate
@@ -72,7 +89,7 @@ class _PopUpFolderState extends State<PopUpFolder> {
                   _validate = true;
                 });
               } else {
-                if (_checkFolderExist(folderNameController.text)) {
+                if (value != widget.folder.name && _checkFolderExist(value)) {
                   setState(() {
                     _isContain = true;
                   });
@@ -104,6 +121,7 @@ class _PopUpFolderState extends State<PopUpFolder> {
               ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).pop();
+                  FocusScope.of(context).unfocus();
                 },
                 child: const Text('Hủy'),
               ),
@@ -116,28 +134,32 @@ class _PopUpFolderState extends State<PopUpFolder> {
                           });
                         } else {
                           if (!_isContain) {
-                            if (widget.folder == null) {
-                              context.read<FoldersViewModel>().add(
-                                    AddFolderEvent(
-                                      folder: FolderModel(
-                                          name: folderNameController.text,
-                                          dateCreate: DateTime.now().toString(),
-                                          dateUpdate:
-                                              DateTime.now().toString()),
-                                    ),
-                                  );
-                            } else {
-                              List<FolderModel> folders = await FolderProvider()
-                                  .getFolders(widget.folder!.id);
-                              FolderModel data = folders.first;
-                              data.name = folderNameController.text;
-                              data.dateUpdate = DateTime.now().toString();
-                              context.read<FoldersViewModel>().add(
-                                    RenameFolderEvent(
-                                      folder: data,
-                                    ),
-                                  );
-                            }
+                            // if (widget.folder == null) {
+                            // context.read<FoldersViewModel>().add(
+                            //       AddFolderEvent(
+                            //         folder: FolderModel(
+                            //             name: folderNameController.text,
+                            //             dateCreate: DateTime.now().toString(),
+                            //             dateUpdate: DateTime.now().toString()),
+                            //       ),
+                            //     );
+                            // _showToastAddSuccess(
+                            //     context.read<FoldersViewModel>().state.message);
+                            // } else {
+                            List<FolderModel> folders = await FolderProvider()
+                                .getFolders(widget.folder!.id);
+                            FolderModel data = folders.first;
+                            data.name = folderNameController.text;
+                            data.dateUpdate = DateTime.now().toString();
+                            context.read<FoldersViewModel>().add(
+                                  RenameFolderEvent(
+                                    folder: data,
+                                  ),
+                                );
+                            // }
+                            _showToastRenameSuccess(
+                                context.read<FoldersViewModel>().state.message);
+                            FocusScope.of(context).unfocus();
                             Navigator.of(context)
                                 .popUntil((route) => route.isFirst);
                           }

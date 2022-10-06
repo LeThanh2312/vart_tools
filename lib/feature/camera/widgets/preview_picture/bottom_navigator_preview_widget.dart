@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:vart_tools/common/enum/camera_type.dart';
 import 'package:vart_tools/common/enum/save_picture_type.dart';
@@ -12,7 +13,8 @@ import '../../view_model/crop_picture_bloc.dart';
 class BottomNavigatorPreviewWidget extends StatefulWidget {
   const BottomNavigatorPreviewWidget({
     Key? key,
-    required this.onShowPopupFilter, required this.style,
+    required this.onShowPopupFilter,
+    required this.style,
   }) : super(key: key);
   final void Function(bool value) onShowPopupFilter;
   final CameraType style;
@@ -24,6 +26,12 @@ class BottomNavigatorPreviewWidget extends StatefulWidget {
 
 class _BottomNavigatorPreviewWidgetState
     extends State<BottomNavigatorPreviewWidget> {
+  @override
+  void initState() {
+    context.read<SavePictureViewModel>();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
@@ -75,6 +83,16 @@ class _BottomNavigatorPreviewWidgetState
     );
   }
 
+  // Future<void> _saveFileLocalStorage(List<Uint8List> pictureCrop) async {
+  //   context.read<SavePictureViewModel>().add(
+  //         SaveEvent(
+  //           style: widget.style,
+  //           listPictureSave: pictureCrop,
+  //           savePictureType: SavePictureType.selector,
+  //         ),
+  //       );
+  // }
+
   Future<void> _showDialogSelectFolder() async {
     return showDialog<void>(
       context: context,
@@ -93,24 +111,31 @@ class _BottomNavigatorPreviewWidgetState
               ),
               onPressed: () async {
                 final state = context.read<CameraPictureViewModel>().state;
-                if (state.isSuccess){
-                  context
-                      .read<SavePictureViewModel>()
-                      .add(SaveEvent(
-                    style: widget.style,
-                    listPictureSave: state.pictureCrop,
-                    savePictureType: SavePictureType.selector,
-                  ),
-                  );
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const BottomNavigationBarMainScreen(
-                            currentTab: TabItem.file)),
-                  );
+                if (state.isSuccess) {
+                  print('===== popup ========}');
+
+                  context.read<SavePictureViewModel>().add(
+                        SaveEvent(
+                          style: widget.style,
+                          listPictureSave: state.pictureCrop,
+                          savePictureType: SavePictureType.create,
+                          context: context,
+                        ),
+                      );
                   imageCache.clear();
                   imageCache.clearLiveImages();
                 }
+                context.read<SavePictureViewModel>().stream.listen((state) {
+                  if(state.isSuccess && state.listFileSave.isNotEmpty){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                          const BottomNavigationBarMainScreen(
+                              currentTab: TabItem.file)),
+                    );
+                  }
+                });
               },
             ),
             ElevatedButton(
@@ -118,28 +143,31 @@ class _BottomNavigatorPreviewWidgetState
                 SavePictureType.selector.name,
                 style: const TextStyle(color: Colors.white),
               ),
-              onPressed: () async{
+              onPressed: () async {
                 final state = context.read<CameraPictureViewModel>().state;
-                if (state.isSuccess){
-                  print('===== ${state.style}');
-                  print('===== ${state.pictureCrop.length}');
-                  context
-                      .read<SavePictureViewModel>()
-                      .add(SaveEvent(
-                      style: widget.style,
-                      listPictureSave: state.pictureCrop,
-                      savePictureType: SavePictureType.selector,
-                    ),
-                  );
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const BottomNavigationBarMainScreen(
-                            currentTab: TabItem.file)),
-                  );
+                if (state.isSuccess) {
+                  context.read<SavePictureViewModel>().add(
+                        SaveEvent(
+                          style: widget.style,
+                          listPictureSave: state.pictureCrop,
+                          savePictureType: SavePictureType.selector,
+                          context: context,
+                        ),
+                      );
                   imageCache.clear();
                   imageCache.clearLiveImages();
                 }
+                context.read<SavePictureViewModel>().stream.listen((state) {
+                  if(state.listFileSave.isNotEmpty){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                          const BottomNavigationBarMainScreen(
+                              currentTab: TabItem.file)),
+                    );
+                  }
+                });
               },
             ),
           ],

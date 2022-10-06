@@ -3,19 +3,28 @@ import 'package:vart_tools/database/folder_database.dart';
 
 abstract class FoldersEvent {}
 
-enum FolderStatus { loading, success, failure, initialize }
+enum FolderStatus {
+  loading,
+  success,
+  failure,
+  initialize,
+  newfoldersuccess,
+  newfolderfail
+}
 
 class FoldersState {
   List<FolderModel> folders = [];
   SortType sortType;
   FolderStatus status;
   String message = '';
+  int newFolderId;
 
   FoldersState({
     this.status = FolderStatus.initialize,
     this.folders = const [],
     this.sortType = SortType.byCreatedDateDESC,
     this.message = '',
+    this.newFolderId = 0,
   });
 
   List<FolderModel> get filterFolder {
@@ -55,12 +64,14 @@ class FoldersState {
     SortType? sortType,
     FolderStatus? status,
     String? message,
+    int? newFolderId,
   }) {
     return FoldersState(
       folders: folders ?? this.folders,
       sortType: sortType ?? this.sortType,
       status: status ?? this.status,
       message: message ?? this.message,
+      newFolderId: newFolderId ?? this.newFolderId,
     );
   }
 
@@ -131,11 +142,19 @@ class FoldersViewModel extends Bloc<FoldersEvent, FoldersState> {
 
   void _addFolder(AddFolderEvent event, Emitter emit) async {
     try {
-      await FolderProvider().insertFolder(event.folder);
+      int id = await FolderProvider().insertFolder(event.folder);
+      print(state.newFolderId);
+      state.newFolderId = id;
+      print("id day ${state.newFolderId}");
       state.folders = await FolderProvider().getFolders(null);
-      emit(state.copyWith(folders: state.filterFolder));
+      emit(state.copyWith(
+        folders: state.filterFolder,
+        newFolderId: id,
+        status: FolderStatus.newfoldersuccess,
+      ));
     } catch (e) {
-      emit(state.copyWith(message: "add folder error"));
+      emit(state.copyWith(
+          message: "add folder error", status: FolderStatus.newfolderfail));
     }
   }
 

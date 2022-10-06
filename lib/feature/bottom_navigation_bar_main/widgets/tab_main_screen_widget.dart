@@ -11,7 +11,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../setting/settings_screen.dart';
 
 class TabMainScreenWidget extends StatefulWidget {
-  const TabMainScreenWidget({Key? key, required this.currentTab}) : super(key: key);
+  const TabMainScreenWidget({Key? key, required this.currentTab})
+      : super(key: key);
   final TabItem currentTab;
 
   @override
@@ -34,10 +35,9 @@ class _TabMainScreenWidgetState extends State<TabMainScreenWidget> {
             builder: (context, state) {
               if (state.redirect) {
                 return FileScreen(
-                    folder: context
-                        .read<RedirectFileScreenViewModel>()
-                        .state
-                        .folder);
+                  folder:
+                      context.read<RedirectFileScreenViewModel>().state.folder,
+                );
               } else {
                 return const FolderScreen();
               }

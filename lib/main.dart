@@ -21,7 +21,7 @@ class SimpleBlocObserver extends BlocObserver {
   }
 }
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FlutterDownloader.initialize();
   Bloc.observer = SimpleBlocObserver();

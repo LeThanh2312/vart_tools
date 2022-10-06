@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:vart_tools/database/file_database.dart';
-import 'package:vart_tools/database/folder_database.dart';
-import 'package:vart_tools/feature/file/view_model/file_bloc.dart';
-import 'package:vart_tools/feature/folder/view_model/folders_bloc.dart';
-import 'package:vart_tools/feature/folder/widget/popup_confirm_delete_folder.dart';
-import 'package:vart_tools/feature/folder/widget/popup_folder.dart';
 import 'package:vart_tools/res/app_color.dart';
 import 'package:vart_tools/res/font_size.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

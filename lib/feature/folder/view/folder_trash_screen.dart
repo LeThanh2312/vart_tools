@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vart_tools/common/animation/scale_animation.dart';
 import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/database/folder_database.dart';
 import 'package:vart_tools/feature/file/widget/file_trash_item.dart';
@@ -22,7 +23,8 @@ class FolderTrashScreen extends StatefulWidget {
   State<FolderTrashScreen> createState() => _FolderTrashScreenState();
 }
 
-class _FolderTrashScreenState extends State<FolderTrashScreen> {
+class _FolderTrashScreenState extends State<FolderTrashScreen>
+    with SingleTickerProviderStateMixin {
   List<FolderModel> folders = [];
   List<FileModel> files = [];
   late bool isSelectedAll;
@@ -60,31 +62,21 @@ class _FolderTrashScreenState extends State<FolderTrashScreen> {
         }
       },
       child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Thùng rác'),
+          leading: InkWell(
+            onTap: () => Navigator.pop(context),
+            child: const Icon(
+              Icons.arrow_back_ios,
+              size: 30,
+              color: Colors.white,
+            ),
+          ),
+        ),
         body: Stack(
           children: [
             Column(
               children: [
-                const Padding(
-                  padding: EdgeInsets.only(left: 15, right: 15, top: 50),
-                  child: SearchWidget(),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 15, left: 30, right: 30),
-                  child: Row(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Icon(Icons.arrow_back_ios),
-                      ),
-                      const Text(
-                        "Thùng rác",
-                        style: ResStyle.h6,
-                      ),
-                    ],
-                  ),
-                ),
                 Padding(
                   padding: const EdgeInsets.only(top: 20, bottom: 20),
                   child: Row(
@@ -113,11 +105,6 @@ class _FolderTrashScreenState extends State<FolderTrashScreen> {
                                                   .state.selectedIdObject
                                                   .clear();
                                               for (FileModel file in files) {
-                                                // folderTrashModel.state.isChecked(
-                                                //   SelectIdTrashModel(
-                                                //       id: file.id!,
-                                                //       type: IdType.file),
-                                                // );
                                                 folderTrashModel.add(
                                                   ToggleSelectFolderTrashEvent(
                                                     selectedIdsObject:
@@ -129,11 +116,6 @@ class _FolderTrashScreenState extends State<FolderTrashScreen> {
                                               }
                                               for (FolderModel folder
                                                   in folders) {
-                                                // folderTrashModel.state.isChecked(
-                                                //   SelectIdTrashModel(
-                                                //       id: folder.id!,
-                                                //       type: IdType.folder),
-                                                // );
                                                 folderTrashModel.add(
                                                   ToggleSelectFolderTrashEvent(
                                                     selectedIdsObject:
@@ -152,7 +134,6 @@ class _FolderTrashScreenState extends State<FolderTrashScreen> {
                                                   .state.selectedIdObject
                                                   .clear();
                                               setState(() {
-                                                print("set lai");
                                                 isSelectedAll = false;
                                               });
                                             }
@@ -161,16 +142,6 @@ class _FolderTrashScreenState extends State<FolderTrashScreen> {
                                                 .state.selectedIdObject
                                                 .clear();
                                           }
-                                          // if (folderTrashModel
-                                          //     .state.selectedIdObject.isEmpty) {
-                                          //   setState(() {
-                                          //     isSelectedAll = true;
-                                          //   });
-                                          // } else {
-                                          //   setState(() {
-                                          //     isSelectedAll = false;
-                                          //   });
-                                          // }
                                         }
                                       : null,
                                   child: isSelectedAll
@@ -253,76 +224,85 @@ class _FolderTrashScreenState extends State<FolderTrashScreen> {
             ),
             Positioned(
               bottom: 0,
-              child: Container(
-                height: 70,
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border(
-                    top: BorderSide(
-                      color: AppColors.grayColor,
-                      width: 1,
-                    ),
-                  ),
-                ),
-                child: BlocBuilder<FolderTrashViewModel, FolderTrashState>(
-                    builder: (context, state) {
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      TextButton(
-                        child: Text("Xóa"),
-                        onPressed: state.isEmptySelectedId
-                            ? null
-                            : () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) =>
-                                      PopupConfirmPermantlyFolder(
-                                    selectedIdObject: state.selectedIdObject,
-                                    onClear: () {
-                                      setState(() {
-                                        isSelectedAll = false;
-                                        if (state.selectedIdObject.length ==
-                                            (folders.length + files.length)) {
-                                          isDisableTextButton = true;
-                                        }
-                                      });
-                                    },
-                                  ),
-                                );
-                              },
+              child: BlocBuilder<FolderTrashViewModel, FolderTrashState>(
+                builder: (context, state) {
+                  if (state.isEmptySelectedId) {
+                    return const SizedBox();
+                  } else {
+                    return Container(
+                      height: 70,
+                      width: MediaQuery.of(context).size.width,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border(
+                          top: BorderSide(
+                            color: AppColors.grayColor,
+                            width: 1,
+                          ),
+                        ),
                       ),
-                      Text(
-                        "đã chọn ${state.selectedIdObject.length} mục",
-                        style: ResStyle.trash_text2,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          TextButton(
+                            child: Text("Xóa"),
+                            onPressed: state.isEmptySelectedId
+                                ? null
+                                : () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          PopupConfirmPermantlyFolder(
+                                        selectedIdObject:
+                                            state.selectedIdObject,
+                                        onClear: () {
+                                          setState(() {
+                                            isSelectedAll = false;
+                                            if (state.selectedIdObject.length ==
+                                                (folders.length +
+                                                    files.length)) {
+                                              isDisableTextButton = true;
+                                            }
+                                          });
+                                        },
+                                      ),
+                                    );
+                                  },
+                          ),
+                          Text(
+                            "đã chọn ${state.selectedIdObject.length} mục",
+                            style: ResStyle.trash_text2,
+                          ),
+                          TextButton(
+                            child: Text("Khôi phục"),
+                            onPressed: state.isEmptySelectedId
+                                ? null
+                                : () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          PopupConfirmRecoverFolders(
+                                        selectedIdObject:
+                                            state.selectedIdObject,
+                                        onClear: () => setState(
+                                          () {
+                                            isSelectedAll = false;
+                                            if (state.selectedIdObject.length ==
+                                                (folders.length +
+                                                    files.length)) {
+                                              isDisableTextButton = true;
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                    );
+                                  },
+                          ),
+                        ],
                       ),
-                      TextButton(
-                        child: Text("Khôi phục"),
-                        onPressed: state.isEmptySelectedId
-                            ? null
-                            : () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) =>
-                                      PopupConfirmRecoverFolders(
-                                    selectedIdObject: state.selectedIdObject,
-                                    onClear: () => setState(
-                                      () {
-                                        isSelectedAll = false;
-                                        if (state.selectedIdObject.length ==
-                                            (folders.length + files.length)) {
-                                          isDisableTextButton = true;
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                );
-                              },
-                      ),
-                    ],
-                  );
-                }),
+                    );
+                  }
+                },
               ),
             )
           ],
