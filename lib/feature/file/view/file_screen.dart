@@ -2,19 +2,30 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:vart_tools/common/animation/scale_animation.dart';
+import 'package:vart_tools/common/enum/save_picture_type.dart';
 import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/database/folder_database.dart';
 import 'package:vart_tools/feature/file/view/file_detail_screen.dart';
 import 'package:vart_tools/feature/file/view_model/file_bloc.dart';
 import 'package:vart_tools/feature/file/widget/popup_add_tag.dart';
 import 'package:vart_tools/feature/file/widget/popup_confirm_delete_mulplite_file.dart';
+import 'package:vart_tools/feature/file/widget/popup_confirm_save_file.dart';
 import 'package:vart_tools/res/assets.dart';
 import 'package:vart_tools/res/font_size.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FileScreen extends StatefulWidget {
-  const FileScreen({Key? key, required this.folder}) : super(key: key);
+  FileScreen(
+      {Key? key,
+      required this.folder,
+      this.filesSave,
+      this.isSelectFolder,
+      this.updateIsSelectFolder})
+      : super(key: key);
   final FolderModel folder;
+  final List<FileModel>? filesSave;
+  bool? isSelectFolder;
+  final void Function(bool value)? updateIsSelectFolder;
 
   @override
   State<FileScreen> createState() => _FileScreenState();
@@ -31,83 +42,30 @@ class _FileScreenState extends State<FileScreen> {
   @override
   void initState() {
     super.initState();
-    // filesData = [
-    //   FileModel(
-    //     name: "avatar",
-    //     idFolder: widget.folder.id!,
-    //     image: ResAssets.images.img1,
-    //     format: "JPG",
-    //     size: 250,
-    //     dateCreate: '2022-09-29 08:28:58',
-    //     dateUpdate: '2022-09-29 08:28:58',
-    //   ),
-    //   FileModel(
-    //     name: "avatar2",
-    //     idFolder: widget.folder.id!,
-    //     image: ResAssets.images.img2,
-    //     format: "JPG",
-    //     size: 550,
-    //     dateCreate: '2022-09-29 08:29:58',
-    //     dateUpdate: '2022-09-29 08:29:58',
-    //   ),
-    //   FileModel(
-    //     name: "avatar2",
-    //     idFolder: widget.folder.id!,
-    //     image: ResAssets.images.img2,
-    //     format: "JPG",
-    //     size: 550,
-    //     dateCreate: '2022-09-29 08:30:58',
-    //     dateUpdate: '2022-09-29 08:30:58',
-    //   ),
-    //   FileModel(
-    //     name: "avatar2",
-    //     idFolder: widget.folder.id!,
-    //     image: ResAssets.images.img3,
-    //     format: "PNG",
-    //     size: 200,
-    //     dateCreate: '2022-09-28 08:28:58',
-    //     dateUpdate: '2022-09-28 08:28:58',
-    //   ),
-    //   FileModel(
-    //     name: "avatar3",
-    //     idFolder: widget.folder.id!,
-    //     image: ResAssets.images.img3,
-    //     format: "PNG",
-    //     size: 200,
-    //     dateCreate: '2022-09-25 08:31:58',
-    //     dateUpdate: '2022-09-25 08:31:58',
-    //   ),
-    //   FileModel(
-    //     name: "avatar3",
-    //     idFolder: widget.folder.id!,
-    //     image: ResAssets.images.img3,
-    //     format: "PNG",
-    //     size: 200,
-    //     dateCreate: '2022-09-25 08:30:58',
-    //     dateUpdate: '2022-09-25 08:30:58',
-    //   ),
-    //   FileModel(
-    //     name: "avatar",
-    //     idFolder: widget.folder.id!,
-    //     image: ResAssets.images.img3,
-    //     format: "PNG",
-    //     size: 200,
-    //     dateCreate: '2022-09-24 08:28:58',
-    //     dateUpdate: '2022-09-24 08:28:58',
-    //   ),
-    // ];
-    // checkDataExist(widget.folder.id!).then(
-    //   (value) {
-    //     if (value) {
-    //       context.read<FilesViewModel>().add(
-    //             AddFilesEvent(files: filesData, folderId: widget.folder.id!),
-    //           );
-    //     }
-    //   },
-    // );
     context
         .read<FilesViewModel>()
         .add(LoadFilesEvent(folderId: widget.folder.id!));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showPopup(context);
+    });
+  }
+
+  void showPopup(BuildContext context) async {
+    if (widget.filesSave!.isNotEmpty && widget.isSelectFolder!) {
+      var result = await showDialog(
+        context: context,
+        builder: (context) => const PopUpConfirmSaveFile(),
+      );
+      if (result) {
+        context.read<FilesViewModel>().add(AddFilesEvent(
+            files: widget.filesSave!, folderId: widget.folder.id!));
+        context
+            .read<FilesViewModel>()
+            .add(LoadFilesEvent(folderId: widget.folder.id!));
+        widget.updateIsSelectFolder!(false);
+        // widget.isSelectFolder = false;
+      }
+    }
   }
 
   Future<bool> checkDataExist(int id) async {

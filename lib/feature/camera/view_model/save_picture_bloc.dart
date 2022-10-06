@@ -122,8 +122,8 @@ class SavePictureViewModel extends Bloc<SavePictureEvent, SavePictureState> {
         print(e);
         emit(state.copyWith(message: 'error'));
       }
-    }
-    else if (event.style == CameraType.passport || event.style == CameraType.document) {
+    } else if (event.style == CameraType.passport ||
+        event.style == CameraType.document) {
       try {
         for (var item in event.listPictureSave) {
           String name =

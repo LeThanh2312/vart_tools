@@ -135,7 +135,6 @@ class _PopUpNewFolderState extends State<PopUpNewFolder> {
                 state.status = FolderStatus.success;
                 Navigator.of(context).pop(newFolderId);
                 print("dong popup");
-
               }
             },
             child: Row(
@@ -144,7 +143,7 @@ class _PopUpNewFolderState extends State<PopUpNewFolder> {
                 ElevatedButton(
                   onPressed: () {
                     FocusScope.of(context).unfocus();
-                    Navigator.pop(context, '');
+                    Navigator.pop(context, 0);
                   },
                   child: const Text('Hủy'),
                 ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vart_tools/common/animation/scale_animation.dart';
+import 'package:vart_tools/common/enum/save_picture_type.dart';
 import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/database/folder_database.dart';
 import 'package:vart_tools/feature/camera/view_model/save_picture_bloc.dart';
@@ -23,7 +24,7 @@ class FolderScreen extends StatefulWidget {
 
 class _FolderScreenState extends State<FolderScreen> {
   List<FileModel> files = [];
-  late int newFolderId;
+  late bool isSelectFolder = false;
   // late bool resultPopup = false;
   @override
   void initState() {
@@ -34,105 +35,123 @@ class _FolderScreenState extends State<FolderScreen> {
     });
   }
 
-  void showPopup(BuildContext context) async{
+  void onShowPopupConfirm(bool value) {
+    setState(() {
+      isSelectFolder = value;
+    });
+  }
+
+  void showPopup(BuildContext context) async {
     final state = context.read<SavePictureViewModel>().state;
-    if(state.listFileSave.isNotEmpty){
-      files = state.listFileSave;
-      var result = await showDialog(
-        context: context,
-        builder: (context) => const PopUpNewFolder(),
-      );
-      if (result == 0) return;
-      return;
+    if (state.listFileSave.isNotEmpty) {
+      if (state.savePictureType == SavePictureType.create) {
+        files = state.listFileSave;
+        var result = await showDialog(
+          context: context,
+          builder: (context) => const PopUpNewFolder(),
+        );
+        if (result != 0) {
+          context
+              .read<FilesViewModel>()
+              .add(AddFilesEvent(files: files, folderId: result));
+        }
+      } else {
+        files = state.listFileSave;
+        isSelectFolder = true;
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return  GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: SafeArea(
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            padding: const EdgeInsets.only(left: 15, right: 15, top: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SearchWidget(),
-                const SizedBox(height: 20),
-                const PanelControlFolder(),
-                const SizedBox(
-                  height: 10,
-                ),
-                Expanded(
-                  child: BlocBuilder<FoldersViewModel, FoldersState>(
-                    builder: (context, state) {
-                      if (state.isSuccess) {
-                        if (state.filterFolder.isNotEmpty) {
-                          return ReorderableListView(
-                            onReorder: reorderData,
-                            children: [
-                              for (var folder in state.filterFolder)
-                                Card(
-                                  key: ValueKey(folder.name),
-                                  child: InkWell(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        ScaleRoute(
-                                          page: FileScreen(
-                                            folder: folder,
-                                          ),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: SafeArea(
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          padding: const EdgeInsets.only(left: 15, right: 15, top: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SearchWidget(),
+              const SizedBox(height: 20),
+              const PanelControlFolder(),
+              const SizedBox(
+                height: 10,
+              ),
+              Expanded(
+                child: BlocBuilder<FoldersViewModel, FoldersState>(
+                  builder: (context, state) {
+                    if (state.isSuccess) {
+                      if (state.filterFolder.isNotEmpty) {
+                        return ReorderableListView(
+                          onReorder: reorderData,
+                          children: [
+                            for (var folder in state.filterFolder)
+                              Card(
+                                key: ValueKey(folder.name),
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      ScaleRoute(
+                                        page: FileScreen(
+                                          folder: folder,
+                                          filesSave: files,
+                                          isSelectFolder: isSelectFolder,
+                                          updateIsSelectFolder:
+                                              onShowPopupConfirm,
                                         ),
-                                      );
-                                    },
-                                    child: FolderItem(folder: folder),
-                                  ),
+                                      ),
+                                    );
+                                  },
+                                  child: FolderItem(folder: folder),
                                 ),
-                            ],
-                          );
-                        } else {
-                          return SizedBox(
-                            width: MediaQuery.of(context).size.width,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                const SizedBox(
-                                  height: 100,
-                                ),
-                                Image.asset(
-                                  ResAssets.icons.listFolderEmpty,
-                                  height: 200,
-                                  width: 200,
-                                  fit: BoxFit.fill,
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                const Text(
-                                  "Chưa có thư mục ",
-                                  style: ResStyle.blur_Text,
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-                      } else if (state.isFailure) {
-                        return Text(state.message);
+                              ),
+                          ],
+                        );
                       } else {
-                        return const Center(
-                          child: CircularProgressIndicator(),
+                        return SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const SizedBox(
+                                height: 100,
+                              ),
+                              Image.asset(
+                                ResAssets.icons.listFolderEmpty,
+                                height: 200,
+                                width: 200,
+                                fit: BoxFit.fill,
+                              ),
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              const Text(
+                                "Chưa có thư mục ",
+                                style: ResStyle.blur_Text,
+                              ),
+                            ],
+                          ),
                         );
                       }
-                    },
-                  ),
-                )
-              ],
-            ),
+                    } else if (state.isFailure) {
+                      return Text(state.message);
+                    } else {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                  },
+                ),
+              )
+            ],
           ),
         ),
+      ),
     );
   }
 
