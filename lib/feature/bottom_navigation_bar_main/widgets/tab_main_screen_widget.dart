@@ -30,20 +30,7 @@ class _TabMainScreenWidgetState extends State<TabMainScreenWidget> {
         ),
         Offstage(
           offstage: widget.currentTab != TabItem.file,
-          child: BlocBuilder<RedirectFileScreenViewModel,
-              OnRedirectFileScreenState>(
-            builder: (context, state) {
-              if (state.redirect) {
-                return FileScreen(
-                  folder:
-                      context.read<RedirectFileScreenViewModel>().state.folder,
-                );
-              } else {
-                return const FolderScreen();
-              }
-            },
-          ),
-        ),
+          child: const FolderScreen(),),
         Offstage(
           offstage: widget.currentTab != TabItem.favourite,
           child: const FolderFavouriteScreen(),

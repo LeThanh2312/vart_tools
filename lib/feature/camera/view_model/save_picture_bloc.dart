@@ -11,6 +11,7 @@ import 'dart:ui' as ui;
 
 import '../../../common/enum/tab_item.dart';
 import '../../bottom_navigation_bar_main/view/bottom_navigation_bar_main_screen.dart';
+import 'package:intl/intl.dart';
 
 enum SavePictureStatus { loading, success, failure, initialize }
 
@@ -108,7 +109,7 @@ class SavePictureViewModel extends Bloc<SavePictureEvent, SavePictureState> {
             await ImagesMergeHelper.uint8ListToImage(event.listPictureSave[0]);
         ui.Image imageAfter =
             await ImagesMergeHelper.uint8ListToImage(event.listPictureSave[1]);
-        String name = 'camera_${DateTime.now()}.jpg';
+        String name = 'camera_${DateFormat('dd-MM-yyyy HH:mm:ss').format(DateTime.now())}.jpg';
         ui.Image image = await ImagesMergeHelper.margeImages(
             [imageBefore, imageAfter],
             fit: false,
@@ -133,7 +134,7 @@ class SavePictureViewModel extends Bloc<SavePictureEvent, SavePictureState> {
       try {
         for (var item in event.listPictureSave) {
           String name =
-              'camera_${event.listPictureSave.indexOf(item)}_${DateTime.now()}.jpg';
+              'camera_${event.listPictureSave.indexOf(item)}_${DateFormat('dd-MM-yyyy HH:mm:ss').format(DateTime.now())}.jpg';
           File file = File('$tempPath/$name');
           file.writeAsBytesSync(item);
 

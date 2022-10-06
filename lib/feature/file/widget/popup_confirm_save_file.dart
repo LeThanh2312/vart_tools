@@ -55,9 +55,6 @@ class _PopUpConfirmSaveFileState extends State<PopUpConfirmSaveFile> {
                     style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.grayColor),
                     onPressed: () {
-                      // context
-                      //     .read<FilesViewModel>()
-                      //     .add(DeleteFileEvent(file: widget.file));
                       Navigator.of(context).pop(true);
                     },
                     child: const Text(
