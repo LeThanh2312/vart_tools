@@ -52,13 +52,6 @@ class _BottomNavigatorCropImageState extends State<BottomNavigatorCropImage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               IconButton(
-                onPressed: () {},
-                iconSize: 27.0,
-                icon: const Icon(
-                  Icons.camera_alt,
-                ),
-              ),
-              IconButton(
                 onPressed: () {
                   if (_platformVersion) {
                     context

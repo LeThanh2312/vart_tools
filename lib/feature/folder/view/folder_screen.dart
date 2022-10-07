@@ -3,7 +3,6 @@ import 'package:vart_tools/common/animation/scale_animation.dart';
 import 'package:vart_tools/common/enum/save_picture_type.dart';
 import 'package:vart_tools/common/toast/custom_toast.dart';
 import 'package:vart_tools/database/file_database.dart';
-import 'package:vart_tools/database/folder_database.dart';
 import 'package:vart_tools/feature/camera/view_model/save_picture_bloc.dart';
 import 'package:vart_tools/feature/file/view/file_screen.dart';
 import 'package:vart_tools/feature/file/view_model/file_bloc.dart';
@@ -50,8 +49,9 @@ class _FolderScreenState extends State<FolderScreen> {
 
   void showPopup(BuildContext context) async {
     final state = context.read<SavePictureViewModel>().state;
+    final stateFolder = context.read<FoldersViewModel>().state;
     if (state.listFileSave.isNotEmpty) {
-      if (state.savePictureType == SavePictureType.create) {
+      if (state.savePictureType == SavePictureType.create || stateFolder.folders.isEmpty) {
         files = state.listFileSave;
         var result = await showDialog(
           context: context,
@@ -60,12 +60,11 @@ class _FolderScreenState extends State<FolderScreen> {
         if (result != 0) {
           ProgressDialog pd = ProgressDialog(context: context);
           pd.show(max: 100,msg: 'Đang lưu file...',
-          /// Assign the type of progress bar.
           progressType: ProgressType.valuable,);
           for (int i = 0; i <= 100; i++) {
             pd.update(value: i);
             i++;
-            await Future.delayed(Duration(milliseconds: 50));
+            await Future.delayed(const Duration(milliseconds: 50));
           }
           context
               .read<FilesViewModel>()

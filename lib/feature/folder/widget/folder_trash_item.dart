@@ -70,18 +70,23 @@ class _FolderTrashItemBodyState extends State<FolderTrashItemBody> {
                   width: 20,
                 ),
                 Expanded(
-                    child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(widget.folder.name!),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Text(DateFormat('dd/MM/yyyy hh:mm')
-                        .format(DateTime.parse(widget.folder.dateUpdate!)))
-                  ],
-                )),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.folder.name!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Text(DateFormat('dd/MM/yyyy hh:mm')
+                          .format(DateTime.parse(widget.folder.dateUpdate!)))
+                    ],
+                  ),
+                ),
                 const SizedBox(
                   height: 30,
                   width: 30,

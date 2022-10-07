@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:vart_tools/database/file_database.dart';
-import 'package:vart_tools/feature/file/view_model/file_bloc.dart';
 import 'package:vart_tools/res/app_color.dart';
 import 'package:vart_tools/res/font_size.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PopUpConfirmSaveFile extends StatefulWidget {
   const PopUpConfirmSaveFile({
@@ -47,7 +44,7 @@ class _PopUpConfirmSaveFileState extends State<PopUpConfirmSaveFile> {
                     Navigator.of(context).pop();
                   },
                   child: const Text(
-                    "Hủy",
+                    "Quay lại",
                     style: ResStyle.h2,
                   ),
                 ),

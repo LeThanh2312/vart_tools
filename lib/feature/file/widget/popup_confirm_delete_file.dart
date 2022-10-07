@@ -56,7 +56,8 @@ class _PopUpConfirmDeleteFileState extends State<PopUpConfirmDeleteFile> {
                       context
                           .read<FilesViewModel>()
                           .add(DeleteFileEvent(file: widget.file));
-                      Navigator.of(context).popUntil((route) => route.isFirst);
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pop();
                     },
                     child: const Text(
                       "Đồng Ý",

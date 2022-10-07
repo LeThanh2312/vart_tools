@@ -1,9 +1,7 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_trash_bloc.dart';
-import 'package:vart_tools/res/assets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
@@ -64,27 +62,33 @@ class _FileTrashItemBodyState extends State<FileTrashItemBody> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(
-                  child: Image.file(File(widget.file.image!),
-                                        fit: BoxFit.cover,
-                                        width: 50,
-                                        height: 50,)
-                ),
+                    child: Image.file(
+                  File(widget.file.image!),
+                  fit: BoxFit.cover,
+                  width: 50,
+                  height: 50,
+                )),
                 const SizedBox(
                   width: 20,
                 ),
                 Expanded(
-                    child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(widget.file.name),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Text(DateFormat('dd/MM/yyyy hh:mm')
-                        .format(DateTime.parse(widget.file.dateUpdate!)))
-                  ],
-                )),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.file.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Text(DateFormat('dd/MM/yyyy hh:mm')
+                          .format(DateTime.parse(widget.file.dateUpdate!)))
+                    ],
+                  ),
+                ),
                 const SizedBox(
                   height: 30,
                   width: 30,

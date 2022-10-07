@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:vart_tools/common/toast/custom_toast.dart';
 import 'package:vart_tools/database/folder_database.dart';
-import 'package:vart_tools/feature/camera/view_model/save_picture_bloc.dart';
-import 'package:vart_tools/feature/file/view_model/file_bloc.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_bloc.dart';
 import 'package:vart_tools/res/app_color.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
-import '../../camera/view_model/crop_picture_bloc.dart';
 
 class PopUpNewFolder extends StatefulWidget {
   const PopUpNewFolder({Key? key}) : super(key: key);
@@ -133,20 +129,19 @@ class _PopUpNewFolderState extends State<PopUpNewFolder> {
                 //     context.read<FoldersViewModel>().state.message);
                 FocusScope.of(context).unfocus();
                 state.status = FolderStatus.success;
-                Navigator.of(context).pop(newFolderId);
-                print("dong popup");
+                Navigator.of(context).popUntil(ModalRoute.withName('/'));
               }
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                ElevatedButton(
-                  onPressed: () {
-                    FocusScope.of(context).unfocus();
-                    Navigator.pop(context, 0);
-                  },
-                  child: const Text('Hủy'),
-                ),
+                // ElevatedButton(
+                //   onPressed: () {
+                //     FocusScope.of(context).unfocus();
+                //     Navigator.pop(context, 0);
+                //   },
+                //   child: const Text('Hủy'),
+                // ),
                 ElevatedButton(
                   onPressed: (!_disable)
                       ? () async {

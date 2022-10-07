@@ -8,11 +8,7 @@ import '../../view_model/crop_picture_bloc.dart';
 class PopupFilterImageWidget extends StatefulWidget {
   const PopupFilterImageWidget({
     Key? key,
-    required this.onChangeImage,
-    required this.isShowPopupFilter,
   }) : super(key: key);
-  final void Function(FilterItem value) onChangeImage;
-  final bool isShowPopupFilter;
 
   @override
   State<PopupFilterImageWidget> createState() => _PopupFilterImageWidgetState();
@@ -28,7 +24,7 @@ class _PopupFilterImageWidgetState extends State<PopupFilterImageWidget> {
   Widget build(BuildContext context) {
     return Container(
       width: 100.0.w,
-      height: MediaQuery.of(context).size.height / 3,
+      height: MediaQuery.of(context).size.height,
       decoration: BoxDecoration(
         border: Border.all(width: 2, color: AppColors.greyLine),
         borderRadius: BorderRadius.circular(15),
@@ -36,15 +32,17 @@ class _PopupFilterImageWidgetState extends State<PopupFilterImageWidget> {
       ),
       child: GridView.builder(
         physics: const NeverScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(10),
         itemCount: FilterItem.values.length,
         itemBuilder: (BuildContext ctx, int index) {
           return filterItem(context, FilterItem.values[index]);
         },
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3,
-            childAspectRatio: 5.0.h / 4.5.h,
-            crossAxisSpacing: 0,
-            mainAxisSpacing: 0),
+            childAspectRatio:MediaQuery.of(context).size.width /
+                (MediaQuery.of(context).size.height / 2.5) ,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10),
       ),
     );
   }
@@ -55,7 +53,6 @@ class _PopupFilterImageWidgetState extends State<PopupFilterImageWidget> {
         context
             .read<CameraPictureViewModel>()
             .add(FilterPictureEvent(filter: filter));
-        widget.onChangeImage(filter);
       },
       child: FittedBox(
         fit: BoxFit.scaleDown,

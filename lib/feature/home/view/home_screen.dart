@@ -5,7 +5,6 @@ import '../../camera/view/camera_screen.dart';
 import '../../folder/view/folder_trash_screen.dart';
 import '../widgets/circle_chart_widget.dart';
 import '../widgets/list_file_widget.dart';
-import '../widgets/search_widget.dart';
 import 'package:camera/camera.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -31,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SearchWidget(),
+              //const SearchWidget(),
               const SizedBox(height: defaultPadding),
               Row(
                 children: [

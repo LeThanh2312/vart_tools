@@ -56,7 +56,6 @@ class SaveEvent extends SavePictureEvent {
   CameraType style;
   SavePictureType savePictureType;
   String tempPath;
-  int? size;
   String? name;
 
   SaveEvent({
@@ -64,7 +63,6 @@ class SaveEvent extends SavePictureEvent {
     required this.listPictureSave,
     required this.savePictureType,
     required this.tempPath,
-    this.size,
     this.name,
   });
 }
@@ -81,12 +79,12 @@ class SavePictureViewModel extends Bloc<SavePictureEvent, SavePictureState> {
     state.listFileSave.clear();
     if (event.style == CameraType.cardID) {
       try {
-        handleMergeImage(event.listPictureSave,event.tempPath,event.name!);
+        File image = handleMergeImage(event.listPictureSave,event.tempPath,event.name!) as File;
         var fileModel = FileModel(
           name: event.name!,
           image: '${event.tempPath}/${event.name}',
           format: "JPG",
-          size: event.size,
+          size: image.lengthSync(),
         );
 
         state.listFileSave.add(fileModel);
@@ -128,7 +126,7 @@ class SavePictureViewModel extends Bloc<SavePictureEvent, SavePictureState> {
   }
 }
 
-Future<ui.Image> handleMergeImage(List<Uint8List> listImage,String tempPath,String name) async{
+Future<File> handleMergeImage(List<Uint8List> listImage,String tempPath,String name) async{
     ui.Image imageBefore = await ImagesMergeHelper.uint8ListToImage(
         listImage[0]);
     ui.Image imageAfter = await ImagesMergeHelper.uint8ListToImage(
@@ -139,7 +137,7 @@ Future<ui.Image> handleMergeImage(List<Uint8List> listImage,String tempPath,Stri
         direction: Axis.vertical,
         backgroundColor: Colors.black26);
     File? file = await ImagesMergeHelper.imageToFile(image);
-    File imageSave = await file!.copy('${tempPath}/$name');
+    File imageSave = await file!.copy('$tempPath/$name');
 
-  return image;
+  return imageSave;
 }

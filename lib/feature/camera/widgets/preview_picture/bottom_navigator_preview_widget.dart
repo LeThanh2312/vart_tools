@@ -11,8 +11,6 @@ import '../../view/crop_image_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import '../../view_model/crop_picture_bloc.dart';
-import 'package:synchronized/synchronized.dart';
-
 
 class BottomNavigatorPreviewWidget extends StatefulWidget {
   const BottomNavigatorPreviewWidget({
@@ -49,9 +47,7 @@ class _BottomNavigatorPreviewWidgetState
             IconButton(
               onPressed: () async {
                 Navigator.push(
-                  context,
-                  SlideRightRoute(page: const CropImageScreen())
-                );
+                    context, SlideRightRoute(page: const CropImageScreen()));
               },
               iconSize: 27.0,
               icon: const Icon(
@@ -84,15 +80,14 @@ class _BottomNavigatorPreviewWidgetState
   }
 
   Future<void> _saveFileLocalStorage(List<Uint8List> pictureCrop,
-      String tempPath, SavePictureType type, int size,String name) async {
+      String tempPath, SavePictureType type, int size, String name) async {
     context.read<SavePictureViewModel>().add(
           SaveEvent(
-              style: widget.style,
-              listPictureSave: pictureCrop,
-              savePictureType: type,
-              tempPath: tempPath,
-              size: size,
-              name: name,
+            style: widget.style,
+            listPictureSave: pictureCrop,
+            savePictureType: type,
+            tempPath: tempPath,
+            name: name,
           ),
         );
   }
@@ -120,19 +115,18 @@ class _BottomNavigatorPreviewWidgetState
                 Directory(tempPath).create();
                 String name = 'camera_${DateTime.now()}.jpg';
                 if (state.isSuccess) {
-                  _saveFileLocalStorage(state.pictureCrop, tempPath,
-                          SavePictureType.create, 0,name)
+                  _saveFileLocalStorage(state.pictureCrop, tempPath, SavePictureType.create, 0, name)
                       .then((value) => {
-                            Navigator.push(
+                            Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
                                       const BottomNavigationBarMainScreen(
-                                          currentTab: TabItem.file)),
+                                          currentTab: TabItem.file),),
+                                ModalRoute.withName('/')
                             )
                           });
                 }
-
               },
             ),
             ElevatedButton(
@@ -143,18 +137,19 @@ class _BottomNavigatorPreviewWidgetState
               onPressed: () async {
                 Directory tempDir = await getTemporaryDirectory();
                 String tempPath = '${tempDir.path}/vars_tools';
+                String name = 'camera_${DateTime.now()}.jpg';
                 Directory(tempPath).create();
                 final state = context.read<CameraPictureViewModel>().state;
                 if (state.isSuccess) {
-                  _saveFileLocalStorage(state.pictureCrop, tempPath,
-                          SavePictureType.selector, 0,'')
+                  _saveFileLocalStorage(state.pictureCrop, tempPath, SavePictureType.selector, 0, name)
                       .then((value) => {
-                            Navigator.push(
+                            Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
                                       const BottomNavigationBarMainScreen(
                                           currentTab: TabItem.file)),
+                                ModalRoute.withName('/')
                             ),
                           });
                 }

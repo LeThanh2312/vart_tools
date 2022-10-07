@@ -1,8 +1,6 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:vart_tools/common/animation/scale_animation.dart';
-import 'package:vart_tools/common/enum/save_picture_type.dart';
 import 'package:vart_tools/common/toast/custom_toast.dart';
 import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/database/folder_database.dart';
@@ -82,7 +80,6 @@ class _FileScreenState extends State<FileScreen> with SingleTickerProviderStateM
         widget.updateIsSelectFolder!(false);
         ProgressDialog pd = ProgressDialog(context: context);
           pd.show(max: 100,msg: 'Đang lưu file...',
-          /// Assign the type of progress bar.
           progressType: ProgressType.valuable,);
           for (int i = 0; i <= 100; i++) {
             pd.update(value: i);

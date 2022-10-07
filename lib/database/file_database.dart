@@ -1,7 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:vart_tools/res/strings.dart';
-import 'package:intl/intl.dart';
 
 class FileModel {
   final int? id;
