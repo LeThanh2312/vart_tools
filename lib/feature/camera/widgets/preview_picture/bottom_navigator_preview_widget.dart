@@ -10,8 +10,7 @@ import '../../view/crop_image_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import '../../view_model/crop_picture_bloc.dart';
-import 'package:merge_images/merge_images.dart';
-import 'dart:ui' as ui;
+
 
 class BottomNavigatorPreviewWidget extends StatefulWidget {
   const BottomNavigatorPreviewWidget({
@@ -121,21 +120,9 @@ class _BottomNavigatorPreviewWidgetState
                 String tempPath = '${tempDir.path}/vars_tools';
                 Directory(tempPath).create();
                 String name = 'camera_${DateTime.now()}.jpg';
-                ui.Image imageBefore = await ImagesMergeHelper.uint8ListToImage(
-                    state.pictureCrop[0]);
-                ui.Image imageAfter = await ImagesMergeHelper.uint8ListToImage(
-                    state.pictureCrop[1]);
-                ui.Image image = await ImagesMergeHelper.margeImages(
-                    [imageBefore, imageAfter],
-                    fit: false,
-                    direction: Axis.vertical,
-                    backgroundColor: Colors.black26);
-                File? file = await ImagesMergeHelper.imageToFile(image);
-                File imageSave = await file!.copy('${tempPath}/$name');
-
                 if (state.isSuccess) {
                   _saveFileLocalStorage(state.pictureCrop, tempPath,
-                          SavePictureType.create, imageSave.lengthSync(),name)
+                          SavePictureType.create, 0,name)
                       .then((value) => {
                             Navigator.push(
                               context,

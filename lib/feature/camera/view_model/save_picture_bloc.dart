@@ -1,9 +1,12 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:flutter/material.dart';
 import 'package:vart_tools/database/file_database.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../common/enum/camera_type.dart';
 import '../../../common/enum/save_picture_type.dart';
+import 'package:merge_images/merge_images.dart';
+import 'dart:ui' as ui;
 
 enum SavePictureStatus { loading, success, failure, initialize }
 
@@ -78,6 +81,7 @@ class SavePictureViewModel extends Bloc<SavePictureEvent, SavePictureState> {
     if (event.style == CameraType.cardID) {
       try {
 
+        handleMergeImage(event.listPictureSave,event.tempPath,event.name!);
 
         var fileModel = FileModel(
           name: event.name!,
@@ -122,4 +126,20 @@ class SavePictureViewModel extends Bloc<SavePictureEvent, SavePictureState> {
       status: SavePictureStatus.success,
     ));
   }
+}
+
+Future<ui.Image> handleMergeImage(List<Uint8List> listImage,String tempPath,String name) async{
+    ui.Image imageBefore = await ImagesMergeHelper.uint8ListToImage(
+        listImage[0]);
+    ui.Image imageAfter = await ImagesMergeHelper.uint8ListToImage(
+        listImage[1]);
+    ui.Image image = await ImagesMergeHelper.margeImages(
+        [imageBefore, imageAfter],
+        fit: false,
+        direction: Axis.vertical,
+        backgroundColor: Colors.black26);
+    File? file = await ImagesMergeHelper.imageToFile(image);
+    File imageSave = await file!.copy('${tempPath}/$name');
+
+  return image;
 }
