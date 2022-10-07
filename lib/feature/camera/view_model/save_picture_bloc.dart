@@ -7,6 +7,7 @@ import '../../../common/enum/camera_type.dart';
 import '../../../common/enum/save_picture_type.dart';
 import 'package:merge_images/merge_images.dart';
 import 'dart:ui' as ui;
+import 'package:intl/intl.dart';
 
 enum SavePictureStatus { loading, success, failure, initialize }
 
@@ -80,9 +81,7 @@ class SavePictureViewModel extends Bloc<SavePictureEvent, SavePictureState> {
     state.listFileSave.clear();
     if (event.style == CameraType.cardID) {
       try {
-
         handleMergeImage(event.listPictureSave,event.tempPath,event.name!);
-
         var fileModel = FileModel(
           name: event.name!,
           image: '${event.tempPath}/${event.name}',
@@ -102,6 +101,8 @@ class SavePictureViewModel extends Bloc<SavePictureEvent, SavePictureState> {
       try {
         for (var item in event.listPictureSave) {
           String name =
+              'camera_${event.listPictureSave.indexOf(item)}_${DateFormat('dd-MM-yyyy HH:mm:ss').format(DateTime.now())}.jpg';
+          File file = File('$tempPath/$name');
               'camera_${event.listPictureSave.indexOf(item)}_${DateTime.now()}.jpg';
           File file = File('${event.tempPath}/$name');
           file.writeAsBytesSync(item);

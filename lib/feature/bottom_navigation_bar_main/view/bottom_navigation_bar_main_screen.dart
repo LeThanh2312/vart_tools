@@ -28,8 +28,6 @@ class _BottomNavigationBarMainScreenState
   void initState() {
     super.initState();
     _currentTab = widget.currentTab;
-    fileScreenRedirect =
-        context.read<RedirectFileScreenViewModel>().state.redirect;
   }
 
   @override

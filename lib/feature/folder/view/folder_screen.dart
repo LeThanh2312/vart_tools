@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vart_tools/common/animation/scale_animation.dart';
 import 'package:vart_tools/common/enum/save_picture_type.dart';
+import 'package:vart_tools/common/toast/custom_toast.dart';
 import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/database/folder_database.dart';
 import 'package:vart_tools/feature/camera/view_model/save_picture_bloc.dart';
@@ -14,6 +15,9 @@ import 'package:vart_tools/feature/home/widgets/search_widget.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vart_tools/res/assets.dart';
 import 'package:vart_tools/res/font_size.dart';
+import 'package:sn_progress_dialog/sn_progress_dialog.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
 
 class FolderScreen extends StatefulWidget {
   const FolderScreen({Key? key}) : super(key: key);
@@ -26,10 +30,12 @@ class _FolderScreenState extends State<FolderScreen> {
   List<FileModel> files = [];
   late bool isSelectFolder = false;
   late bool isSelectBloc = false;
-  // late bool resultPopup = false;
+  late FToast fToast;
+
   @override
   void initState() {
     super.initState();
+    print("----init----");
     context.read<FoldersViewModel>().add(LoadFoldersEvent());
     WidgetsBinding.instance.addPostFrameCallback((_) {
       showPopup(context);
@@ -44,7 +50,6 @@ class _FolderScreenState extends State<FolderScreen> {
 
   void showPopup(BuildContext context) async {
     final state = context.read<SavePictureViewModel>().state;
-    print('====== leght  ${state.listFileSave.length}');
     if (state.listFileSave.isNotEmpty) {
       if (state.savePictureType == SavePictureType.create) {
         files = state.listFileSave;
@@ -53,14 +58,29 @@ class _FolderScreenState extends State<FolderScreen> {
           builder: (context) => const PopUpNewFolder(),
         );
         if (result != 0) {
+          ProgressDialog pd = ProgressDialog(context: context);
+          pd.show(max: 100,msg: 'Đang lưu file...',
+          /// Assign the type of progress bar.
+          progressType: ProgressType.valuable,);
+          for (int i = 0; i <= 100; i++) {
+            pd.update(value: i);
+            i++;
+            await Future.delayed(Duration(milliseconds: 50));
+          }
           context
               .read<FilesViewModel>()
               .add(AddFilesEvent(files: files, folderId: result));
+          fToast = FToast();
+          fToast.init(context);
+          fToast.showToast(
+              child: const ToastSuccess(message: "Lưu file thành công."));
         }
+        
       } else {
         files = state.listFileSave;
         isSelectFolder = true;
       }
+      
     }
   }
 

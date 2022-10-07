@@ -10,6 +10,7 @@ import '../../view/crop_image_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import '../../view_model/crop_picture_bloc.dart';
+import 'package:synchronized/synchronized.dart';
 
 
 class BottomNavigatorPreviewWidget extends StatefulWidget {

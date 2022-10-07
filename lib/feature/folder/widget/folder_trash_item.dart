@@ -60,15 +60,18 @@ class _FolderTrashItemBodyState extends State<FolderTrashItemBody> {
                   );
             },
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
               children: [
                 SizedBox(
                   child: Image.asset(ResAssets.icons.folder),
                 ),
                 const SizedBox(
-                  width: 30,
+                  width: 20,
                 ),
                 Expanded(
                     child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(widget.folder.name!),
