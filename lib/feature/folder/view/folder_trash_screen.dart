@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:vart_tools/common/animation/scale_animation.dart';
 import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/database/folder_database.dart';
 import 'package:vart_tools/feature/file/widget/file_trash_item.dart';
-import 'package:vart_tools/feature/folder/view/folder_screen.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_bloc.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_trash_bloc.dart';
 import 'package:vart_tools/feature/folder/widget/folder_trash_item.dart';
 import 'package:vart_tools/feature/folder/widget/popup_confirm_permantly_folder.dart';
 import 'package:vart_tools/feature/folder/widget/popup_confirm_recover_folder.dart';
-import 'package:vart_tools/feature/home/widgets/search_widget.dart';
 import 'package:vart_tools/res/app_color.dart';
 import 'package:vart_tools/res/assets.dart';
 import 'package:vart_tools/res/font_size.dart';
@@ -110,7 +107,9 @@ class _FolderTrashScreenState extends State<FolderTrashScreen>
                                                     selectedIdsObject:
                                                         SelectIdTrashModel(
                                                             id: file.id!,
-                                                            type: IdType.file),
+                                                            type: IdType.file,
+                                                            image: file.image!,
+                                                        ),
                                                   ),
                                                 );
                                               }
@@ -121,8 +120,8 @@ class _FolderTrashScreenState extends State<FolderTrashScreen>
                                                     selectedIdsObject:
                                                         SelectIdTrashModel(
                                                             id: folder.id!,
-                                                            type:
-                                                                IdType.folder),
+                                                            type: IdType.folder,
+                                                            image: folder.name!),
                                                   ),
                                                 );
                                                 setState(() {
@@ -177,13 +176,13 @@ class _FolderTrashScreenState extends State<FolderTrashScreen>
                                 FolderTrashItem(
                                   folder: folder,
                                   selectIdObject: SelectIdTrashModel(
-                                      id: folder.id!, type: IdType.folder),
+                                      id: folder.id!, type: IdType.folder, image: folder.name!),
                                 ),
                               for (var file in state.files)
                                 FileTrashItem(
                                   file: file,
                                   slectIdObject: SelectIdTrashModel(
-                                      id: file.id!, type: IdType.file),
+                                      id: file.id!, type: IdType.file,image: file.image!),
                                 ),
                             ],
                           );
