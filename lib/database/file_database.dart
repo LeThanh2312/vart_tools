@@ -251,13 +251,15 @@ enum IdType { folder, file }
 class SelectIdTrashModel {
   final int id;
   final IdType type;
-  SelectIdTrashModel({required this.id, required this.type});
+  final String image;
+  SelectIdTrashModel({required this.id, required this.type,required this.image});
 
   Map<String, Object?> toMap() {
     String datetime_tmp = DateTime.now().toString();
     return {
       "id": id,
       "type": type,
+      "image": image,
     };
   }
 }

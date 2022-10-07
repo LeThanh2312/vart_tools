@@ -110,22 +110,25 @@ class _BottomNavigatorPreviewWidgetState
               ),
               onPressed: () async {
                 final state = context.read<CameraPictureViewModel>().state;
-                Directory tempDir = await getTemporaryDirectory();
-                String tempPath = '${tempDir.path}/vars_tools';
-                Directory(tempPath).create();
+                Directory storageDir = await getApplicationDocumentsDirectory();
+                String storagePath = '${storageDir.path}/vars_tools';
+                Directory(storagePath).create();
                 String name = 'camera_${DateTime.now()}.jpg';
                 if (state.isSuccess) {
-                  _saveFileLocalStorage(state.pictureCrop, tempPath, SavePictureType.create, 0, name)
+                  _saveFileLocalStorage(state.pictureCrop, storagePath, SavePictureType.create, 0, name)
                       .then((value) => {
-                            Navigator.pushAndRemoveUntil(
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
                                       const BottomNavigationBarMainScreen(
-                                          currentTab: TabItem.file),),
-                                ModalRoute.withName('/')
+                                          currentTab: TabItem.file)),
                             )
                           });
+                }
+                Directory tempDir = await getTemporaryDirectory();
+                if (tempDir.existsSync()) {
+                  tempDir.deleteSync(recursive: true);
                 }
               },
             ),
@@ -135,23 +138,26 @@ class _BottomNavigatorPreviewWidgetState
                 style: const TextStyle(color: Colors.white),
               ),
               onPressed: () async {
-                Directory tempDir = await getTemporaryDirectory();
-                String tempPath = '${tempDir.path}/vars_tools';
+                Directory storageDir = await getApplicationDocumentsDirectory();
+                String storagePath = '${storageDir.path}/vars_tools';
                 String name = 'camera_${DateTime.now()}.jpg';
-                Directory(tempPath).create();
+                Directory(storagePath).create();
                 final state = context.read<CameraPictureViewModel>().state;
                 if (state.isSuccess) {
-                  _saveFileLocalStorage(state.pictureCrop, tempPath, SavePictureType.selector, 0, name)
+                  _saveFileLocalStorage(state.pictureCrop, storagePath, SavePictureType.selector, 0, name)
                       .then((value) => {
-                            Navigator.pushAndRemoveUntil(
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
                                       const BottomNavigationBarMainScreen(
                                           currentTab: TabItem.file)),
-                                ModalRoute.withName('/')
                             ),
                           });
+                }
+                Directory tempDir = await getTemporaryDirectory();
+                if (tempDir.existsSync()) {
+                  tempDir.deleteSync(recursive: true);
                 }
               },
             ),

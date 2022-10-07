@@ -5,6 +5,8 @@ import 'package:vart_tools/res/app_color.dart';
 import 'package:vart_tools/res/font_size.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../file/view_model/file_bloc.dart';
+
 class PopupConfirmPermantlyFolder extends StatelessWidget {
   const PopupConfirmPermantlyFolder(
       {Key? key, required this.selectedIdObject, required this.onClear})
@@ -53,6 +55,10 @@ class PopupConfirmPermantlyFolder extends StatelessWidget {
                       context.read<FolderTrashViewModel>().add(
                             PermanentlyDeleteEvent(
                                 selectedIdsObject: selectedIdObject),
+                          );
+                      context.read<FilesViewModel>().add(
+                            DeleteFileToFolderEvent(
+                                selectedIdObject: selectedIdObject),
                           );
                       onClear();
                       Navigator.of(context).pop();

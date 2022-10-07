@@ -129,19 +129,20 @@ class _PopUpNewFolderState extends State<PopUpNewFolder> {
                 //     context.read<FoldersViewModel>().state.message);
                 FocusScope.of(context).unfocus();
                 state.status = FolderStatus.success;
-                Navigator.of(context).popUntil(ModalRoute.withName('/'));
+                Navigator.of(context).pop(newFolderId);
+                print("dong popup");
               }
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                // ElevatedButton(
-                //   onPressed: () {
-                //     FocusScope.of(context).unfocus();
-                //     Navigator.pop(context, 0);
-                //   },
-                //   child: const Text('Hủy'),
-                // ),
+                ElevatedButton(
+                  onPressed: () {
+                    FocusScope.of(context).unfocus();
+                    Navigator.pop(context, 0);
+                  },
+                  child: const Text('Hủy'),
+                ),
                 ElevatedButton(
                   onPressed: (!_disable)
                       ? () async {

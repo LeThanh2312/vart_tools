@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/database/folder_database.dart';
@@ -92,6 +94,11 @@ class LoadFilesEvent extends FileViewEvent {
   LoadFilesEvent({required this.folderId});
 }
 
+class DeleteFileToFolderEvent extends FileViewEvent {
+  final List<SelectIdTrashModel> selectedIdObject;
+  DeleteFileToFolderEvent({required this.selectedIdObject});
+}
+
 class AddFilesEvent extends FileViewEvent {
   List<FileModel> files;
   int folderId;
@@ -132,6 +139,7 @@ class FilesViewModel extends Bloc<FileViewEvent, FilesViewState> {
     on<DeleteMulpliteEvent>(_deleteMulpliteFile);
     on<AddFilesEvent>(_addFiles);
     on<AddTagsEvent>(_addTags);
+    on<DeleteFileToFolderEvent>(_deleteFileToFolder);
   }
 
   void _loadDataFiles(LoadFilesEvent event, Emitter emit) async {
@@ -201,6 +209,28 @@ class FilesViewModel extends Bloc<FileViewEvent, FilesViewState> {
     } catch (e) {
       emit(state.copyWith(
           message: "thêm tag error", status: FilesStatus.failure));
+    }
+  }
+
+  void _deleteFileToFolder(DeleteFileToFolderEvent event,Emitter emit) async {
+    try {
+      event.selectedIdObject.forEach((element) async {
+          if (element.type == IdType.folder) {
+            for(var item in event.selectedIdObject) {
+              final files = await FileProvider().getFiles(item.id);
+              for(var item in files){
+                File(item.image!).deleteSync();
+              }
+            }
+          } else {
+            File(element.image).deleteSync();
+          }
+        },
+      );
+
+      emit(state.copyWith(files: state.files, status: FilesStatus.success));
+    } catch (e) {
+      emit(state.copyWith(message: " error", status: FilesStatus.failure));
     }
   }
 }
