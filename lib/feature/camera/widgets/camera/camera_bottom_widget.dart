@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import 'package:camera/camera.dart';
+import 'package:vart_tools/common/animation/scale_animation.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import '../../../../common/enum/camera_type.dart';
 import '../../../../res/vietnam_asset_picker_text_delegate.dart';
@@ -95,7 +96,7 @@ class _CameraBottomWidgetState extends State<CameraBottomWidget> {
                 Expanded(
                   child: IconButton(
                     onPressed: () {
-                      if(widget.isLoadingTakePicture == false){
+                      if (widget.isLoadingTakePicture == false) {
                         setState(() {
                           widget.onChangeTakePhoto(true);
                         });
@@ -115,14 +116,13 @@ class _CameraBottomWidgetState extends State<CameraBottomWidget> {
                       ? InkWell(
                           onTap: () {
                             Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ListPicturePhotoScreen(
-                                  listPicture: listPicture,
-                                  style: widget.styleCamera,
-                                ),
-                              ),
-                            );
+                                context,
+                                SlideRightRoute(
+                                  page: ListPicturePhotoScreen(
+                                    listPicture: listPicture,
+                                    style: widget.styleCamera,
+                                  ),
+                                ));
                           },
                           child: SizedBox(
                             width: 40,
@@ -248,14 +248,12 @@ class _CameraBottomWidgetState extends State<CameraBottomWidget> {
         listPicture.add(File(pictureAfter.path));
         if (!mounted) return;
         Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PreviewPictureScreen(
+            context,
+            SlideRightRoute(
+                page: PreviewPictureScreen(
               listPicture: listPicture,
               style: CameraType.cardID,
-            ),
-          ),
-        ).then(
+            ))).then(
           (_) => setState(
             () {
               listPicture.clear();
@@ -320,8 +318,8 @@ class _CameraBottomWidgetState extends State<CameraBottomWidget> {
         if (!mounted) return;
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => PreviewPictureScreen(
+          SlideRightRoute(
+            page: PreviewPictureScreen(
               listPicture: listPicture,
               style: widget.styleCamera,
             ),

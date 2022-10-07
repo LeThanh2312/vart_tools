@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:vart_tools/common/animation/scale_animation.dart';
 import 'package:vart_tools/common/enum/camera_type.dart';
 import 'package:vart_tools/common/enum/save_picture_type.dart';
 import 'package:vart_tools/common/enum/tab_item.dart';
@@ -49,9 +50,7 @@ class _BottomNavigatorPreviewWidgetState
               onPressed: () async {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => CropImageScreen(),
-                  ),
+                  SlideRightRoute(page: const CropImageScreen())
                 );
               },
               iconSize: 27.0,
@@ -69,7 +68,6 @@ class _BottomNavigatorPreviewWidgetState
                 Icons.filter_alt_rounded,
               ),
             ),
-            //to leave space in between the bottom app bar items and below the FAB
             IconButton(
               onPressed: () {
                 _showDialogSelectFolder();
@@ -134,6 +132,7 @@ class _BottomNavigatorPreviewWidgetState
                             )
                           });
                 }
+
               },
             ),
             ElevatedButton(

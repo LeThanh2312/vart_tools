@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vart_tools/common/animation/scale_animation.dart';
 import 'package:vart_tools/common/enum/chart_item.dart';
 import 'package:vart_tools/res/app_color.dart';
 import '../view/detail_size_screen.dart';
@@ -61,11 +62,9 @@ class _ListFileWidgetState extends State<ListFileWidget> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => DetailSizeScreen(
-                            typeDetail: e,
-                          ),
-                        ),
+                        SlideRightRoute(page: DetailSizeScreen(
+                          typeDetail: e,
+                        ),)
                       );
                     },
                     child: const Icon(Icons.keyboard_arrow_right, size: 44),
