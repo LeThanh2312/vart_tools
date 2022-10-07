@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/feature/file/widget/bottom_bar.dart';
@@ -54,7 +56,15 @@ class _FileDetailScreenState extends State<FileDetailScreen> {
                   Container(
                       margin: const EdgeInsets.only(
                           top: 10, bottom: 20, left: 50, right: 50),
-                      child: Image.asset(widget.file.image!)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Image.file(
+                                                  File(widget.file.image!),
+                                                  fit: BoxFit.cover,
+                                                  height: MediaQuery.of(context).size.height / 3,
+                                                  width: MediaQuery.of(context).size.width,),
+                      ),
+                      ),
                   Padding(
                     padding: const EdgeInsets.only(left: 40, bottom: 8),
                     child: Text(

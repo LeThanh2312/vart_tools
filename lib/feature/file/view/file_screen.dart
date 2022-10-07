@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:vart_tools/common/animation/scale_animation.dart';
 import 'package:vart_tools/common/enum/save_picture_type.dart';
+import 'package:vart_tools/common/toast/custom_toast.dart';
 import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/database/folder_database.dart';
 import 'package:vart_tools/feature/file/view/file_detail_screen.dart';
@@ -13,6 +14,9 @@ import 'package:vart_tools/feature/file/widget/popup_confirm_save_file.dart';
 import 'package:vart_tools/res/assets.dart';
 import 'package:vart_tools/res/font_size.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sn_progress_dialog/sn_progress_dialog.dart';
+
 
 class FileScreen extends StatefulWidget {
   FileScreen(
@@ -31,17 +35,34 @@ class FileScreen extends StatefulWidget {
   State<FileScreen> createState() => _FileScreenState();
 }
 
-class _FileScreenState extends State<FileScreen> {
+class _FileScreenState extends State<FileScreen> with SingleTickerProviderStateMixin {
   late List<FileModel> filesData;
   late List<FileModel> files;
   bool isSelectionMode = false;
   List<int?> _idSelected = [];
   bool _selectAll = false;
   bool progress = true;
+  late AnimationController controller;
+  late Animation<double> scaleAnimation;
+  late FToast fToast;
+
 
   @override
   void initState() {
     super.initState();
+    controller =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 1500));
+    scaleAnimation =
+        CurvedAnimation(parent: controller, curve: Curves.fastOutSlowIn);
+
+    controller.addListener(() {
+      setState(() {});
+    });
+    controller.forward();
+
+    fToast = FToast();
+    fToast.init(context);
+
     context
         .read<FilesViewModel>()
         .add(LoadFilesEvent(folderId: widget.folder.id!));
@@ -54,16 +75,29 @@ class _FileScreenState extends State<FileScreen> {
     if (widget.filesSave!.isNotEmpty && widget.isSelectFolder!) {
       var result = await showDialog(
         context: context,
-        builder: (context) => const PopUpConfirmSaveFile(),
+        builder: (context) => ScaleTransition(scale: scaleAnimation, child: const PopUpConfirmSaveFile(),),
       );
       if (result) {
+        try{
+        widget.updateIsSelectFolder!(false);
+        ProgressDialog pd = ProgressDialog(context: context);
+          pd.show(max: 100,msg: 'Đang lưu file...',
+          /// Assign the type of progress bar.
+          progressType: ProgressType.valuable,);
+          for (int i = 0; i <= 100; i++) {
+            pd.update(value: i);
+            i++;
+            await Future.delayed(Duration(milliseconds: 50));
+          }
         context.read<FilesViewModel>().add(AddFilesEvent(
             files: widget.filesSave!, folderId: widget.folder.id!));
-        context
-            .read<FilesViewModel>()
-            .add(LoadFilesEvent(folderId: widget.folder.id!));
-        widget.updateIsSelectFolder!(false);
-        // widget.isSelectFolder = false;
+        fToast.showToast(
+          child: const ToastSuccess(message: "Lưu file thành công."));
+        }catch (e){
+          fToast.showToast(
+          child: const ToastFaild(message: 'error'));
+        }
+        
       }
     }
   }
@@ -267,14 +301,11 @@ class _FileScreenState extends State<FileScreen> {
                                         },
                                         child: Stack(
                                           children: [
-                                            // Image.asset(
-                                            //   '${file["image"]}',
-                                            //   fit: BoxFit.cover,
-                                            //   width: double.infinity,
-                                            //   height: double.infinity,
-                                            // ),
                                             Image.file(
-                                                File('${file["image"]}')),
+                                                File('${file["image"]}'), 
+                                                fit: BoxFit.cover, 
+                                                width: double.infinity, 
+                                                height: double.infinity,),
                                             Positioned(
                                               right: 0,
                                               top: 0,

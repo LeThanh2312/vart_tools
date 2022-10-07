@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/feature/folder/view_model/folders_trash_bloc.dart';
@@ -59,15 +61,20 @@ class _FileTrashItemBodyState extends State<FileTrashItemBody> {
                   );
             },
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(
-                  child: Image.asset(widget.file.image!),
+                  child: Image.file(File(widget.file.image!),
+                                        fit: BoxFit.cover,
+                                        width: 50,
+                                        height: 50,)
                 ),
                 const SizedBox(
-                  width: 30,
+                  width: 20,
                 ),
                 Expanded(
                     child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(widget.file.name),

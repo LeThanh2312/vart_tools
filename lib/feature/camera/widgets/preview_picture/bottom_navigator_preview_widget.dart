@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:vart_tools/common/animation/scale_animation.dart';
@@ -8,8 +9,10 @@ import 'package:vart_tools/feature/camera/view_model/save_picture_bloc.dart';
 import '../../../bottom_navigation_bar_main/view/bottom_navigation_bar_main_screen.dart';
 import '../../view/crop_image_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:path_provider/path_provider.dart';
 import '../../view_model/crop_picture_bloc.dart';
+import 'package:synchronized/synchronized.dart';
+
 
 class BottomNavigatorPreviewWidget extends StatefulWidget {
   const BottomNavigatorPreviewWidget({
@@ -29,7 +32,6 @@ class _BottomNavigatorPreviewWidgetState
     extends State<BottomNavigatorPreviewWidget> {
   @override
   void initState() {
-    context.read<SavePictureViewModel>();
     super.initState();
   }
 
@@ -81,15 +83,19 @@ class _BottomNavigatorPreviewWidgetState
     );
   }
 
-  // Future<void> _saveFileLocalStorage(List<Uint8List> pictureCrop) async {
-  //   context.read<SavePictureViewModel>().add(
-  //         SaveEvent(
-  //           style: widget.style,
-  //           listPictureSave: pictureCrop,
-  //           savePictureType: SavePictureType.selector,
-  //         ),
-  //       );
-  // }
+  Future<void> _saveFileLocalStorage(List<Uint8List> pictureCrop,
+      String tempPath, SavePictureType type, int size,String name) async {
+    context.read<SavePictureViewModel>().add(
+          SaveEvent(
+              style: widget.style,
+              listPictureSave: pictureCrop,
+              savePictureType: type,
+              tempPath: tempPath,
+              size: size,
+              name: name,
+          ),
+        );
+  }
 
   Future<void> _showDialogSelectFolder() async {
     return showDialog<void>(
@@ -109,29 +115,24 @@ class _BottomNavigatorPreviewWidgetState
               ),
               onPressed: () async {
                 final state = context.read<CameraPictureViewModel>().state;
+                Directory tempDir = await getTemporaryDirectory();
+                String tempPath = '${tempDir.path}/vars_tools';
+                Directory(tempPath).create();
+                String name = 'camera_${DateTime.now()}.jpg';
                 if (state.isSuccess) {
-                  print('===== popup ========}');
-
-                  context.read<SavePictureViewModel>().add(
-                        SaveEvent(
-                          style: widget.style,
-                          listPictureSave: state.pictureCrop,
-                          savePictureType: SavePictureType.create,
-                          context: context,
-                        ),
-                      );
-                  imageCache.clear();
-                  imageCache.clearLiveImages();
+                  _saveFileLocalStorage(state.pictureCrop, tempPath,
+                          SavePictureType.create, 0,name)
+                      .then((value) => {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const BottomNavigationBarMainScreen(
+                                          currentTab: TabItem.file)),
+                            )
+                          });
                 }
-                context.read<SavePictureViewModel>().stream.listen((state) {
-                  if(state.isSuccess && state.listFileSave.isNotEmpty){
-                    Navigator.push(
-                      context,
-                      SlideRightRoute(page: const BottomNavigationBarMainScreen(
-                          currentTab: TabItem.file))
-                    );
-                  }
-                });
+
               },
             ),
             ElevatedButton(
@@ -140,28 +141,23 @@ class _BottomNavigatorPreviewWidgetState
                 style: const TextStyle(color: Colors.white),
               ),
               onPressed: () async {
+                Directory tempDir = await getTemporaryDirectory();
+                String tempPath = '${tempDir.path}/vars_tools';
+                Directory(tempPath).create();
                 final state = context.read<CameraPictureViewModel>().state;
                 if (state.isSuccess) {
-                  context.read<SavePictureViewModel>().add(
-                        SaveEvent(
-                          style: widget.style,
-                          listPictureSave: state.pictureCrop,
-                          savePictureType: SavePictureType.selector,
-                          context: context,
-                        ),
-                      );
-                  imageCache.clear();
-                  imageCache.clearLiveImages();
+                  _saveFileLocalStorage(state.pictureCrop, tempPath,
+                          SavePictureType.selector, 0,'')
+                      .then((value) => {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const BottomNavigationBarMainScreen(
+                                          currentTab: TabItem.file)),
+                            ),
+                          });
                 }
-                context.read<SavePictureViewModel>().stream.listen((state) {
-                  if(state.listFileSave.isNotEmpty){
-                    Navigator.push(
-                      context,
-                      SlideRightRoute(page: const BottomNavigationBarMainScreen(
-                          currentTab: TabItem.file))
-                    );
-                  }
-                });
               },
             ),
           ],
