@@ -1,12 +1,7 @@
 import 'dart:io';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/feature/file/view_model/file_bloc.dart';
-import 'package:vart_tools/feature/file/widget/bottom_sheet_share.dart';
 import 'package:vart_tools/feature/file/widget/popup_confirm_delete_file.dart';
 import 'package:vart_tools/res/app_color.dart';
 import 'package:vart_tools/res/assets.dart';
@@ -16,9 +11,10 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:isolate';
 import 'dart:ui';
-import 'package:http/http.dart';
 import 'package:share/share.dart';
-import 'package:flutter/services.dart';
+
+import '../../../common/animation/scale_animation.dart';
+import '../view/convert_text_screen.dart';
 
 class BottomBarFileDetail extends StatefulWidget {
   const BottomBarFileDetail({Key? key, required this.file}) : super(key: key);
@@ -111,6 +107,16 @@ class _BottomBarFileDetailState extends State<BottomBarFileDetail> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
+          InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  SlideRightRoute(
+                    page: ConvertTextScreen(file: widget.file),
+                  ),
+                );
+              },
+              child: const Icon(Icons.text_rotation_none)),
           InkWell(
             onTap: () {
               _download(
