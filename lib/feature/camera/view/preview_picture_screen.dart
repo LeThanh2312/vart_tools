@@ -17,9 +17,11 @@ class PreviewPictureScreen extends StatefulWidget {
     Key? key,
     required this.listPicture,
     required this.style,
+    required this.isGallery,
   }) : super(key: key);
   final List<File> listPicture;
   final CameraType style;
+  final bool isGallery;
 
   @override
   State<PreviewPictureScreen> createState() => _PreviewPictureScreenState();
@@ -62,7 +64,7 @@ class _PreviewPictureScreenState extends State<PreviewPictureScreen> {
       double imgHeightReal = memoryImageSize.height.toDouble();
       double imgWidthReal = memoryImageSize.width.toDouble();
 
-      if (imgHeightReal < imgWidthReal) {
+      if (imgHeightReal < imgWidthReal && !widget.isGallery) {
         final tmp = imgWidthReal;
         imgWidthReal = imgHeightReal;
         imgHeightReal = tmp;

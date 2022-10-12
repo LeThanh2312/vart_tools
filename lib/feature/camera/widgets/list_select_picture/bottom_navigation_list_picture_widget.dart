@@ -80,6 +80,7 @@ class _BottomNavigatorListPictureWidgetState
             page: PreviewPictureScreen(
               listPicture: listPictureSelect,
               style: widget.type,
+              isGallery: false,
             ),
           ));
     } else {

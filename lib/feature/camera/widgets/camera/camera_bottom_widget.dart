@@ -253,6 +253,7 @@ class _CameraBottomWidgetState extends State<CameraBottomWidget> {
                 page: PreviewPictureScreen(
               listPicture: listPicture,
               style: CameraType.cardID,
+              isGallery: false,
             ))).then(
           (_) => setState(
             () {
@@ -322,6 +323,7 @@ class _CameraBottomWidgetState extends State<CameraBottomWidget> {
             page: PreviewPictureScreen(
               listPicture: listPicture,
               style: widget.styleCamera,
+              isGallery: true,
             ),
           ),
         ).then(

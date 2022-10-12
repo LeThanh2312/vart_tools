@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 
 class DragBottomConvertTextWidget extends StatefulWidget {
-  const DragBottomConvertTextWidget({Key? key, required this.listString})
-      : super(key: key);
+  const DragBottomConvertTextWidget({
+    Key? key,
+    required this.listString,
+    required this.isSelectAll,
+    required this.onChangeSelectAll,
+  }) : super(key: key);
   final List<String>? listString;
+  final bool isSelectAll;
+  final void Function(bool value) onChangeSelectAll;
 
   @override
   State<DragBottomConvertTextWidget> createState() =>
@@ -12,6 +18,8 @@ class DragBottomConvertTextWidget extends StatefulWidget {
 
 class _DragBottomConvertTextWidgetState
     extends State<DragBottomConvertTextWidget> {
+  List<TextEditingController> controller = [];
+
   @override
   void initState() {
     super.initState();
@@ -19,7 +27,11 @@ class _DragBottomConvertTextWidgetState
 
   @override
   Widget build(BuildContext context) {
-    print('===== show text ===== ${widget.listString}');
+    if (widget.listString != null) {
+      for (var item in widget.listString!) {
+        controller.add(TextEditingController());
+      }
+    }
     return DraggableScrollableSheet(
       initialChildSize: 0.30,
       minChildSize: 0.15,
@@ -40,37 +52,39 @@ class _DragBottomConvertTextWidgetState
                       height: MediaQuery.of(context).size.height * 0.9,
                       width: MediaQuery.of(context).size.width,
                       padding:
-                          const EdgeInsets.only(top: 0, left: 10, right: 10),
+                          const EdgeInsets.only(top: 30, left: 10, right: 10),
                       child: SingleChildScrollView(
                         controller: scrollController,
                         child: Column(
                           children: [
-                            const SizedBox(
-                              height: 50,
-                            ),
-                            ...List.generate(
-                                widget.listString!.length,
-                                (index) => Container(
-                                    height: 50,
-                                    child: Text(widget.listString![index])))
-                            // ListView.builder(
-                            //     shrinkWrap: true,
-                            //     physics: const BouncingScrollPhysics(),
-                            //     itemCount: widget.listString!.length,
-                            //     itemBuilder: (context, index) {
-                            //       TextEditingController textController =
-                            //           TextEditingController();
-                            //       textController.text =
-                            //           widget.listString![index];
-                            //       return TextField(
-                            //         autofocus: false,
-                            //         keyboardType: TextInputType.multiline,
-                            //         style: const TextStyle(
-                            //           decoration: TextDecoration.none,
-                            //         ),
-                            //         controller: textController,
-                            //       );
-                            //     }),
+                            ListView.builder(
+                                shrinkWrap: true,
+                                physics: const BouncingScrollPhysics(),
+                                itemCount: widget.listString!.length,
+                                itemBuilder: (context, index) {
+                                  controller[index].text =
+                                      widget.listString![index];
+                                  return SizedBox(
+                                    height: 25,
+                                    child: TextField(
+                                      autofocus: false,
+                                      controller: controller[index],
+                                      keyboardType: TextInputType.multiline,
+                                      style: const TextStyle(
+                                        fontSize: 15.0,
+                                        color: Colors.black,
+                                        decoration: TextDecoration.none,
+                                      ),
+                                      decoration: const InputDecoration(
+                                        focusedBorder: UnderlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: Colors.grey),
+                                          //  when the TextFormField in focused
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }),
                           ],
                         ),
                       ),
@@ -80,15 +94,23 @@ class _DragBottomConvertTextWidgetState
                       width: MediaQuery.of(context).size.width,
                       margin:
                           const EdgeInsets.only(top: 20, left: 10, right: 10),
-                      child: const Center(
-                        child: Text(
-                          'Không nhận dạng được văn bản',
-                          style: TextStyle(color: Colors.black),
+                      child: SingleChildScrollView(
+                        controller: scrollController,
+                        child: const SizedBox(
+                          height: 100,
+                          child: Center(
+                            child: Text(
+                              'Không nhận dạng được văn bản',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ),
                         ),
                       ),
                     ),
               IgnorePointer(
+                ignoring: false,
                 child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   decoration: BoxDecoration(
                     borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(20),
@@ -96,15 +118,32 @@ class _DragBottomConvertTextWidgetState
                     color: Colors.grey[200],
                   ),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      const SizedBox(
+                        width: 60,
+                      ),
                       Container(
                         margin: const EdgeInsets.only(top: 10, bottom: 10),
                         height: 10,
-                        width: 100,
+                        width: 50,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                             color: Colors.grey),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          widget.onChangeSelectAll(!widget.isSelectAll);
+                          setState(() {});
+                        },
+                        child: Text(
+                          'Chọn tất cả',
+                          style: TextStyle(
+                            color: widget.isSelectAll
+                                ? Colors.green
+                                : Colors.black,
+                          ),
+                        ),
                       ),
                     ],
                   ),
