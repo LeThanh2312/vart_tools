@@ -71,10 +71,6 @@ dependencies:
   image_cropper: ^3.0.0
   merge_images: ^2.0.0-nullsafety
 
-  #image_crop: ^0.4.1
-  crop_your_image: ^0.7.2
-  cropperx: ^1.1.1
-
   # ASK PERMISSION
   path_provider: ^2.0.11
   permission_handler: ^10.0.1
@@ -88,13 +84,12 @@ dependencies:
 
   # DOWNLOADER AND SHARE
   flutter_downloader: ^1.8.4
-  share: ^2.0.4
+  share_plus: ^5.0.0
   fluttertoast: ^8.0.9
   sn_progress_dialog: ^1.0.8
 
   # Learning Text Recognition
   google_ml_kit: ^0.11.0
-
   snapping_sheet: ^3.1.0
 
 dev_dependencies:

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import '../../../database/file_database.dart';
+import '../widget/convert_text_widgets/bottom_navigator_convert_text.dart';
 import '../widget/convert_text_widgets/drag_bottom_convert_text_widget.dart';
 import '../widget/convert_text_widgets/text_detector_painter.dart';
 
@@ -28,7 +29,9 @@ class _ConvertTextScreenState extends State<ConvertTextScreen> {
   List<TextElement> _elements = [];
 
   List<String>? _listStrings;
-  List<String>? _listStringsOrigin;
+
+  Map<int,String> string = {};
+  Map<int,String> stringOrigin = {};
 
   late bool isSelectAll;
 
@@ -36,7 +39,9 @@ class _ConvertTextScreenState extends State<ConvertTextScreen> {
 
   String pattern = r"^[a-zA-Z0-9]";
 
-  var scale;
+  late double scale;
+
+  List<TextEditingController> controller = [];
 
   @override
   void initState() {
@@ -50,11 +55,12 @@ class _ConvertTextScreenState extends State<ConvertTextScreen> {
   void onChangeSelectAll(bool value) {
     isSelectAll = value;
     if (value == true) {
-      _listStrings = [..._listStringsOrigin!];
+      _listStrings = [...stringOrigin.values];
       _elements = [..._elementsOrigin];
     } else {
       _listStrings!.clear();
       _elements.clear();
+      string.clear();
     }
     setState(() {});
   }
@@ -92,6 +98,11 @@ class _ConvertTextScreenState extends State<ConvertTextScreen> {
       for (TextLine line in block.lines) {
         if (regEx.hasMatch(line.text)) {
           strings.add(line.text);
+          for (var text in strings){
+            var index = strings.indexOf(text);
+            string[index] = text;
+            stringOrigin[index] = text;
+          }
           for (TextElement element in line.elements) {
             _elementsOrigin.add(element);
             _elements.add(element);
@@ -99,10 +110,8 @@ class _ConvertTextScreenState extends State<ConvertTextScreen> {
         }
       }
     }
-
     setState(() {
-      _listStrings = [...strings];
-      _listStringsOrigin = [...strings];
+      _listStrings = [...string.values];
     });
   }
 
@@ -115,7 +124,7 @@ class _ConvertTextScreenState extends State<ConvertTextScreen> {
       child: Scaffold(
         body: Stack(
           children: [
-            _imageSize != null
+            stringOrigin.isNotEmpty
                 ? Container(
                     width: double.maxFinite,
                     color: Colors.grey[50],
@@ -140,40 +149,24 @@ class _ConvertTextScreenState extends State<ConvertTextScreen> {
                             : AspectRatio(
                                 aspectRatio: _imageSize!.aspectRatio,
                                 child: GestureDetector(onPanUpdate: (details) {
-                                  RegExp regEx = RegExp(pattern);
-
-                                  // for (TextBlock block in text.blocks) {
-                                  //   for (TextLine line in block.lines) {
-                                  //     for (TextElement element
-                                  //         in line.elements) {
-                                  //       var index = block.lines.indexOf(line);
-                                  //       if (element.boundingBox.contains(
-                                  //               details.localPosition *
-                                  //                   scale) &&
-                                  //           !_elements.contains(element)) {
-                                  //         _elements.add(element);
-                                  //         if (regEx.hasMatch(line.text) &&
-                                  //             !_listStrings!
-                                  //                 .contains(line.text)) {
-                                  //           _listStrings!
-                                  //               .insert(index, line.text);
-                                  //         }
-                                  //       }
-                                  //     }
-                                  //   }
-                                  // }
                                   for (var text in _elementsOrigin) {
-                                    var index = _elementsOrigin.indexOf(text);
                                     if (text.boundingBox.contains(details.localPosition * scale) && !_elements.contains(text)) {
                                       _elements.add(text);
 
-                                      print('======= length ${_listStringsOrigin!.length}');
-                                      print('======= length ${_listStrings!.length}');
-                                      print('======= index $index');
-                                      _listStrings!.add(_listStringsOrigin![index]);
+                                      var key = stringOrigin.keys.firstWhere((k) => stringOrigin[k]!.contains(text.text),);
+
+                                      if(string.keys.contains(key)){
+                                        string.update(key, (value) => '${string[key]} ${text.text}');
+                                      } else{
+                                        string[key] = text.text;
+                                      }
                                     }
                                   }
-                                  setState(() {});
+                                  setState(() {
+                                    string = Map.fromEntries(string.entries.toList()..sort((e1, e2) =>
+                                        e1.key.compareTo(e2.key)));
+                                    _listStrings = [...string.values];
+                                  });
                                 }),
                               )
                       ],
@@ -200,9 +193,11 @@ class _ConvertTextScreenState extends State<ConvertTextScreen> {
               listString: _listStrings,
               isSelectAll: isSelectAll,
               onChangeSelectAll: onChangeSelectAll,
+              controller: controller,
             )
           ],
         ),
+        bottomNavigationBar: BottomNavigatorConvertText(controller: controller,),
       ),
     );
   }

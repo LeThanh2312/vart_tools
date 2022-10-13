@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:vart_tools/database/file_database.dart';
 import 'package:vart_tools/feature/file/view_model/file_bloc.dart';
 import 'package:vart_tools/feature/file/widget/popup_confirm_delete_file.dart';
@@ -11,8 +12,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:isolate';
 import 'dart:ui';
-import 'package:share/share.dart';
-
 import '../../../common/animation/scale_animation.dart';
 import '../view/convert_text_screen.dart';
 
@@ -73,26 +72,14 @@ class _BottomBarFileDetailState extends State<BottomBarFileDetail> {
 
   Future<Null> urlFileShare() async {
     final RenderBox box = context.findRenderObject() as RenderBox;
-    if (Platform.isAndroid) {
-      var url = 'https://i.ytimg.com/vi/fq4N0hgOWzU/maxresdefault.jpg';
-      // var response = await get(Uri.parse(url));
-      // final documentDirectory = await getExternalStorageDirectory();
-      // File imgFile = new File('$documentDirectory/flutter.png');
-      // imgFile.writeAsBytesSync(response.bodyBytes);
-      // Share.shareFiles(["${documentDirectory}/flutter.png"]);
-      // ['PNG', 'JPG'];
-      // subject:
-      // 'URL File Share';
-      // text:
-      // 'Hello, check your share files!';
-      // sharePositionOrigin:
-      // box.localToGlobal(Offset.zero) & box.size;
-      Share.share(url);
-    } else {
-      Share.share('Hello, check your share files!',
-          subject: 'URL File Share',
-          sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
-    }
+    Share.shareFiles(['${widget.file.image}']);
+
+    // if (Platform.isAndroid) {
+    // } else {
+    //   Share.share('Hello, check your share files!',
+    //       subject: 'URL File Share',
+    //       sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+    // }
   }
 
   @override

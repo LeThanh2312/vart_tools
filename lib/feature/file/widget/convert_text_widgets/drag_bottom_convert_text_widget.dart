@@ -5,11 +5,12 @@ class DragBottomConvertTextWidget extends StatefulWidget {
     Key? key,
     required this.listString,
     required this.isSelectAll,
-    required this.onChangeSelectAll,
+    required this.onChangeSelectAll, required this.controller,
   }) : super(key: key);
   final List<String>? listString;
   final bool isSelectAll;
   final void Function(bool value) onChangeSelectAll;
+  final List<TextEditingController> controller;
 
   @override
   State<DragBottomConvertTextWidget> createState() =>
@@ -18,7 +19,6 @@ class DragBottomConvertTextWidget extends StatefulWidget {
 
 class _DragBottomConvertTextWidgetState
     extends State<DragBottomConvertTextWidget> {
-  List<TextEditingController> controller = [];
 
   @override
   void initState() {
@@ -27,9 +27,10 @@ class _DragBottomConvertTextWidgetState
 
   @override
   Widget build(BuildContext context) {
+    widget.controller.clear();
     if (widget.listString != null) {
       for (var item in widget.listString!) {
-        controller.add(TextEditingController());
+        widget.controller.add(TextEditingController());
       }
     }
     return DraggableScrollableSheet(
@@ -62,13 +63,12 @@ class _DragBottomConvertTextWidgetState
                                 physics: const BouncingScrollPhysics(),
                                 itemCount: widget.listString!.length,
                                 itemBuilder: (context, index) {
-                                  controller[index].text =
-                                      widget.listString![index];
+                                  widget.controller[index].text = widget.listString![index];
                                   return SizedBox(
                                     height: 25,
                                     child: TextField(
                                       autofocus: false,
-                                      controller: controller[index],
+                                      controller: widget.controller[index],
                                       keyboardType: TextInputType.multiline,
                                       style: const TextStyle(
                                         fontSize: 15.0,
