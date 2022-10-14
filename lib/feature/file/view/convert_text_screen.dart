@@ -30,8 +30,8 @@ class _ConvertTextScreenState extends State<ConvertTextScreen> {
 
   List<String>? _listStrings;
 
-  Map<int,String> string = {};
-  Map<int,String> stringOrigin = {};
+  Map<int, String> string = {};
+  Map<int, String> stringOrigin = {};
 
   late bool isSelectAll;
 
@@ -42,6 +42,7 @@ class _ConvertTextScreenState extends State<ConvertTextScreen> {
   late double scale;
 
   List<TextEditingController> controller = [];
+  List<TextEditingController> controllerEdit= [];
 
   @override
   void initState() {
@@ -79,6 +80,7 @@ class _ConvertTextScreenState extends State<ConvertTextScreen> {
     );
 
     final Size imageSize = await completer.future;
+
     setState(() {
       _imageSize = imageSize;
     });
@@ -98,7 +100,7 @@ class _ConvertTextScreenState extends State<ConvertTextScreen> {
       for (TextLine line in block.lines) {
         if (regEx.hasMatch(line.text)) {
           strings.add(line.text);
-          for (var text in strings){
+          for (var text in strings) {
             var index = strings.indexOf(text);
             string[index] = text;
             stringOrigin[index] = text;
@@ -120,8 +122,10 @@ class _ConvertTextScreenState extends State<ConvertTextScreen> {
     if (_imageSize != null) {
       scale = _imageSize!.width / MediaQuery.of(context).size.width;
     }
+    final _isKeyboard = MediaQuery.of(context).viewInsets.bottom != 0;
     return SafeArea(
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         body: Stack(
           children: [
             stringOrigin.isNotEmpty
@@ -150,21 +154,31 @@ class _ConvertTextScreenState extends State<ConvertTextScreen> {
                                 aspectRatio: _imageSize!.aspectRatio,
                                 child: GestureDetector(onPanUpdate: (details) {
                                   for (var text in _elementsOrigin) {
-                                    if (text.boundingBox.contains(details.localPosition * scale) && !_elements.contains(text)) {
+                                    if (text.boundingBox.contains(
+                                            details.localPosition * scale) &&
+                                        !_elements.contains(text)) {
                                       _elements.add(text);
 
-                                      var key = stringOrigin.keys.firstWhere((k) => stringOrigin[k]!.contains(text.text),);
+                                      var key = stringOrigin.keys.firstWhere(
+                                        (k) => stringOrigin[k]!
+                                            .contains(text.text),
+                                      );
 
-                                      if(string.keys.contains(key)){
-                                        string.update(key, (value) => '${string[key]} ${text.text}');
-                                      } else{
+                                      if (string.keys.contains(key)) {
+                                        string.update(
+                                            key,
+                                            (value) =>
+                                                '${string[key]} ${text.text}');
+                                      } else {
                                         string[key] = text.text;
                                       }
                                     }
                                   }
                                   setState(() {
-                                    string = Map.fromEntries(string.entries.toList()..sort((e1, e2) =>
-                                        e1.key.compareTo(e2.key)));
+                                    string = Map.fromEntries(
+                                        string.entries.toList()
+                                          ..sort((e1, e2) =>
+                                              e1.key.compareTo(e2.key)));
                                     _listStrings = [...string.values];
                                   });
                                 }),
@@ -189,16 +203,22 @@ class _ConvertTextScreenState extends State<ConvertTextScreen> {
                 ),
               ),
             ),
-            DragBottomConvertTextWidget(
-              listString: _listStrings,
-              isSelectAll: isSelectAll,
-              onChangeSelectAll: onChangeSelectAll,
-              controller: controller,
+            Padding(
+              padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom),
+              child: DragBottomConvertTextWidget(
+                listString: _listStrings,
+                isSelectAll: isSelectAll,
+                onChangeSelectAll: onChangeSelectAll,
+                controller: controller,
+                controllerEdit: controllerEdit,
+              ),
             )
           ],
         ),
-        bottomNavigationBar: BottomNavigatorConvertText(controller: controller,),
+        bottomNavigationBar: _isKeyboard ? SizedBox(): BottomNavigatorConvertText(controller: controllerEdit,),
       ),
     );
   }
+
 }
