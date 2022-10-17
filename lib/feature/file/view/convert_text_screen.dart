@@ -62,6 +62,8 @@ class _ConvertTextScreenState extends State<ConvertTextScreen> {
       _listStrings!.clear();
       _elements.clear();
       string.clear();
+      controller.clear();
+      controllerEdit.clear();
     }
     setState(() {});
   }
@@ -158,20 +160,19 @@ class _ConvertTextScreenState extends State<ConvertTextScreen> {
                                             details.localPosition * scale) &&
                                         !_elements.contains(text)) {
                                       _elements.add(text);
-
                                       var key = stringOrigin.keys.firstWhere(
                                         (k) => stringOrigin[k]!
                                             .contains(text.text),
                                       );
-
+                                      print('====== ${text.text}');
                                       if (string.keys.contains(key)) {
-                                        string.update(
-                                            key,
-                                            (value) =>
-                                                '${string[key]} ${text.text}');
+                                        string.update(key, (value) => '${string[key]} ${text.text}');
+                                        print('===== 1');
                                       } else {
                                         string[key] = text.text;
+                                        print('===== 2');
                                       }
+
                                     }
                                   }
                                   setState(() {

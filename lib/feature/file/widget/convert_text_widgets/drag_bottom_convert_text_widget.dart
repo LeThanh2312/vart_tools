@@ -32,12 +32,13 @@ class _DragBottomConvertTextWidgetState
 
   @override
   Widget build(BuildContext context) {
-    if (widget.listString != null && widget.controllerEdit.isEmpty) {
+    if (widget.listString != null) {
       for (var item in widget.listString!) {
         widget.controller.add(TextEditingController(text: item));
-        widget.controllerEdit.add(TextEditingController(text: item));
+       // widget.controllerEdit.add(TextEditingController(text: item));
       }
       isCheckChangeText = false;
+
     } else{
 
     }
@@ -73,7 +74,7 @@ class _DragBottomConvertTextWidgetState
                               itemBuilder: (context, index) {
                                 return TextField(
                                   autofocus: false,
-                                  controller: widget.controllerEdit[index],
+                                  controller: widget.controller[index],
                                   keyboardType: TextInputType.multiline,
                                   maxLines: 1,
                                   style: const TextStyle(
